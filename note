@@ -1,0 +1,115 @@
+* getting motivated
+  - vi-vi-vi
+  - Escape Meta Alt Control Shift
+  - EMACS Makes Any Computer Slow
+  - http://www.gnu.org/fun/jokes/gospel.html
+    
+* getting start
+** getting ready
+  apt-get install emacs-snapshot-gtk emacs-goodie emacs-goodies-extra
+** directory hierarchy
+  how to emacs project looks like
+** help
+  how to find what you are looking for
+  - doc
+  - key
+  - bindings
+  - functions
+  - variables
+** navigate/understand the gist
+  how to understand how it works
+  - tetris (lisp)
+  - reading tetris game
+  - creating new game with lisp
+
+* elisp practices
+** tab vs space 
+  - automatic tab/space switch
+** linux kernel
+  - project specific settings
+** key macro
+  - customization
+** remote editing
+  - tramp: ssh/ftp/telnet
+** change theme
+  - look & feel: list-* functions
+** change font
+  - kr
+** change key-binding
+  - key map/keydef-mode
+** sh
+  - use elisp in the shell
+** compile
+  - VS like compilation window
+** search 
+** tag/cscope/ebrowse
+   
+* utils
+** ref: font/color/ascii/rfc
+** ascii drawing: artist-mode/boxquote/under
+** other than text: pdf,png,tar ...
+** navigating: ido
+** prog: flymake, gdb, ediff
+** editing: browse-kill-ring, clipper
+** sh: eshell, find/grep
+** search: occur
+** info: man/woman/info
+** util: smart-tab
+** util: bm
+** util: dired/wdired
+** util: SES (spreadsheet)
+** util: change-log-mode
+** util: calc
+** util: flyspell
+** util: line-number
+** util: whitespace-mode -> tabify/untabify
+** util: makefile-mode
+** util: electric
+** util: zone
+** util: all
+** util: align-string
+
+- dedicated-mode
+- dict
+- edit-env
+- framepop
+- egocentric
+
+* modes
+** languages: c/c++
+** languages: python
+** languages: perl
+** languages: ruby
+** languages: lisp
+** languages: javascript
+** languages: php
+** languages: xml/html
+** languages: haskel
+** scm: cvs/svn/git
+** email: mule
+** tool: yas
+** tool: tex
+** tool: w3m
+** tool: anything
+** tool: htmlize
+** tool: auto-complete
+** tool: cedet/ecb
+** tool: hexl-mode
+** tool: org-mode
+** tool: vi-mode
+** wiki: emacs-wiki-mode
+** tool: bugzilla (?bug-reference-mode)
+   
+* alternative OS specific comments
+** Windows
+** MAC
+
+* tips
+** changing ctrl key
+ - ref. (Windows) http://technet.microsoft.com/en-us/sysinternals/bb897578.aspx
+ - ref. (Linux & MAC)  
+  
+* refs
+ - emacs FAQ: http://www.gnu.org/software/emacs/emacs-faq.html#Origin-of-the-term-Emacs
+ - http://www.gnu.org/fun/jokes/gnuemacs.acro.exp.html
+ - http://www.gnu.org/software/emacs/emacs-paper.html
