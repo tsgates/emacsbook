@@ -1,10 +1,12 @@
 all: doc.pdf
 
-out.md: doc.md images/*.png
-	cp $< $@
-	perl -pi -e 's/{{ proj }}/Ok/g' $@
+%.markdown: %.md
+	./gen $^
 
-doc.pdf: chap1/doc.md
+out.md: chap*/doc.markdown
+	cat $? > $@
+
+doc.pdf: out.md
 	markdown2pdf -N $^ -o $@
 
 clean:
