@@ -1,0 +1,84 @@
+#! /usr/bin/env python3
+
+# 
+# generating markdown from my anotated markdown
+#
+
+import re
+import os
+import sys
+import optparse
+
+debug = False
+
+# collect key binding for index or later use
+def key_binding(opt):
+    # collect them later
+    return "`" + opt + "`"
+
+def link_binding(opt):
+    # collect them later
+    return "`" + opt + "`"
+
+def menu_binding(opt):
+    # collect them later
+    return "`" + opt + "`"
+
+def func_binding(opt):
+    # collect them later
+    return "`" + opt + "`"
+
+def todo_binding(opt):
+    # collect them later
+    return ""
+
+def preprocess(marks, src, todo=False):
+    dst = []
+
+    # for each keywords
+    for m in re.finditer("\\\\(.?){([^}]+)}", src):
+        key, opt = m.groups()
+        opt = opt.replace("\n", " ")
+        
+        if key not in marks:
+            print("Can't find %s in %s: %s", key, marks.keys(), opt)
+            exit(1)
+
+        if debug:
+            print(m.span(), key, opt)
+        
+        dst.append((m.span(), marks[key](opt)))
+
+    # sort inverse
+    for ((beg, end), new) \
+            in sorted(dst, key=lambda d:d[0][0], reverse=True):
+        # substitute
+        src = src[:beg] + new + src[end:]
+
+    return src
+
+if __name__ == "__main__":
+    parser = optparse.OptionParser(__doc__.strip() if __doc__ else "")
+    parser.add_option("-t", "--todo",
+                      help="list up todo", action="store_true",
+                      dest="todo", default=False)
+    (opts, args) = parser.parse_args()
+
+    # grep todo
+    if opts.todo:
+        os.system("grep -Hrn --color=always TODO %s" % " ".join(args))
+        exit(0)
+        
+    # create marks
+    marks = {k[0]:v for k, v in globals().items() \
+                 if k.endswith("binding")}
+
+    # create markdown files
+    for f in args:
+        ifn = f
+        ofn = ifn.replace(".md", ".markdown")
+
+        with open(ofn, "w") as ofd:
+            with open(ifn) as ifd:
+                ofd.write(preprocess(marks, ifd.read()))
+
