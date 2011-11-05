@@ -7,7 +7,7 @@
 우분투 배보판 이멕스를 기준으로 설명하도록 하겠다. 우분투 (데비안 계열)
 배포판에서는 아래와 같이 최신 버젼의 이멕스를 설치할 수 있다.
 
-    apt-get install emacs-snapshot-gtk emacs-goodie
+    apt-get install emacs-snapshot emacs-snapshot-gtk emacs-goodies-el emacs-snapshot-el
 
 이멕스는 추구하는 목적에 따라 여러종류의 이멕스가 파생되어 개발이 되고 있다. 그
 중 앞으로 초점을 맞추어 살표보게될 이멕스는 리차드스톨만이 처음 개발하고 같은
@@ -162,7 +162,7 @@ syntax의전부이다. lisp에서는 일반 imperative 언어에서 특별하게
 대부분의 설명은 앞에서 배운 용어들로 이해가 쉽게 되지만, 몇가지 새로운 용어들이
 있다.
 
- - built-in 함수: c로 구현된 함수
+ - built-in 함수: c로 구현된 함수 (primitive 함수)
    이멕스는 c로 구현된 (기본이 되는) built-in 함수들과 lisp으로 구현된
    라이브러리들로 이루어진다. 위의 message 함수는 또한 editfns.c 파일에서
    구현된 함수를 찾아 볼 수 있다. 
