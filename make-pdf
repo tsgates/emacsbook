@@ -11,7 +11,7 @@ alias :pipe :popen3
 $proj = "emacs"
 
 $here = File.expand_path(File.dirname(__FILE__))
-$root = File.join($here, '..')
+$root = $here
 $outDir = File.join($root, 'pdf')
 
 def figures(&block)
@@ -114,7 +114,7 @@ end
 ARGV.delete_if{|arg| $DEBUG = true if arg == '-d' or arg == '--debug'}
 
 # enforce
-language = ["kr"]
+languages = ["ko"]
 
 $config = YAML.load_file("#$here/latex/config.yml")
 template = ERB.new(File.read("#$here/latex/template.tex"))
@@ -130,8 +130,7 @@ figures do
 	languages.each do |lang|
 		config = $config['default'].merge($config[lang]) rescue $config['default']
 
-		puts "#{lang}:"
-		markdown = Dir["#$root/#{lang}/*/*.markdown"].sort.map do |file|
+		markdown = Dir["#$root/chap*/doc.markdown"].sort.map do |file|
 			File.read(file)
 		end.join("\n\n")
 
@@ -143,9 +142,8 @@ figures do
 		end
 		puts "done"
       
-		print "\tCreating main.tex for #{lang}... "
-		dir = "#$here/#{lang}"
-		mkdir_p(dir)
+		print "\tCreating main.tex ... "
+		dir = "#$here/latex"
 		File.open("#{dir}/main.tex", 'w') do |file|
 			file.write(template.result(binding))
 		end
@@ -171,11 +169,5 @@ figures do
 			break if abort
 			puts "done"
 		end
-
-		unless abort
-			print "\tMoving output to #$proj.#{lang}.pdf... "
-            `mv #$root/latex/#{lang}/main.pdf #$root/pdf/#$proj.#{lang}.pdf`
-			puts "done"
-		end
-	end
+    end
 end

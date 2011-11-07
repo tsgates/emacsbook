@@ -1,13 +1,16 @@
+
+MD := $(wildcard chap*/doc.md)
+
 all: doc.pdf
 
 %.markdown: %.md
 	./gen $^
 
-out.md: chap*/doc.markdown
-	cat $? > $@
+doc.pdf: latex/main.pdf
+	cp -f $^ $@
 
-doc.pdf: out.md
-	markdown2pdf -N $^ -o $@
+latex/main.pdf: ${MD:.md=.markdown} latex/template.tex latex/config.yml
+	./make-pdf
 
 clean:
 	rm out.md doc.pdf
