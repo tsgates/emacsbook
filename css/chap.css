@@ -1,0 +1,262 @@
+@import url(http://fonts.googleapis.com/css?family=Abel);
+@import url(http://fonts.googleapis.com/css?family=Francois+One);
+
+html {
+  background: #333 url("../images/bg.jpg") repeat 0 0;
+  font-family: 'Helvetica Neue', Georgia, serif;
+  font-size: 14px;
+}
+
+body {
+  margin-bottom: 40px;
+}
+
+#topbar {
+  width: 670px;
+  margin: 0 auto;
+  padding: 0 15px;
+}
+
+#topbar h1 {
+  font-weight: bold;
+  font-size: 59px;
+  font-family: georgia;
+  text-shadow: 6px 6px 0 black;
+  color: #efefef;
+  line-height: 18px;
+  margin: 20px 0 0 0;
+  font-family: 'Francois One', sans-serif;
+}
+
+#topbar a {
+  text-decoration: none;
+}
+
+#topbar h1:hover {
+  opacity: .8;
+}
+
+#topbar h2 {
+  font-family: 'Helvetica Neue', Georgia, serif;
+  clear: both;
+  font-size: 14px;
+  text-shadow: 0 -1px black;
+  color: #565656;
+  margin: 23px 0 15px 10px;
+  font-weight: normal;
+}
+
+.emacs {
+  color: #808b5d;
+}
+
+#main {
+  padding: 5px 15px 15px 15px;
+  margin: 0 auto;
+  width: 670px;
+  border-radius: 8px;
+  -moz-border-radius: 8px;
+  -webkit-border-radius: 8px;
+  -o-border-radius: 8px;
+  box-shadow: 1px 2px 5px#000;
+  -moz-box-shadow: 1px 2px 5px#000;
+  -webkit-box-shadow: 1px 2px 5px#000;
+  -o-box-shadow: 1px 2px 5px#000;
+  background: #fff;
+}
+
+#main h3 {
+  margin: 15px 0 0 0;
+  font-family: 'Helvetica Neue';
+  font-size: 24px;
+  font-family: 'Francois One', sans-serif;
+}
+
+#posts ul {
+  padding-left: 10px;
+}
+
+#posts ul li {
+  border-bottom: 1px solid #ddd;
+  padding: 0;
+}
+
+#posts ul li:last-child {
+  border-bottom: none;
+}
+
+.post h2 {
+  font-family: 'Abel', sans-serif;
+  font-size: 16px;
+  margin: 10px 0 0 0;
+  color: gray;
+  font-weight: 400;
+}
+
+.post h1 {
+  margin: 5px 0 0 0;
+  font-family: 'Helvetica Neue';
+  font-size: 24px;
+  font-family: 'Francois One', sans-serif;
+}
+
+.post h1 a {
+  color: black;
+  text-decoration: none;
+}
+
+.post h2 span.hint {
+  font-size: 24px;
+  color: #808b5d;
+  margin: 0 15px 0 0;
+}
+
+.post p {
+  font-size: 14px;
+  line-height: 20px;
+  padding: 0;
+  margin-top: 0px;
+}
+
+#main p {
+  font-size: 14px;
+  line-height: 20px;
+  padding: 10px 0 0 0;
+}
+
+#main p a {
+  color: #808b5d;
+  font-weight: bold;
+}
+
+#main_nav {
+  margin: 0 auto;
+  width: 700px;
+  height: 30px;
+}
+
+#main_nav ul {
+  float: right;
+  list-style: none;
+}
+
+#main_nav ul li {
+  float: left;
+  margin: 5px 0 0 0;
+  padding: 0 2px;
+}
+
+#main_nav ul li:last-child {
+  padding: 0 2px;
+  border: none;
+}
+
+#main_nav ul li a {
+  color: #929292;
+  font-family: 'Helvetica Neue', Helvetica, Calibri, Arial;
+  font-size: 14px;
+  padding: 5px 10px;
+  display: block;
+  text-shadow: 1px 1px 1px #000;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+  -webkit-transition: all .3s ease-in-out;
+  -moz-transition: all .3s ease-in-out;
+  -o-transition: all .3s ease-in-out;
+  transition: all .3s ease-in-out;
+  text-decoration: none;
+}
+
+#main_nav ul li a:hover {
+  background: rgba(238, 238, 238, 0.19);
+}
+
+#social_buttons {
+  margin-top: 15px;
+}
+
+#disqus_thread {
+  margin: 20px 0 0 0;
+}
+
+#disqus_thread a {
+  color: #808b5d;
+  font-weight: bold;
+}
+
+#copyright {
+  width: 700px;
+  margin: 0 auto;
+}
+
+#copyright p {
+  font-size: 13px;
+  color: #929292;
+  padding: 10px 15px;
+  text-shadow: 0 2px 1px rgba(0, 0, 0, .4);
+  float: left;
+}
+
+#copyright .rss {
+  float: right;
+}
+
+.dsq-brlink {
+  display: none;
+}
+
+.function-list {
+  margin: 15px 0 0 0;
+}
+
+.function-list th {
+  font-weight: bold;
+  text-align: left;
+  padding: 0 5px 10px 5px;
+  border-bottom: 1px dotted #333;
+  border-right: 1px dotted #333;
+}
+
+.function-list td {
+  padding: 4px 4px;
+  border-right: 1px dotted #ddd;
+  border-bottom: 1px dotted #ddd;
+  min-width: 130px;
+}
+
+.function-list td:last-child {
+  border-right: none;
+}
+
+.function-list th:last-child {
+  border-right: none;
+}
+
+.function-list .functions {
+  width: 230px;
+}
+
+.function-list td {
+  padding: 4px 4px;
+  border-right: 1px dotted #ddd;
+  border-bottom: 1px dotted #ddd;
+}
+
+.function-list span.code {
+  font-family: monospace;
+  background: rgba(128, 139, 93, .25);
+  color: rgba(0, 0, 0, 0.75);
+  padding: 1px 3px;
+}
+
+.function-list span.item {
+  font-style: italic;
+  font-weight: bold;
+}
+
+ol, ul {
+    list-style-image: none;
+    list-style-position: outside;
+    list-style-type: none;
+}
