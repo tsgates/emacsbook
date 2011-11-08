@@ -117,8 +117,9 @@ ARGV.delete_if{|arg| $DEBUG = true if arg == '-d' or arg == '--debug'}
 languages = ["ko"]
 
 $config = YAML.load_file("#$here/latex/config.yml")
-base_template = ERB.new(File.read("#$here/html/template.html"))
-chap_template = ERB.new(File.read("#$here/html/template-chap.html"))
+base_template  = ERB.new(File.read("#$here/html/template.html"))
+chap_template  = ERB.new(File.read("#$here/html/template-chap.html"))
+index_template = ERB.new(File.read("#$here/html/template-index.html"))
 
 missing = ['pandoc', 'xelatex'].reject{|command| command_exists?(command)}
 unless missing.empty?
@@ -150,12 +151,34 @@ figures do
 
     print "\tCreating index.html ... "
     File.open("#$here/html/index.html", 'w') do |file|
-      file.write("<li>\n")
-      Dir["#$here/html/chap*.html"].sort.map do |chap|
-        chap = chap["#$here/".length..-1]
-        file.write("<ul>#{chap}</ul>\n")
+      html = "<ul>\n"
+      Dir["#$here/html/chap*.html"].sort.map do |path|
+        chap = /chap(\d+)/.match(path)[1]
+
+        mtime = `git log -1 --format=format:"%cD" #$here/chap#{chap}/doc.md`
+        ctime = DateTime.parse(mtime).strftime("%B %d, %Y")
+        
+        link = path["#$here/html/".length..-1]
+        html += <<DONE
+<li>
+<article class="post">
+<header>
+<h2>
+<span class="hint">Chap ##{chap}</span>
+#{ctime}
+</h2>
+<h1>
+<a href="#{link}">Do what you have to do</a>
+</h1>
+</header>
+<p>Manage your tasks through the day could be difficult, but with the power of Org Mode's task ability you get a powerful feature to handle it.</p>
+</li>
+DONE
       end
-      file.write("</li>")
+      html += "</ul>"
+      
+      template = index_template.result(binding)
+      file.write(base_template.result(binding))
     end
     puts "done"
     

@@ -18,4 +18,4 @@ clean:
 html: ${MD:.md=.markdown} html/template*.html
 	./make-html
 
-.PHONY: all
+.PHONY: all clean html
