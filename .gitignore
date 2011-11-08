@@ -7,3 +7,7 @@ chap*/*.markdown
 /latex/main.pdf
 /latex/main.tex
 /latex/main.toc
+/html/chap2.html
+/html/chap3.html
+/html/index.html
+/html/chap1.html
