@@ -117,7 +117,8 @@ ARGV.delete_if{|arg| $DEBUG = true if arg == '-d' or arg == '--debug'}
 languages = ["ko"]
 
 $config = YAML.load_file("#$here/latex/config.yml")
-template = ERB.new(File.read("#$here/html/template-chap.html"))
+base_template = ERB.new(File.read("#$here/html/template.html"))
+chap_template = ERB.new(File.read("#$here/html/template-chap.html"))
 
 missing = ['pandoc', 'xelatex'].reject{|command| command_exists?(command)}
 unless missing.empty?
@@ -142,7 +143,8 @@ figures do
 
       m = /chap\d+/.match(file)
       File.open("#$here/html/#{m[0]}.html", 'w') do |file|
-        file.write(template.result(binding))
+        template = chap_template.result(binding)
+        file.write(base_template.result(binding))
       end
     end
 

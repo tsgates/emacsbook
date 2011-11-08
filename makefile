@@ -15,7 +15,7 @@ latex/main.pdf: ${MD:.md=.markdown} latex/template.tex latex/config.yml
 clean:
 	rm out.md doc.pdf
 
-html:
-	;
+html: ${MD:.md=.markdown} html/template*.html
+	./make-html
 
 .PHONY: all
