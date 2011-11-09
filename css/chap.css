@@ -85,42 +85,9 @@ body {
   border-bottom: none;
 }
 
-.post h2 {
-  font-family: 'Abel', sans-serif;
-  font-size: 16px;
-  margin: 10px 0 0 0;
-  color: gray;
-  font-weight: 400;
-}
-
-.post h1 {
-  margin: 5px 0 0 0;
-  font-family: 'Helvetica Neue';
-  font-size: 24px;
-  font-family: 'Francois One', sans-serif;
-}
-
-.post h1 a {
-  color: black;
-  text-decoration: none;
-}
-
-.post h2 span.hint {
-  font-size: 24px;
-  color: #808b5d;
-  margin: 0 15px 0 0;
-}
-
-.post p {
-  font-size: 14px;
-  line-height: 20px;
-  padding: 0;
-  margin-top: 0px;
-}
-
 #main p {
   font-size: 14px;
-  line-height: 20px;
+  line-height: 28px;
   padding: 10px 0 0 0;
 }
 
@@ -259,4 +226,73 @@ ol, ul {
     list-style-image: none;
     list-style-position: outside;
     list-style-type: none;
+}
+
+
+/* a chapter style */
+.post dl {
+  padding-left: 30px;
+  margin-bottom: 0px;
+  font-size: 14px;
+}
+
+.post dl dt {
+  padding-bottom: 5px;
+  font-weight: bold;
+}
+.post dl dd {
+  padding-bottom: 10px;
+}
+
+.post ul {
+    list-style-image: none;
+    list-style-position: outside;
+    list-style-type: none;
+    margin-left: 0;
+    padding-left: 1em;
+    text-indent: 10px;
+}
+
+.post ul li:before {
+    content: "\00BB \0020";
+}
+
+.post ul li {
+    font-size: 14px;
+    line-height: 28px;
+    margin-top: 0px;
+    padding-bottom: 5px;
+}
+
+.post h2 {
+  font-family: 'Abel', sans-serif;
+  font-size: 16px;
+  margin: 10px 0 0 0;
+  color: gray;
+  font-weight: 400;
+}
+
+.post h1 {
+  margin: 5px 0 0 0;
+  font-family: 'Helvetica Neue';
+  font-size: 24px;
+  font-family: 'Francois One', sans-serif;
+}
+
+.post h1 a {
+  color: black;
+  text-decoration: none;
+}
+
+.post h2 span.hint {
+  font-size: 24px;
+  color: #808b5d;
+  margin: 0 15px 0 0;
+}
+
+.post p {
+  font-size: 14px;
+  line-height: 28px;
+  padding: 0;
+  margin-top: 0px;
 }
