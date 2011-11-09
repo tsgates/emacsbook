@@ -123,3 +123,46 @@
  - emacs FAQ: http://www.gnu.org/software/emacs/emacs-faq.html#Origin-of-the-term-Emacs
  - http://www.gnu.org/fun/jokes/gnuemacs.acro.exp.html
  - http://www.gnu.org/software/emacs/emacs-paper.html
+
+* deps:
+ - cabal pandoc (>1.8)
+ 
+* markdown
+ - http://johnmacfarlane.net/pandoc/demo/example9/pandocs-markdown.html
+ - http://johnmacfarlane.net/pandoc/demos.html
+ 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ {.haskell .numberLines}
+qsort []     = []
+qsort (x:xs) = qsort (filter (< x) xs) ++ [x] ++
+               qsort (filter (>= x) xs) 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+* fruits
+    + apples
+        - macintosh
+        - red delicious
+    + pears
+    + peaches
+* vegetables
+    + brocolli
+    + chard
+
+1.  one
+2.  two
+3.  three
+
+ 9)  Ninth
+10)  Tenth
+11)  Eleventh
+       i. subone
+      ii. subtwo
+     iii. subthree
+
+Term 1
+:   Definition 1
+
+Term 1
+  ~ Definition 1
+Term 2
+  ~ Definition 2a
+  ~ Definition 2b

@@ -12,7 +12,11 @@ $proj = "emacs"
 
 $here = File.expand_path(File.dirname(__FILE__))
 $root = $here
-$outDir = File.join($root, 'pdf')
+$pandoc = <<END
+pandoc -f markdown -t json \
+ | runhaskell pygments.hs \
+ | pandoc -s -p --no-wrap -f json -t html
+END
 
 def figures(&block)
 	begin
@@ -136,7 +140,9 @@ figures do
       markdown = File.read(file)
       print "\tParsing markdown #{file}\n"
       
-      html = pipe('pandoc -p --no-wrap -f markdown -t html') do |stdin, stdout, stderr|
+      html = pipe("pandoc -f markdown -t json \
+                    | runhaskell #$here/script/pygments.hs \
+                    | pandoc -s -p --no-wrap -f json -t html") do |stdin, stdout, stderr|
         stdin.write(pre_pandoc(markdown, config))
         stdin.close
         post_pandoc(stdout.read, config)
