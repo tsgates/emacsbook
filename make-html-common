@@ -96,6 +96,11 @@ def post_pandoc(string, config)
 	end
 end
 
+def html_mtime(chap)
+  mtime = `git log -1 --format=format:"%cD" #$here/chap#{chap}/doc.md`
+  return DateTime.parse(mtime).strftime("%B %d, %Y")
+end
+
 # check deps
 missing = ['pandoc', 'xelatex', 'runhaskell'].reject{|command| command_exists?(command)}
 unless missing.empty?

@@ -43,8 +43,9 @@ figures do
       post_pandoc(stdout.read, config)
     end
 
-    m = /chap\d+/.match(file)
-    File.open("#$here/html/#{m[0]}.html", 'w') do |file|
+    chap = /chap(\d+)/.match(file)[1]
+    date = html_mtime(chap)
+    File.open("#$here/html/chap#{chap}.html", 'w') do |file|
       template = $chap_template.result(binding)
       file.write($base_template.result(binding))
     end

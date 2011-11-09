@@ -1,6 +1,11 @@
 %
 % Taesoo Kim
 %
+% 이멕스 설치 및 실행
+%
+% 시작하기에 앞서 이멕스를 설치하고, 작업환경을 갖춘다. 또한 설치된 이멕스의
+% 디렉토리 구조를 개관적으로 살펴보고, 앞으로 사용할 용어를 정의한다.
+% 
 
 # 설치하기
 
@@ -16,11 +21,11 @@
 
 간략하게 우리가 무엇을 설치하고 있는지 알아보면,
 
-- emacs23
+emacs23
 :   이멕스 바이너리 및 컴파일된 기본 리습파일
-- emacs23-el
+emacs23-el
 :   기본 리습 소스파일
-- emacs-goodies-el
+emacs-goodies-el
 :   추가적인 리습 라이브러리
 
 한가지더, 이멕스의 소스파일을 추가적으로 다운받아 놓자.
@@ -35,13 +40,13 @@
 
 마지막으로, 우리는 무엇을 설치했는가?
 
-- /usr/share/emacs/[ver]/lisp
+/usr/share/emacs/[ver]/lisp
 :   컴파일된 리습파일(.elc)과 컴파일된 리습파일(.el.gz)이 모여있는 디렉토리
-- /usr/share/emacs/[ver]/site-lisp
+/usr/share/emacs/[ver]/site-lisp
 :   추가적인 리습라이브러리(예를 들면, emacs-goodies-el)이 모여있는 디렉토리
-- /usr/lib/emacs/[ver]/[arch]/
+/usr/lib/emacs/[ver]/[arch]/
 :   이멕스에서 내부적으로 사용되는 실행 파일들(예를 들면, hexl)이 모여있는 디렉토리
-- /usr/bin/emacs[ver]
+/usr/bin/emacs[ver]
 :   이멕스 실행파일
 
 기본적인 작업환경이 이해가됬다면 본격적으로 이멕스에 대해 알아보자.

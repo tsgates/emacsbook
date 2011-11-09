@@ -22,10 +22,7 @@ figures do
     html = "<ul>\n"
     Dir["#$here/html/chap*.html"].sort.map do |path|
       chap = /chap(\d+)/.match(path)[1]
-
-      mtime = `git log -1 --format=format:"%cD" #$here/chap#{chap}/doc.md`
-      ctime = DateTime.parse(mtime).strftime("%B %d, %Y")
-      
+      date = html_mtime(chap)
       link = path["#$here/html/".length..-1]
       html += <<DONE
 <li>
@@ -33,7 +30,7 @@ figures do
     <header>
       <h2>
         <span class="hint">Chap ##{chap}</span>
-        #{ctime}
+        #{date}
       </h2>
       <h1>
         <a href="#{link}">Do what you have to do</a>
