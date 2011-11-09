@@ -1,6 +1,4 @@
 
-.SUFFIXES: .html .markdown .md
-
 MD := $(wildcard chap*/doc.md)
 
 OUT_MD   := $(MD:.md=.markdown)
