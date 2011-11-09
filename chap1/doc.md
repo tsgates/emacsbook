@@ -28,19 +28,25 @@ emacs-goodies-el
 현재 디렉토리에 다운받아진 emacs23-[ver] 디렉토리를 ([ver]은 "23.2+1"와 같은
 배포판에 종속적인 문자열) 원하는 곳으로 (예를 들면, /usr/src/emacs-[ver])
 옮겨 놓도록하자. 우리가 관심있게 살펴볼 소스코드들은 "emacs23-[ver]/src"
-디렉토리에 모여 있고, 앞으로 차근 차근 알아보도록 한다.
+디렉토리에 모여 있다. 각각의 소스파일들은 앞으로 천천히 알아보도록하자.
 
 마지막으로, 우리가 설치한것들은 무엇인가?
 
-- /usr/share/emacs/23.2/lisp
-- /usr/share/emacs/23.2/site-lisp
-- /usr/lib/emacs/23.2/x86_64-linux-gnu/
-- /usr/bin/emacs23
-- /usr/bin/emacs
+- /usr/share/emacs/[ver]/lisp
+:   컴파일된 리습파일(.elc)과 컴파일된 리습파일(.el.gz)이 모여있는 디렉토리
+- /usr/share/emacs/[ver]/site-lisp
+:   추가적인 리습라이브러리(예를 들면, emacs-goodies-el)이 모여있는 디렉토리
+- /usr/lib/emacs/[ver]/[arch]/
+:   이멕스에서 내부적으로 사용되는 실행 파일들(예를 들면, hexl)이 모여있는 디렉토리
+- /usr/bin/emacs[ver]
+:   이멕스 실행파일
+
+기본적인 작업환경이 이해가됬다면 본격적으로 이멕스에 대해 알아보자.
 
 # 시작하기
 
-역사, 철학, 종교(?)적인 이야기는 뒤로하고, 설치한 이멕스를 실행해 보자.
+흥미 진지한 역사, 철학, 종교(?)적인 이야기는 아쉽지만 뒤로하고, 설치한 이멕스를
+다음과 같은 명령으로 실행해 보자.
 
     emacs
 
