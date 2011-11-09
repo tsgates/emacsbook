@@ -1,0 +1,53 @@
+#!/usr/bin/env ruby
+# -*- coding: utf-8 -*-
+
+load 'make-html-common'
+
+def usage
+	puts <<USAGE
+Usage:
+  make-html-index
+
+Options:
+  -d, --debug   : debuging
+USAGE
+	exit
+end
+
+figures do
+  config = $config['default'].merge($config["ko"]) rescue $config['default']
+  
+  print "\tCreating index.html ... " if $DEBUG
+  File.open("#$here/html/index.html", 'w') do |file|
+    html = "<ul>\n"
+    Dir["#$here/html/chap*.html"].sort.map do |path|
+      chap = /chap(\d+)/.match(path)[1]
+
+      mtime = `git log -1 --format=format:"%cD" #$here/chap#{chap}/doc.md`
+      ctime = DateTime.parse(mtime).strftime("%B %d, %Y")
+      
+      link = path["#$here/html/".length..-1]
+      html += <<DONE
+<li>
+  <article class="post">
+    <header>
+      <h2>
+        <span class="hint">Chap ##{chap}</span>
+        #{ctime}
+      </h2>
+      <h1>
+        <a href="#{link}">Do what you have to do</a>
+      </h1>
+     </header>
+     <p>Manage your tasks through the day could be difficult, but with the power of Org Mode's task ability you get a powerful feature to handle it.</p>
+  </article>
+</li>
+DONE
+    end
+    html += "</ul>"
+    
+    template = $index_template.result(binding)
+    file.write($base_template.result(binding))
+  end
+  puts "done" if $DEBUG
+end

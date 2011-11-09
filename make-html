@@ -1,192 +1,53 @@
 #!/usr/bin/env ruby
 # -*- coding: utf-8 -*-
-require 'fileutils'
-require 'open3'
-require 'erb'
-require 'yaml'
 
-include FileUtils, Open3
-alias :pipe :popen3
+load 'make-html-common'
 
-$proj = "emacs"
-
-$here = File.expand_path(File.dirname(__FILE__))
-$root = $here
 $pandoc = <<END
 pandoc -f markdown -t json \
  | runhaskell pygments.hs \
  | pandoc -s -p --no-wrap -f json -t html
 END
 
-def figures(&block)
-	begin
-		# Dir["#$root/figures-png/*"].each do |file|
-		# 	cp(file, file.sub(/(figures-png)/, '\1.\2'))
-		# end
-		block.call
-	ensure
-		# Dir["#$root/figures/18333*.png"].each do |file|
-		# 	rm(file.gsub(/18333fig0(\d)0?(\d+)\-tn/, '\1.\2'))
-		# end
-	end
-end
-
 def usage
 	puts <<USAGE
 Usage:
-  makepdf [OPTION...] LANGUAGE [LANGUAGE 2...]
+  make-html [markdown]
 
 Options:
-  -d, --debug      prints TeX and other output
+  -d, --debug   : debuging
 USAGE
 	exit
 end
 
-def command_exists?(command)
-	ENV['PATH'].split(/:/).map do |path|
-		File.executable?("#{path}/#{command}")
-	end.inject{|a, b| a || b}
-end
-
-def replace(string, &block)
-	string.instance_eval do
-		alias :s :gsub!
-		instance_eval(&block)
-	end
-	string
-end
-
-def verbatim_sanitize(string)
-	string.gsub('\\', '{\textbackslash}').
-		gsub('~', '{\textasciitilde}').
-		gsub(/([\$\#\_\^\%])/, '\\\\' + '\1{}')
-end
-
-def pre_pandoc(string, config)
-	replace(string) do
-		# Pandoc discards #### subsubsections #### - this hack recovers them
-		s /\#\#\#\# (.*?) \#\#\#\#/, 'SUBSUBSECTION: \1'
-
-		# Turns URLs into clickable links
-		s /\`(http:\/\/[A-Za-z0-9\/\%\&\=\-\_\\\.]+)\`/, '<\1>'
-		s /(\n\n)\t(http:\/\/[A-Za-z0-9\/\%\&\=\-\_\\\.]+)\n([^\t]|\t\n)/, '\1<\2>\1'
-
-		# Process figures
-		s /Insert\s.+\.png\s*\n.*?\d{1,2}-\d{1,2}\. (.*)/, 'FIG: \1'
-	end
-end
-
-def post_pandoc(string, config)
-	replace(string) do
-		space = /\s/
-
-		# Reformat for the book documentclass as opposed to article
-		s '\section', '\chap'
-		s '\sub', '\\'
-		s /SUBSUBSECTION: (.*)/, '\subsubsection{\1}'
-
-		# Enable proper cross-reference
-		s /#{config['fig'].gsub(space, '\s')}\s*(\d+)\-\-(\d+)/, '\imgref{\1.\2}'
-		s /#{config['tab'].gsub(space, '\s')}\s*(\d+)\-\-(\d+)/, '\tabref{\1.\2}'
-		s /#{config['prechap'].gsub(space, '\s')}\s*(\d+)(\s*)#{config['postchap'].gsub(space, '\s')}/, '\chapref{\1}\2'
-
-		# Miscellaneous fixes
-		s /FIG: (.*)/, '\img{\1}'
-		s '\begin{enumerate}[1.]', '\begin{enumerate}'
-		s /(\w)--(\w)/, '\1-\2'
-		s /``(.*?)''/, "#{config['dql']}\\1#{config['dqr']}"
-
-		# Typeset the maths in the book with TeX
-		s '\verb!p = (n(n-1)/2) * (1/2^160))!', '$p = \frac{n(n-1)}{2} \times \frac{1}{2^{160}}$)'
-		s '2\^{}80', '$2^{80}$'
-		s /\sx\s10\\\^\{\}(\d+)/, '\e{\1}'
-
-		# Convert inline-verbatims into \texttt (which is able to wrap)
-		s /\\verb(\W)(.*?)\1/ do
-			"{\\texttt{#{verbatim_sanitize($2)}}}"
-		end
-
-		# Ensure monospaced stuff is in a smaller font
-		s /(\\verb(\W).*?\2)/, '{\footnotesize\1}'
-		s /(\\begin\{verbatim\}.*?\\end\{verbatim\})/m, '{\footnotesize\1}'
-
-		# Shaded verbatim block
-		s /(\\begin\{verbatim\}.*?\\end\{verbatim\})/m, '\begin{shaded}\1\end{shaded}'
-	end
-end
-
-ARGV.delete_if{|arg| $DEBUG = true if arg == '-d' or arg == '--debug'}
-
-# enforce
-languages = ["ko"]
-
-$config = YAML.load_file("#$here/latex/config.yml")
-base_template  = ERB.new(File.read("#$here/html/template.html"))
-chap_template  = ERB.new(File.read("#$here/html/template-chap.html"))
-index_template = ERB.new(File.read("#$here/html/template-index.html"))
-
-missing = ['pandoc', 'xelatex'].reject{|command| command_exists?(command)}
-unless missing.empty?
-	puts "Missing dependencies: #{missing.join(', ')}."
-	puts "Install these and try again."
-	exit
+# re-generate all if nothing
+if ARGV.empty?
+  $DEBUG = true
+  Dir["#$here/chap*/doc.markdown"].each do |file|
+    ARGV.push(file)
+  end
 end
 
 figures do
-  languages.each do |lang|
-    config = $config['default'].merge($config[lang]) rescue $config['default']
+  config = $config['default'].merge($config["ko"])
 
-    Dir["#$here/chap*/doc.markdown"].sort.map do |file|
-      markdown = File.read(file)
-      print "\tParsing markdown #{file}\n"
-      
-      html = pipe("pandoc -f markdown -t json \
+  ARGV.sort.map do |file|
+    markdown = File.read(file)
+    print "\tParsing markdown #{file}" if $DEBUG
+    
+    html = pipe("pandoc -f markdown -t json \
                     | runhaskell #$here/script/pygments.hs \
                     | pandoc -s -p --no-wrap -f json -t html") do |stdin, stdout, stderr|
-        stdin.write(pre_pandoc(markdown, config))
-        stdin.close
-        post_pandoc(stdout.read, config)
-      end
-
-      m = /chap\d+/.match(file)
-      File.open("#$here/html/#{m[0]}.html", 'w') do |file|
-        template = chap_template.result(binding)
-        file.write(base_template.result(binding))
-      end
+      stdin.write(pre_pandoc(markdown, config))
+      stdin.close
+      post_pandoc(stdout.read, config)
     end
 
-    print "\tCreating index.html ... "
-    File.open("#$here/html/index.html", 'w') do |file|
-      html = "<ul>\n"
-      Dir["#$here/html/chap*.html"].sort.map do |path|
-        chap = /chap(\d+)/.match(path)[1]
-
-        mtime = `git log -1 --format=format:"%cD" #$here/chap#{chap}/doc.md`
-        ctime = DateTime.parse(mtime).strftime("%B %d, %Y")
-        
-        link = path["#$here/html/".length..-1]
-        html += <<DONE
-<li>
-<article class="post">
-<header>
-<h2>
-<span class="hint">Chap ##{chap}</span>
-#{ctime}
-</h2>
-<h1>
-<a href="#{link}">Do what you have to do</a>
-</h1>
-</header>
-<p>Manage your tasks through the day could be difficult, but with the power of Org Mode's task ability you get a powerful feature to handle it.</p>
-</li>
-DONE
-      end
-      html += "</ul>"
-      
-      template = index_template.result(binding)
-      file.write(base_template.result(binding))
+    m = /chap\d+/.match(file)
+    File.open("#$here/html/#{m[0]}.html", 'w') do |file|
+      template = $chap_template.result(binding)
+      file.write($base_template.result(binding))
     end
-    puts "done"
-    
   end
+  puts " ... done" if $DEBUG
 end
