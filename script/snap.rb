@@ -38,7 +38,8 @@ end
 emacs_id = run_emacs "--no-init"
 
 # send_key
-send_key(emacs_id, "test")
+send_key(emacs_id, "")
+send_type(emacs_id, "test")
 
 # key    =
 # width  =
