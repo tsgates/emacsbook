@@ -11,89 +11,90 @@ alias :pipe :popen3
 $root = $here = File.expand_path(File.dirname(__FILE__))
 
 def figures(&block)
-	begin
-		# Dir["#$root/figures-png/*"].each do |file|
-		# 	cp(file, file.sub(/(figures-png)/, '\1.\2'))
-		# end
-		block.call
-	ensure
-		# Dir["#$root/figures/18333*.png"].each do |file|
-		# 	rm(file.gsub(/18333fig0(\d)0?(\d+)\-tn/, '\1.\2'))
-		# end
-	end
+  begin
+    # Dir["#$root/figures-png/*"].each do |file|
+    # 	cp(file, file.sub(/(figures-png)/, '\1.\2'))
+    # end
+    block.call
+  ensure
+    # Dir["#$root/figures/18333*.png"].each do |file|
+    # 	rm(file.gsub(/18333fig0(\d)0?(\d+)\-tn/, '\1.\2'))
+    # end
+  end
 end
 
 def command_exists?(command)
-	ENV['PATH'].split(/:/).map do |path|
-		File.executable?("#{path}/#{command}")
-	end.inject{|a, b| a || b}
+  ENV['PATH'].split(/:/).map do |path|
+    File.executable?("#{path}/#{command}")
+  end.inject{|a, b| a || b}
 end
 
 def replace(string, &block)
-	string.instance_eval do
-		alias :s :gsub!
-		instance_eval(&block)
-	end
-	string
+  string.instance_eval do
+    alias :s :gsub!
+    instance_eval(&block)
+  end
+  string
 end
 
 def verbatim_sanitize(string)
-	string.gsub('\\', '{\textbackslash}').
-		gsub('~', '{\textasciitilde}').
-		gsub(/([\$\#\_\^\%])/, '\\\\' + '\1{}')
+  string.gsub('\\', '{\textbackslash}').
+    gsub('~', '{\textasciitilde}').
+    gsub(/([\$\#\_\^\%])/, '\\\\' + '\1{}')
 end
 
 def pre_pandoc(string, config)
-	replace(string) do
-		# Pandoc discards #### subsubsections #### - this hack recovers them
-		s /\#\#\#\# (.*?) \#\#\#\#/, 'SUBSUBSECTION: \1'
+  replace(string) do
+    # Inc one category depth
+    # Pandoc discards #### subsubsections #### - this hack recovers them
+    s /\#\#\#\# (.*?) \#\#\#\#/, 'SUBSUBSECTION: \1'
 
-		# Turns URLs into clickable links
-		s /\`(http:\/\/[A-Za-z0-9\/\%\&\=\-\_\\\.]+)\`/, '<\1>'
-		s /(\n\n)\t(http:\/\/[A-Za-z0-9\/\%\&\=\-\_\\\.]+)\n([^\t]|\t\n)/, '\1<\2>\1'
+    # Turns URLs into clickable links
+    s /\`(http:\/\/[A-Za-z0-9\/\%\&\=\-\_\\\.]+)\`/, '<\1>'
+    s /(\n\n)\t(http:\/\/[A-Za-z0-9\/\%\&\=\-\_\\\.]+)\n([^\t]|\t\n)/, '\1<\2>\1'
 
-		# Process figures
-		s /Insert\s.+\.png\s*\n.*?\d{1,2}-\d{1,2}\. (.*)/, 'FIG: \1'
-	end
+    # Process figures
+    s /Insert\s.+\.png\s*\n.*?\d{1,2}-\d{1,2}\. (.*)/, 'FIG: \1'
+  end
 end
 
 def post_pandoc(string, config)
-	replace(string) do
-		space = /\s/
+  replace(string) do
+    space = /\s/
 
-		# Reformat for the book documentclass as opposed to article
-		s '\section', '\chap'
-		s '\sub', '\\'
-		s /SUBSUBSECTION: (.*)/, '\subsubsection{\1}'
+    # Reformat for the book documentclass as opposed to article
+    s '\section', '\chap'
+    s '\sub', '\\'
+    s /SUBSUBSECTION: (.*)/, '\subsubsection{\1}'
 
-		# Enable proper cross-reference
-		s /#{config['fig'].gsub(space, '\s')}\s*(\d+)\-\-(\d+)/, '\imgref{\1.\2}'
-		s /#{config['tab'].gsub(space, '\s')}\s*(\d+)\-\-(\d+)/, '\tabref{\1.\2}'
-		s /#{config['prechap'].gsub(space, '\s')}\s*(\d+)(\s*)#{config['postchap'].gsub(space, '\s')}/, '\chapref{\1}\2'
+    # Enable proper cross-reference
+    s /#{config['fig'].gsub(space, '\s')}\s*(\d+)\-\-(\d+)/, '\imgref{\1.\2}'
+    s /#{config['tab'].gsub(space, '\s')}\s*(\d+)\-\-(\d+)/, '\tabref{\1.\2}'
+    s /#{config['prechap'].gsub(space, '\s')}\s*(\d+)(\s*)#{config['postchap'].gsub(space, '\s')}/, '\chapref{\1}\2'
 
-		# Miscellaneous fixes
-		s /FIG: (.*)/, '\img{\1}'
-		s '\begin{enumerate}[1.]', '\begin{enumerate}'
-		s /(\w)--(\w)/, '\1-\2'
-		s /``(.*?)''/, "#{config['dql']}\\1#{config['dqr']}"
+    # Miscellaneous fixes
+    s /FIG: (.*)/, '\img{\1}'
+    s '\begin{enumerate}[1.]', '\begin{enumerate}'
+    s /(\w)--(\w)/, '\1-\2'
+    s /``(.*?)''/, "#{config['dql']}\\1#{config['dqr']}"
 
-		# Typeset the maths in the book with TeX
-		s '\verb!p = (n(n-1)/2) * (1/2^160))!', '$p = \frac{n(n-1)}{2} \times \frac{1}{2^{160}}$)'
-		s '2\^{}80', '$2^{80}$'
-		s /\sx\s10\\\^\{\}(\d+)/, '\e{\1}'
+    # Typeset the maths in the book with TeX
+    s '\verb!p = (n(n-1)/2) * (1/2^160))!', '$p = \frac{n(n-1)}{2} \times \frac{1}{2^{160}}$)'
+    s '2\^{}80', '$2^{80}$'
+    s /\sx\s10\\\^\{\}(\d+)/, '\e{\1}'
 
-		# Convert inline-verbatims into \texttt (which is able to wrap)
-		s /\\verb(\W)(.*?)\1/ do
-			"{\\texttt{#{verbatim_sanitize($2)}}}"
-		end
+    # Convert inline-verbatims into \texttt (which is able to wrap)
+    s /\\verb(\W)(.*?)\1/ do
+      "{\\texttt{#{verbatim_sanitize($2)}}}"
+    end
 
-		# Ensure monospaced stuff is in a smaller font
-		s /(\\verb(\W).*?\2)/, '{\footnotesize\1}'
-		s /(\\begin\{verbatim\}.*?\\end\{verbatim\})/m, '{\footnotesize\1}'
+    # Ensure monospaced stuff is in a smaller font
+    s /(\\verb(\W).*?\2)/, '{\footnotesize\1}'
+    s /(\\begin\{verbatim\}.*?\\end\{verbatim\})/m, '{\footnotesize\1}'
 
-		# Shaded verbatim block
-		s /(\\begin\{verbatim\}.*?\\end\{verbatim\})/m, '\begin{shaded}\1\end{shaded}'
-	end
+    # Shaded verbatim block
+    s /(\\begin\{verbatim\}.*?\\end\{verbatim\})/m, '\begin{shaded}\1\end{shaded}'
+  end
 end
 
 def html_mtime(chap)
@@ -102,11 +103,15 @@ def html_mtime(chap)
 end
 
 # check deps
-missing = ['pandoc', 'xelatex', 'runhaskell'].reject{|command| command_exists?(command)}
+missing = ['pandoc',
+           'xelatex',
+           'runhaskell',
+           'pygmentize'].reject{|command| command_exists?(command)}
+
 unless missing.empty?
-	puts "Missing dependencies: #{missing.join(', ')}."
-	puts "Install these and try again."
-	exit
+  puts "Missing dependencies: #{missing.join(', ')}."
+  puts "Install these and try again."
+  exit
 end
 
 # include configuration file
@@ -120,3 +125,8 @@ $index_template = ERB.new(File.read("#$here/html/template-index.html"))
 # common debug flag
 ARGV.delete_if{|arg| $DEBUG = true if arg == '-d' or arg == '--debug'}
 
+# check pandoc version
+unless `pandoc --version | head -1`.include? "1.8"
+  puts "Install the latest version of pandoc"
+  exit
+end

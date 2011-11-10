@@ -3,12 +3,6 @@
 
 load 'make-html-common'
 
-$pandoc = <<END
-pandoc -f markdown -t json \
- | runhaskell pygments.hs \
- | pandoc -s -p --no-wrap -f json -t html
-END
-
 def usage
 	puts <<USAGE
 Usage:
@@ -33,7 +27,7 @@ figures do
 
   ARGV.sort.map do |file|
     markdown = File.read(file)
-    print "\tParsing markdown #{file}" if $DEBUG
+    print "\tParsing markdown #{file}\n" if $DEBUG
     
     html = pipe("pandoc -f markdown -t json \
                     | runhaskell #$here/script/pygments.hs \
@@ -43,6 +37,11 @@ figures do
       post_pandoc(stdout.read, config)
     end
 
+    unless html
+      puts "Got error on executing pondoc"
+      exit 1
+    end
+    
     chap = /chap(\d+)/.match(file)[1]
     date = html_mtime(chap)
     File.open("#$here/html/chap#{chap}.html", 'w') do |file|
@@ -50,5 +49,4 @@ figures do
       file.write($base_template.result(binding))
     end
   end
-  puts " ... done" if $DEBUG
 end
