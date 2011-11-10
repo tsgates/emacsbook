@@ -65,7 +65,7 @@ body {
   background: #fff;
 }
 
-#main h3 {
+h3 {
   margin: 15px 0 0 0;
   font-family: 'Helvetica Neue';
   font-size: 24px;
@@ -265,6 +265,13 @@ ol, ul {
 }
 
 .post h2 {
+  margin: 5px 0 0 0;
+  font-family: 'Helvetica Neue';
+  font-size: 24px;
+  font-family: 'Francois One', sans-serif;
+}
+
+.post h3 {
   font-family: 'Abel', sans-serif;
   font-size: 16px;
   margin: 10px 0 0 0;
@@ -284,7 +291,7 @@ ol, ul {
   text-decoration: none;
 }
 
-.post h2 span.hint {
+.post h3 span.hint {
   font-size: 24px;
   color: #808b5d;
   margin: 0 15px 0 0;
