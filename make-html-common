@@ -46,6 +46,8 @@ end
 def pre_pandoc(string, config)
   replace(string) do
     # Inc one category depth
+    s /^\#/, '##'
+    
     # Pandoc discards #### subsubsections #### - this hack recovers them
     s /\#\#\#\# (.*?) \#\#\#\#/, 'SUBSUBSECTION: \1'
 
