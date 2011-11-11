@@ -265,7 +265,7 @@ ol, ul {
 
 .post h2 {
   margin: 5px 0 0 0;
-  font-size: 24px;
+  font-size: 22px;
   font-family: sans-serif;
 }
 
@@ -278,9 +278,13 @@ ol, ul {
 }
 
 .post h1 {
-  margin: 5px 0 20px 0;
-  font-family: 'Helvetica Neue';
+  margin: 10px 0 0px 0;
+  font-family: sans-serif;
   font-size: 24px;
+}
+
+.post header {
+    margin-bottom: 20px;
 }
 
 .post h1 a {
