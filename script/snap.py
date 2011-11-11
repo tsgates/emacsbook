@@ -20,7 +20,9 @@ def run_emacs(*opt):
     while True:
         time.sleep(0.1)
         res = xdotool_get_id(p.pid)
-        if res != "" and "Error" not in res:
+        if res != "" \
+                and "Error" not in res \
+                and "\n" not in res:
             time.sleep(1)
             return (res, p)
     # unreachable
@@ -62,13 +64,48 @@ if __name__ == '__main__':
     parser.add_option("-i", "--img",
                       help="image file", 
                       dest="img", default="out.png")
+    parser.add_option("-b", "--batch",
+                      help="batch processing", action="store_true",
+                      dest="batch", default=False)
+    # XXX. implement later
+    parser.add_option("-r", "--restart",
+                      help="force restart", action="store_true",
+                      dest="restart", default=False)
     (opts, args) = parser.parse_args()
-    
+
     # modifier map
-    mmap = {"M-" : "alt+"  ,
-            "C-" : "ctrl+" ,
-            "S-" : "super+",
-            "RET": "Return"}
+    mmap = {
+        "M-" : "alt+"  ,
+        "C-" : "ctrl+" ,
+        "S-" : "super+",
+        "RET": "Return",
+        "\n" : "Return", 
+        " "  : "space", 
+        "?"  : "shift+question", 
+        "!"  : "shift+exclam", 
+        ","  : "comma", 
+        "."  : "period", 
+        ";"  : "shift+semicolon", 
+        ":"  : "shift+colon", 
+        '"'  : "shift+2", 
+        "$"  : "shift+4", 
+        "%"  : "shift+5", 
+        "&"  : "shift+6", 
+        "/"  : "shift+7", 
+        "("  : "shift+8", 
+        ")"  : "shift+9", 
+        "="  : "shift+0", 
+        "^"  : "dead_circumflex+dead_circumflex", 
+        "*"  : "shift+asterisk", 
+        "#"  : "numbersign", 
+        "'"  : "shift+apostrophe", 
+        "-"  : "minus", 
+        "_"  : "shift+underscore", 
+        "<"  : "less", 
+        ">"  : "shift+greater", 
+        "\t" : "Tab", 
+        "\b" : "BackSpace", 
+        }
 
     (res, proc) = run_emacs("--no-init", "--geometry=" + opts.size + "+0+0")
     
@@ -77,16 +114,19 @@ if __name__ == '__main__':
     
     # feed key
     for cmd in args:
-        # if key
-        if any(m in cmd for m in mmap):
-            for m in mmap:
-                cmd = cmd.replace(m, mmap[m])
-    
-            send_key(res, cmd)
+        # if type
+        if cmd.startswith('"') and cmd.endswith('"'):
+            send_type(res, cmd[1:-1])
             continue
         
-        # if type
-        send_type(res, cmd)
+        # if key
+        for m in mmap:
+            cmd = cmd.replace(m, mmap[m])
+    
+        send_key(res, cmd)
 
     snapshot(res, opts.img)
     proc.kill()
+
+    if not opts.batch:
+        os.system("DISPLAY=:0 gnome-open %s" % opts.img)
