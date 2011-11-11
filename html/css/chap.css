@@ -84,6 +84,7 @@ h3 {
   border-bottom: none;
 }
 
+/*
 #main p {
   font-size: 14px;
   line-height: 28px;
@@ -94,6 +95,7 @@ h3 {
   color: #808b5d;
   font-weight: bold;
 }
+*/
 
 #main_nav {
   margin: 0 auto;
@@ -264,7 +266,7 @@ ol, ul {
 }
 
 .post h2 {
-  margin: 5px 0 0 0;
+  margin: 15px 0 0 0;
   font-size: 22px;
   font-family: sans-serif;
 }
@@ -302,5 +304,6 @@ ol, ul {
   font-size: 14px;
   line-height: 28px;
   padding: 0;
-  margin-top: 0px;
+  margin-top: 10px;
+  margin-bottom: 5px;
 }
