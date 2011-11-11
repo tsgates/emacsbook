@@ -28,10 +28,23 @@ figures do
   ARGV.sort.map do |file|
     markdown = File.read(file)
     print "\tParsing markdown #{file}\n" if $DEBUG
+
+    info = {
+      "title" => "",
+      "abstract" => "",
+    }
     
     html = pipe("pandoc -f markdown -t json \
                     | runhaskell #$here/script/pygments.hs \
                     | pandoc -s -p --no-wrap -f json -t html") do |stdin, stdout, stderr|
+
+      # extract info
+      info.each_key do |key|
+        blob = markdown.scan(/^% #{key}:(.*)/).join
+        blob.gsub("\n", "")
+        info[key] = blob
+      end
+
       stdin.write(pre_pandoc(markdown, config))
       stdin.close
       post_pandoc(stdout.read, config)

@@ -24,6 +24,20 @@ figures do
       chap = /chap(\d+)/.match(path)[1]
       date = html_mtime(chap)
       link = path["#$here/html/".length..-1]
+      
+      info = {
+        "title" => "",
+        "abstract" => "",
+      }
+      
+      # extract info
+      markdown = File.read("#$here/chap#{chap}/doc.markdown")
+      info.each_key do |key|
+        blob = markdown.scan(/^% #{key}:(.*)/).join
+        blob.gsub("\n", "")
+        info[key] = blob
+      end
+
       html += <<DONE
 <li>
   <article class="post">
@@ -33,10 +47,10 @@ figures do
         #{date}
       </h3>
       <h1>
-        <a href="#{link}">Do what you have to do</a>
+        <a href="#{link}">#{info["title"]}</a>
       </h1>
      </header>
-     <p>Manage your tasks through the day could be difficult, but with the power of Org Mode's task ability you get a powerful feature to handle it.</p>
+     <p>#{info["abstract"]}</p>
   </article>
 </li>
 DONE
