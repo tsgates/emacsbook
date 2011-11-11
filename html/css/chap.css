@@ -1,5 +1,4 @@
 @import url(http://fonts.googleapis.com/css?family=Abel);
-@import url(http://fonts.googleapis.com/css?family=Francois+One);
 
 html {
   background: #333 url("../images/bg.jpg") repeat 0 0;
@@ -266,9 +265,8 @@ ol, ul {
 
 .post h2 {
   margin: 5px 0 0 0;
-  font-family: 'Helvetica Neue';
   font-size: 24px;
-  font-family: 'Francois One', sans-serif;
+  font-family: sans-serif;
 }
 
 .post h3 {
@@ -280,10 +278,9 @@ ol, ul {
 }
 
 .post h1 {
-  margin: 5px 0 0 0;
+  margin: 5px 0 20px 0;
   font-family: 'Helvetica Neue';
   font-size: 24px;
-  font-family: 'Francois One', sans-serif;
 }
 
 .post h1 a {

@@ -24,10 +24,7 @@ def xdotool_get_id(pid)
 end
 
 def send_key(res, keys)
-  # translate emacs keys to xdotool
-  # M- => alt+
-  # C- => ctrl+
-  `xdotool key --window #{res} --clearmodifiers alt+x`
+  `xdotool key --window #{res} --clearmodifiers #{keys}`
 end
 
 def send_type(res, keys)
@@ -37,9 +34,26 @@ end
 # wait until calm down
 emacs_id = run_emacs "--no-init"
 
+#
+# M-x a C-a abcd RET
+#
+# split by space
+#  M- => alt+
+#  C- => ctrl+
+#  RET => Return
+#
+
+ARGV.each do |cmd|
+  ["M-", "C-", "S-"].each do |m|
+    if cmd.includes? m
+      cmd.gsub(m, mmap[m])
+    end
+
 # send_key
 send_key(emacs_id, "")
 send_type(emacs_id, "test")
+
+end
 
 # key    =
 # width  =

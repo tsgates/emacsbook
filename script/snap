@@ -8,9 +8,9 @@ kill_vnc() {
 }
 
 kill_vnc
-vncserver $PORT -geometry 1024x768 
+vncserver $PORT -geometry 1024x768 &> /dev/null
 
-DISPLAY=$PORT $ROOT/snap.rb $@
+DISPLAY=$PORT $ROOT/snap.py $@
 
 # just in case to debug
 sleep 1
