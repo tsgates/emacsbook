@@ -106,7 +106,8 @@ C-c:종료}의 단축키가 적혀있는걸 볼 수 있다. 이멕스에서는 �
 명확한 의사 전달을 위해서는 사용할 용어를 먼저 정의하는게 가장 중요하다. 앞으로
 사용할 기본적인 용어들을 정리하면,
 
-![\n{img} 이멕스 구성 \t{+add a layer}](emacs-gui-init.png)
+![\n{img} 이멕스 구성 \t{+add a layer}](\s{snap -o emacs-screen-org.png
+  -a "--no-init script/snap.sh" M-x "\"flyspell-prog-mode\"" RET C-x C-f TAB})
 
 버퍼
 :   **기본적인 편집의 장소** (파일 <-> 버퍼 <-> 이멕스).
@@ -164,7 +165,9 @@ C-c:종료}의 단축키가 적혀있는걸 볼 수 있다. 이멕스에서는 �
     *Messages*
     *scratch*
 
-![\n{img} 이멕스 버퍼](\s{snap -s 80x25 -o switching-buffers.png -c C-x b "*" TAB})
+![\n{img} 이멕스 버퍼](\s{snap -s 80x25 -o switching-buffers.png -c 
+   C-x b "\"*sc\"" TAB RET "\"(message \\\"hello world\\\")\"" 
+   C-j C-x b "\"*\"" TAB})
 
 이멕스에서는 관행적으로 파일로 매핑되어 있지 않는 특별한 버퍼이름 앞에 \*를 붙여
 관리 한다. 기본적으로 이멕스는 위에 나열된 두개의 특별한 버퍼를 생성한다.
@@ -204,8 +207,15 @@ syntax의전부이다. lisp에서는 일반 imperative 언어에서 특별하게
 제어문 등 또한 하나의 함수 호출의 형태를 띄고있다. 그러면 우리가 호출할 수 있는
 함수는 무엇이며 어떻게 사용할 수 있을까?
 
-다음 장으로 넘어가기전에 두가지 *반드시* 해야되는 숙제가 있다. 
+# 정리
 
- - 이멕스 가이드투어 훑어보기 \l{http://www.gnu.org/software/emacs/tour/}
+이번장에서는 간략하게 어떻게 이멕스가 구성되는지 알아보았다. 혹시 독자가 이멕스의
+기능들을 어떻게 추상화(abstraction)시켜 리습이라는 언어가 자유롭게 접근할 수 있게
+되었을까? 그리고 왜 리습이라는 언어이어야만 했을까? 라는 의문을 들었다면, 필자의
+목적이 충분히 전달되었다고 생각된다.
+
+다음 장으로 넘어가기전에 두가지 *반드시* 해야되는 숙제가 있다.
+
  - 이멕스 튜토리얼 \m{Help->Tutorial} 따라하기
+ - 이멕스 가이드투어 훑어보기 \l{http://www.gnu.org/software/emacs/tour/}
  - (선택) 이멕스 논문 훑어보기 \l{http://www.gnu.org/software/emacs/emacs-paper.html}

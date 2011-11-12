@@ -99,7 +99,6 @@ mmap = {
     ")"  : "shift+9", 
     "="  : "shift+0", 
     "^"  : "dead_circumflex+dead_circumflex", 
-    "*"  : "shift+asterisk", 
     "#"  : "numbersign", 
     "'"  : "shift+apostrophe", 
     "-"  : "minus", 

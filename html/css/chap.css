@@ -243,6 +243,7 @@ ol, ul {
 }
 .post dl dd {
   padding-bottom: 10px;
+  line-height: 23px;
 }
 
 .post ul {
