@@ -120,6 +120,7 @@ if __name__ == '__main__':
         "<"  : "less", 
         ">"  : "shift+greater", 
         "\t" : "Tab", 
+        "TAB": "Tab", 
         "\b" : "BackSpace", 
         }
 
