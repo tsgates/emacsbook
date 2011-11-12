@@ -9,30 +9,32 @@ import os
 import sys
 import optparse
 
+from collections import defaultdict
+
 debug = False
 
 # collect key binding for index or later use
-def key_binding(opt):
+def key_binding(md, opt):
     # collect them later
     return "`" + opt + "`"
 
-def link_binding(opt):
+def link_binding(md, opt):
     # collect them later
     return "`" + opt + "`"
 
-def menu_binding(opt):
+def menu_binding(md, opt):
     # collect them later
     return "`" + opt + "`"
 
-def func_binding(opt):
+def func_binding(md, opt):
     # collect them later
     return "`" + opt + "`"
 
-def todo_binding(opt):
+def todo_binding(md, opt):
     # collect them later
     return ""
 
-def snap_binding(opt):
+def snap_binding(md, opt):
     out = re.findall("-o ([^ ]+)", opt)
     if out:
         # append image path
@@ -40,7 +42,18 @@ def snap_binding(opt):
     print("error on parsing snapshot commands")
     return ""
 
-def preprocess(marks, src, dumps=[]):
+def num_binding(md, opt):
+    if not hasattr(num_binding, "num"):
+        num_binding.num = defaultdict(lambda:defaultdict(int))
+
+    num_binding.num[md][opt] += 1
+    if opt == "img":
+        return "그림-%d." % num_binding.num[md][opt]
+
+    print("error on parsing snapshot commands")
+    return ""
+
+def preprocess(md, marks, src, dumps=[]):
     dst = []
 
     # for each keywords
@@ -58,7 +71,7 @@ def preprocess(marks, src, dumps=[]):
         if debug:
             print(m.span(), key, opt)
         
-        dst.append((m.span(), marks[key](opt)))
+        dst.append((m.span(), marks[key](md, opt)))
 
     # sort inverse
     for ((beg, end), new) \
@@ -98,5 +111,5 @@ if __name__ == "__main__":
 
         with open(ofn, "w") as ofd:
             with open(ifn) as ifd:
-                ofd.write(preprocess(marks, ifd.read(), dumps))
+                ofd.write(preprocess(ifn, marks, ifd.read(), dumps))
 

@@ -67,6 +67,9 @@ if __name__ == '__main__':
     parser.add_option("-b", "--non-batch",
                       help="non batch processing", action="store_false",
                       dest="batch", default=True)
+    parser.add_option("-a", "--args",
+                      help="command arguments",
+                      dest="args", default="--no-init")
     # XXX. implement later
     parser.add_option("-r", "--restart",
                       help="force restart", action="store_true",
@@ -107,7 +110,8 @@ if __name__ == '__main__':
         "\b" : "BackSpace", 
         }
 
-    (res, proc) = run_emacs("--no-init", "--geometry=" + opts.size + "+0+0")
+    (res, proc) = run_emacs("--geometry=" + opts.size + "+0+0",
+                            *opt.args.split())
     
     dbg("[!] found emacs-id: %s" % res)
     time.sleep(1)
