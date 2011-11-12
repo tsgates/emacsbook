@@ -67,7 +67,7 @@ if __name__ == '__main__':
     parser = optparse.OptionParser(__doc__.strip() if __doc__ else "")
     parser.add_option("-s", "--size",
                       help="image (width x height)", 
-                      dest="size", default="80x25")
+                      dest="size", default=None)
     parser.add_option("-o", "--out",
                       help="output image file", 
                       dest="out", default="out.png")
@@ -80,6 +80,9 @@ if __name__ == '__main__':
     parser.add_option("-e", "--exe",
                       help="exe commands", 
                       dest="exe", default="emacs")
+    parser.add_option("-c", "--clean",
+                      help="clean emacs", action="store_true",
+                      dest="clean", default=False)    
     # XXX. implement later
     parser.add_option("-r", "--restart",
                       help="force restart", action="store_true",
@@ -120,11 +123,13 @@ if __name__ == '__main__':
         "\b" : "BackSpace", 
         }
 
-    args = opts.args.split()
-    if opts.exe == "emacs":
-        args.append("--geometry=" + opts.size + "+0+0")
-
-    (res, proc) = run_emacs(opts.exe, *args)
+    cmdargs = opts.args.split()
+    if opts.size:
+        cmdargs.append("--geometry=" + opts.size + "+0+0")
+    if opts.clean:
+        cmdargs.append("--no-init")
+        
+    (res, proc) = run_emacs(opts.exe, *cmdargs)
     
     dbg("[!] found emacs-id: %s" % res)
     time.sleep(1)
