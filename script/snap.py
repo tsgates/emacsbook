@@ -128,5 +128,9 @@ if __name__ == '__main__':
     snapshot(res, opts.out)
     proc.kill()
 
+    # resizing
+    # img = Image.open(filename).resize( (400,400) )
+    # img = img.resize( (200,200), Image.ANTIALIAS)
+
     if not opts.batch:
         os.system("DISPLAY=:0 gnome-open %s" % opts.out)
