@@ -61,9 +61,9 @@ if __name__ == '__main__':
     parser.add_option("-s", "--size",
                       help="image (width x height)", 
                       dest="size", default="80x25")
-    parser.add_option("-i", "--img",
-                      help="image file", 
-                      dest="img", default="out.png")
+    parser.add_option("-o", "--out",
+                      help="output image file", 
+                      dest="out", default="out.png")
     parser.add_option("-b", "--batch",
                       help="batch processing", action="store_true",
                       dest="batch", default=False)
@@ -125,8 +125,8 @@ if __name__ == '__main__':
     
         send_key(res, cmd)
 
-    snapshot(res, opts.img)
+    snapshot(res, opts.out)
     proc.kill()
 
     if not opts.batch:
-        os.system("DISPLAY=:0 gnome-open %s" % opts.img)
+        os.system("DISPLAY=:0 gnome-open %s" % opts.out)
