@@ -111,7 +111,7 @@ if __name__ == '__main__':
         }
 
     (res, proc) = run_emacs("--geometry=" + opts.size + "+0+0",
-                            *opt.args.split())
+                            *opts.args.split())
     
     dbg("[!] found emacs-id: %s" % res)
     time.sleep(1)
