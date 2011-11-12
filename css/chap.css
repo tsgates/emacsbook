@@ -307,3 +307,9 @@ ol, ul {
   margin-top: 10px;
   margin-bottom: 5px;
 }
+
+.figure p {
+  text-align: center;
+  font-weight: bold;
+  font-style: italic;
+}
