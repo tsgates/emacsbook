@@ -88,7 +88,7 @@ C-c:종료}의 단축키가 적혀있는걸 볼 수 있다. 이멕스에서는 �
 
     $ emacs -nw
 
-![\n{img} 이멕스 CUI](\s{snap -s 80x25 -o emacs-cui-init.png -a "-nw --no-init"})
+![\n{img} 이멕스 CUI](\s{snap -o emacs-cui-init.png -e emacs-terminal.sh})
 
 필자는 종종 간단한 설정파일을 수정하기위해서 위의 명령으로 터미널에서 이멕스를
 실행하곤한다. (-nw는 --__n__o-__w__indow의 약자로 쉽게 기억할수 있다.) 터미널에

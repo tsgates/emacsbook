@@ -16,10 +16,11 @@ def sh(cmd):
     return rtn
 
 def run_emacs(*opt):
-    p = subprocess.Popen(["emacs"] + list(opt))
+    dbg("[!] %s" % " ".join(opt))
+    p = subprocess.Popen(opt)
     while True:
         time.sleep(0.1)
-        res = xdotool_get_id(p.pid)
+        res = xdotool_get_id(opt[0], p.pid)
         if res != "" \
                 and "Error" not in res \
                 and "\n" not in res:
@@ -34,8 +35,14 @@ def xdotool_win_size(res, width, height):
 def xdotool_win_move(res, x, y):
     sh("xdotool windowmove %s %s %s" % (emacs_id, x, y))
 
-def xdotool_get_id(pid):
-    return sh("xdotool search --pid %s --onlyvisible --name emacs" % pid)
+def xdotool_get_id(exe, pid):
+    exe_to_clss = {
+        "emacs-terminal.sh": "terminal"
+        }
+
+    clss = exe_to_clss.get(exe, exe)
+    
+    return sh("xdotool search --pid %s --onlyvisible --classname %s" % (pid, clss))
 
 def send_key(res, keys):
     sh("xdotool key --window %s --clearmodifiers %s" % (res, keys))
@@ -69,7 +76,10 @@ if __name__ == '__main__':
                       dest="batch", default=True)
     parser.add_option("-a", "--args",
                       help="command arguments",
-                      dest="args", default="--no-init")
+                      dest="args", default="")
+    parser.add_option("-e", "--exe",
+                      help="exe commands", 
+                      dest="exe", default="emacs")
     # XXX. implement later
     parser.add_option("-r", "--restart",
                       help="force restart", action="store_true",
@@ -110,8 +120,11 @@ if __name__ == '__main__':
         "\b" : "BackSpace", 
         }
 
-    (res, proc) = run_emacs("--geometry=" + opts.size + "+0+0",
-                            *opts.args.split())
+    args = opts.args.split()
+    if opts.exe == "emacs":
+        args.append("--geometry=" + opts.size + "+0+0")
+
+    (res, proc) = run_emacs(opts.exe, *args)
     
     dbg("[!] found emacs-id: %s" % res)
     time.sleep(1)
