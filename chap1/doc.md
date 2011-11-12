@@ -69,7 +69,7 @@ emacs-goodies-el
 
     $ emacs
 
-!!snap -s 80x25 -o emacs-init.png 
+![이멕스 GUI](\s{snap -s 80x25 -o emacs-gui-init.png})
 
 실행된 GUI 버전의 이멕스를 종료하기전에 \m{File->Quit} 메뉴를 살펴보면 \k{C-x
 C-c:종료}의 단축키가 적혀있는걸 볼 수 있다. 이멕스에서는 단축키를 아래와 같은 규칙을

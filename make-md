@@ -1,4 +1,4 @@
-#! /usr/bin/env python3
+#! /usr/bin/python3
 
 # 
 # generating markdown from my anotated markdown
@@ -32,7 +32,15 @@ def todo_binding(opt):
     # collect them later
     return ""
 
-def preprocess(marks, src, todo=False):
+def snap_binding(opt):
+    out = re.findall("-o ([^ ]+)", opt)
+    if out:
+        # append image path
+        return "../img/%s" % out[0]
+    print("error on parsing snapshot commands")
+    return ""
+
+def preprocess(marks, src, dumps=[]):
     dst = []
 
     # for each keywords
@@ -43,6 +51,9 @@ def preprocess(marks, src, todo=False):
         if key not in marks:
             print("Can't find %s in %s: %s", key, marks.keys(), opt)
             exit(1)
+
+        if key in dumps:
+            print(opt)
 
         if debug:
             print(m.span(), key, opt)
@@ -59,6 +70,9 @@ def preprocess(marks, src, todo=False):
 
 if __name__ == "__main__":
     parser = optparse.OptionParser(__doc__.strip() if __doc__ else "")
+    parser.add_option("-s", "--snap",
+                      help="list up snap", action="store_true",
+                      dest="snap", default=False)
     parser.add_option("-t", "--todo",
                       help="list up todo", action="store_true",
                       dest="todo", default=False)
@@ -68,7 +82,11 @@ if __name__ == "__main__":
     if opts.todo:
         os.system("grep -Hrn --color=always TODO %s" % " ".join(args))
         exit(0)
-        
+
+    dumps = []
+    if opts.snap:
+        dumps.append("s")
+    
     # create marks
     marks = {k[0]:v for k, v in globals().items() \
                  if k.endswith("binding")}
@@ -80,5 +98,5 @@ if __name__ == "__main__":
 
         with open(ofn, "w") as ofd:
             with open(ifn) as ifd:
-                ofd.write(preprocess(marks, ifd.read()))
+                ofd.write(preprocess(marks, ifd.read(), dumps))
 

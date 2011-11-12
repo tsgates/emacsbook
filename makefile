@@ -25,8 +25,8 @@ html: $(OUT_HTML) $(OUT_INDX)
 $(OUT_INDX): $(OUT_HTML)
 	./make-html-index
 
-snap:
-	PATH=$(PWD)/script:$$PATH DISPLAY=$(PORT) ./make-snap
+snap: $(MD)
+	PATH=$(PWD)/script:$$PATH DISPLAY=$(PORT) ./make-snap $^
 
 clean:
 	rm -f doc.pdf $(OUT_MD) $(OUT_HTML) $(OUT_INDX)

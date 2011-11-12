@@ -64,9 +64,9 @@ if __name__ == '__main__':
     parser.add_option("-o", "--out",
                       help="output image file", 
                       dest="out", default="out.png")
-    parser.add_option("-b", "--batch",
-                      help="batch processing", action="store_true",
-                      dest="batch", default=False)
+    parser.add_option("-b", "--non-batch",
+                      help="non batch processing", action="store_false",
+                      dest="batch", default=True)
     # XXX. implement later
     parser.add_option("-r", "--restart",
                       help="force restart", action="store_true",

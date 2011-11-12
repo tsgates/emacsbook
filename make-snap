@@ -1,4 +1,4 @@
-#!/usr/bin/env ruby1.9.1
+#!/usr/bin/env ruby
 # -*- coding: utf-8 -*-
 
 $LOAD_PATH.push("script")
@@ -40,32 +40,25 @@ end
 
 ARGV.sort.map do |file|
   chap = /chap(\d+)/.match(file)[1]
-  markdown = File.read(file)
   puts "  [!] Reading markdown #{file}" if $DEBUG
 
-  in_dir("#$here/chap#{chap}/") do
-    mkdir "img" unless File.exist?("img")
+  snap = `./make-md -s #{file}`
+  snap and snap.each do |line|
+    line = line.rstrip
+    puts "  [!] #{line}" if $DEBUG
+      
+    # image output
+    out = /-o ([^ ]+)/.match(line)[1]
     
-    markdown.scan(/^!!(.*)/) do |lines|
-      lines.each do |line|
-        line = line.rstrip
-        puts "  [!] #{line}" if $DEBUG
-        
-        # image output
-        out = /-o ([^ ]+)/.match(line)[1]
-
-        # check if exist
-        if deps[out] != line or !File.exist?("img/" + out)
-          system(line.gsub(out, "img/" + out))
-          deps[out] = line
-        end
-
-      end
+    # check if exist
+    if deps[out] != line or !File.exist?("img/" + out)
+      system(line.gsub(out, "img/" + out))
+      deps[out] = line
     end
   end
 end
 
 # update dependencies
 File.open(".snap-dep", "w") do |f|
-  f.write(deps.to_s)
+  f.write(deps.inspect)
 end

@@ -44,11 +44,7 @@ def verbatim_sanitize(string)
 end
 
 def pre_pandoc(string, config)
-  cnt_fig = 0
   replace(string) do
-    # Personal commands
-    s /^!!.*/, ''
-
     # Inc one category depth
     s /^\#/, '##'
     
