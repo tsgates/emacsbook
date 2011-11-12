@@ -12,7 +12,7 @@ CMD=${1:-on}
 case "$CMD" in
     on)
         kill_vnc
-        vncserver $PORT -geometry 1024x768 &> /dev/null
+        vncserver $PORT -geometry 1024x1024 &> /dev/null
         ;;
     off)
         kill_vnc

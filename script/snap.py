@@ -6,6 +6,7 @@ import time
 import optparse
 import commands
 import subprocess
+import Image
 
 def dbg(msg):
     print msg
@@ -53,6 +54,19 @@ def send_type(res, keys):
 def snapshot(res, img):
     sh("import -w %s %s" % (res, img))
 
+def cal_img_size(img, size):
+    # case 1) fit into one screen
+    if "full" == opts.image:
+        if img.size[0] > 700.0:
+            factor = 700.0 / img.size[0]
+        rtn = [int(x*factor) for x in img.size]
+    # user explictly specify
+    else:
+        rtn = [int(x) for x in opts.image.split("x")]
+
+    print "[!] resizing: img.size %s => %s" % (img.size, rtn)
+    
+    return rtn
 #
 # M-x a C-a abcd RET
 #
@@ -62,11 +76,46 @@ def snapshot(res, img):
 #  RET => Return
 #
 
+# modifier map
+mmap = {
+    "M-" : "alt+"  ,
+    "C-" : "ctrl+" ,
+    "S-" : "super+",
+    "RET": "Return",
+    "\n" : "Return", 
+    " "  : "space", 
+    "?"  : "shift+question", 
+    "!"  : "shift+exclam", 
+    ","  : "comma", 
+    "."  : "period", 
+    ";"  : "shift+semicolon", 
+    ":"  : "shift+colon", 
+    '"'  : "shift+2", 
+    "$"  : "shift+4", 
+    "%"  : "shift+5", 
+    "&"  : "shift+6", 
+    "/"  : "shift+7", 
+    "("  : "shift+8", 
+    ")"  : "shift+9", 
+    "="  : "shift+0", 
+    "^"  : "dead_circumflex+dead_circumflex", 
+    "*"  : "shift+asterisk", 
+    "#"  : "numbersign", 
+    "'"  : "shift+apostrophe", 
+    "-"  : "minus", 
+    "_"  : "shift+underscore", 
+    "<"  : "less", 
+    ">"  : "shift+greater", 
+    "\t" : "Tab", 
+    "TAB": "Tab", 
+    "\b" : "BackSpace", 
+    }
+
 if __name__ == '__main__':
     # gtk geometry: row x col + x + y
     parser = optparse.OptionParser(__doc__.strip() if __doc__ else "")
     parser.add_option("-s", "--size",
-                      help="image (width x height)", 
+                      help="window size: (width x height)", 
                       dest="size", default=None)
     parser.add_option("-o", "--out",
                       help="output image file", 
@@ -82,47 +131,15 @@ if __name__ == '__main__':
                       dest="exe", default="emacs")
     parser.add_option("-c", "--clean",
                       help="clean emacs", action="store_true",
-                      dest="clean", default=False)    
+                      dest="clean", default=False)
+    parser.add_option("-i", "--image-size",
+                      help="image size",
+                      dest="image", default="full")
     # XXX. implement later
     parser.add_option("-r", "--restart",
                       help="force restart", action="store_true",
                       dest="restart", default=False)
     (opts, args) = parser.parse_args()
-
-    # modifier map
-    mmap = {
-        "M-" : "alt+"  ,
-        "C-" : "ctrl+" ,
-        "S-" : "super+",
-        "RET": "Return",
-        "\n" : "Return", 
-        " "  : "space", 
-        "?"  : "shift+question", 
-        "!"  : "shift+exclam", 
-        ","  : "comma", 
-        "."  : "period", 
-        ";"  : "shift+semicolon", 
-        ":"  : "shift+colon", 
-        '"'  : "shift+2", 
-        "$"  : "shift+4", 
-        "%"  : "shift+5", 
-        "&"  : "shift+6", 
-        "/"  : "shift+7", 
-        "("  : "shift+8", 
-        ")"  : "shift+9", 
-        "="  : "shift+0", 
-        "^"  : "dead_circumflex+dead_circumflex", 
-        "*"  : "shift+asterisk", 
-        "#"  : "numbersign", 
-        "'"  : "shift+apostrophe", 
-        "-"  : "minus", 
-        "_"  : "shift+underscore", 
-        "<"  : "less", 
-        ">"  : "shift+greater", 
-        "\t" : "Tab", 
-        "TAB": "Tab", 
-        "\b" : "BackSpace", 
-        }
 
     cmdargs = opts.args.split()
     if opts.size:
@@ -151,9 +168,11 @@ if __name__ == '__main__':
     snapshot(res, opts.out)
     proc.kill()
 
-    # resizing
-    # img = Image.open(filename).resize( (400,400) )
-    # img = img.resize( (200,200), Image.ANTIALIAS)
-
+    # image size
+    if opts.image:
+        img = Image.open(opts.out)
+        img = img.resize(cal_img_size(img, opts.image), Image.ANTIALIAS)
+        img.save(opts.out)
+        
     if not opts.batch:
         os.system("DISPLAY=:0 gnome-open %s" % opts.out)
