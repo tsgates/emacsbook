@@ -164,7 +164,7 @@ C-c:종료}의 단축키가 적혀있는걸 볼 수 있다. 이멕스에서는 �
     *Messages*
     *scratch*
 
-![\n{img} 이멕스 버퍼](\s{snap -s 80x25 -o switching-buffers.png C-x b c \t})
+![\n{img} 이멕스 버퍼](\s{snap -s 80x25 -o switching-buffers.png -c C-x b "*" TAB})
 
 이멕스에서는 관행적으로 파일로 매핑되어 있지 않는 특별한 버퍼이름 앞에 \*를 붙여
 관리 한다. 기본적으로 이멕스는 위에 나열된 두개의 특별한 버퍼를 생성한다.

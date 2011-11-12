@@ -14,3 +14,4 @@ chap*/*.markdown
 /.snap-dep
 /script/out.png
 /script/screen.jpg
+/html/chap4.html
