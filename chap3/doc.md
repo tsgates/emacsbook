@@ -1,13 +1,16 @@
 %
 % Taesoo Kim
 %
-
-# Lisp 이해하기
+% title: Lisp 이해하기
+%
+% abstract: 이멕스를 확장하고 이해하기 위한 기본적인 Lisp의 개념들을 이해하고,
+% abstract: 직접 프로그래밍 해본다.
+%
 
 Lisp의 재미있는 특성들을 하나의 장에서 모두 다루기는 불가능하다. 이번장에서는
 이멕스를 확장하고 이해하는데 필요한 기본적인 특성들을 알아보자.
 
-## 심볼 (Symbol)
+# 심볼 (Symbol)
 
 아래와 같은 표현식을 다시 살펴보자.
 
@@ -72,11 +75,11 @@ message 함수를 70의 인자를 가지고 evaluate하는 과정에서 에러�
 것이다. 그러면 message라는 심볼을 어떻게 표현 할까? Lisp에서는 ' 를 앞에 붙여
 'message라고 쓰면 message라는 이름의 심볼을 의미한다. 
 
-## 리스트 (List)
+# 리스트 (List)
 
 Lisp은 LISt Processing의 약자이다. 즉 
 
-## Special Forms
+# Special Forms
 
 - evaluate
 - calling function

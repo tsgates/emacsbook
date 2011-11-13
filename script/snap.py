@@ -57,6 +57,7 @@ def snapshot(res, img):
 def cal_img_size(img, size):
     # case 1) fit into one screen
     if "full" == opts.image:
+        factor = 1.0
         if img.size[0] > 700.0:
             factor = 700.0 / img.size[0]
         rtn = [int(x*factor) for x in img.size]
