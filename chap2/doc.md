@@ -61,7 +61,8 @@ built-in 함수
 - 메시지를 리턴한다.
 
 또한 message 함수의 인자중 하나인 FORMAT-STRING의 사용법 또한 간단하게 기술되어
-있다.
+있다. (다른 언어와는 달리 Lisp에서는 '-', '?', '!'등은 합법적인 글자이며,
+FORMAT-STRING은 하나의 변수 이름을 의미한다.)
 
     The first argument is a format control string, and the rest are data
     to be formatted under control of the string.  See `format' for details.
@@ -76,27 +77,28 @@ built-in 함수
     "hello *scratch*"
 
 위의 표현식은 message 함수를
-  - "%s %s" (format-string)
-  - "hello" 문자열
-  - buffer-name 함수의 호출 결과값
+- "%s %s" (FORMAT-STRING)
+- "hello" 문자열
+- (buffer-name_ 함수의 호출 결과값
 을 인자로 호출한다.
 
-자 그럼 buffer-name은 무슨 함수 일까? message와 같은 방법으로 \k{C-h f} 실행 후
-buffer-name의 문서를 찾아보자. 이제 부터 모르는 함수가 나오면 (또한 궁금하다면)
-주어진 방법으로 함수에 대한 설명을 찾아 읽고 넘어가도록 하자.
+자 그럼 buffer-name은 무슨 함수 일까? (이름에서 쉽게 추측가능 하지만) message와
+같은 방법으로 \k{C-h f} 실행 후 buffer-name의 문서를 찾아보자. 이제 부터 모르는
+함수가 나오면 주어진 방법으로 함수에 대한 설명을 찾아 읽고 넘어가도록 하자.
 
 # 문서 찾기
 
-message함수의 format-string은 어떠한 스팩을 가지고 있을까? 두번째로 알아 볼
+message 함수의 format-string은 어떠한 스팩을 가지고 있을까? 두번째로 알아 볼
 도움말 시스템은 문서를 검색하는 방법이다. 위의 message 함수의 도움말 중 아래의
 설명을 보았을 것이다. 
 
     See `format' for details.
 
-첫번째 방법은 커서를 \*Help\* 버퍼로 이동 (\k{C-o:버퍼간 이동}) 후 TAB으로
-밑줄쳐진 format 위로 커서를 이동한 후 리턴키를 입력하는 방법이다 (해보자.). 두번째
-방법은 모든 문서중 format의 키워드를 포함하는 문서들을 나열하는 방법이다.
-\k{C-h d:문서 찾기} (__h__elp __d__ocument)이후 format을 입력하자. 
+첫번째 방법은 커서를 \*Help\* 버퍼로 이동 (\k{C-x o:버퍼간 이동}) 후 TAB으로
+(커서를 링크가능 키워드로 이동) format 위에 커서를 이동시킨 후 리턴키를 입력하는
+방법이다. 두번째 방법은 모든 문서중 "format"의 키워드를 포함하는 문서들을
+찾아보는 방법이 이겠다.  \k{C-h d:문서 찾기} (__h__elp __d__ocument)이후 format을
+입력하자.
 
     format
       Function: Format a string out of a format-string and arguments.
