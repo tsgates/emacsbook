@@ -1,7 +1,7 @@
 @import url(http://fonts.googleapis.com/css?family=Abel);
 
 html {
-  background: #333 url("../images/bg.jpg") repeat 0 0;
+  background: #333;
   font-family: 'Helvetica Neue', Georgia, serif;
   font-size: 14px;
 }
@@ -52,6 +52,7 @@ body {
 #main {
   padding: 5px 15px 15px 15px;
   margin: 0 auto;
+  margin-top: 15px;
   width: 700px;
   border-radius: 8px;
   -moz-border-radius: 8px;

@@ -275,3 +275,7 @@ td { vertical-align: top; }
   p, h2, h3 { orphans: 3; widows: 3; }
   h2, h3 { page-break-after: avoid; }
 }
+
+/* disqus */
+#dsq-content div, #dsq-content p, #dsq-content h3 { clear:none !important; }
+#dsq-reply h3 { display:none !important; }
