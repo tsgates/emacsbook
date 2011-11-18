@@ -69,6 +69,9 @@ def pre_pandoc(string, config)
 
 		# Process figures
 		s /Insert\s.+\.png\s*\n.*?\d{1,2}-\d{1,2}\. (.*)/, 'FIG: \1'
+
+        # fix img path
+        s '../img/', 'img/'
 	end
 end
 

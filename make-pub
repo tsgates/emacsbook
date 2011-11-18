@@ -1,0 +1,14 @@
+#!/bin/bash -x
+PWD=$(readlink -f `dirname "$0"`)
+CHAP=$PWD/html/chap[1-$1].html
+
+# generate index
+make html
+./make-html-index $CHAP
+
+# fix img path
+perl -pi -e 's#\.\./img/#/img/#g' $CHAP
+
+# sync
+rsync -l -ah html/ root@taesoo.org:/var/www/emacsbook/
+rsync -l -ah img/  root@taesoo.org:/var/www/emacsbook/img/

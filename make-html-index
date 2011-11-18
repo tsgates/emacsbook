@@ -14,13 +14,21 @@ USAGE
 	exit
 end
 
+# re-generate all if nothing
+if ARGV.empty?
+  $DEBUG = true
+  Dir["#$here/html/chap*.html"].each do |file|
+    ARGV.push(file)
+  end
+end
+
 figures do
   config = $config['default'].merge($config["ko"]) rescue $config['default']
   
   print "\tCreating index.html ... " if $DEBUG
   File.open("#$here/html/index.html", 'w') do |file|
     html = "<ul>\n"
-    Dir["#$here/html/chap*.html"].sort.map do |path|
+    ARGV.sort.map do |path|
       chap = /chap(\d+)/.match(path)[1]
       date = html_mtime(chap)
       link = path["#$here/html/".length..-1]
