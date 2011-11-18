@@ -37,12 +37,12 @@ Lisp의 message함수를 호출해 보았다. 그럼 우리가 호출할 수 있
     ...
 
 ![\n{img} 도움말 시스템](\s{snap -o help-function.png -c 
-   C-b "\"*s\"" RET 
+   C-x b "\"*scratch*\"" RET 
    "\"(message \\\"%s %s\\\" \\\"hello\\\" (buffer-name))\"" C-j
    C-h f "\"message\"" RET})
 
-기본적인 설명은 앞에서 정의한 용어들로 이해가 쉽게 되지만, 몇가지 새로운 사용된
-용어들을 정의해보자.
+앞에서 정의한 용어들로 message 함수에대한 설명은 이해가 쉽게 되지만, 몇가지
+새로운 사용된 용어들을 명확하게 정의하고 넘어가자.
 
 built-in 함수
 :   c로 구현된 함수 (primitive 함수).
@@ -51,10 +51,10 @@ built-in 함수
     구현되어 있기 때문에 built-in 함수라고 칭한다.
 &rest
 :   나머지 함수인자를 리스트로 받겠다는 키워드로 c에서 va_args나, python에서
-    * 키워드와 같은 기능을 한다.
-    (&optional: 함수인자는 옵션)
+    * 키워드와 같은 기능을 한다. (참고로 "&optional"는 함수인자를 선택적으로
+      받겠다는 키워드)
 
-위의 설명에서 message의 기능적 특성 세가지를 알 수 있다. 
+위의 설명에 따르면 message의 기능적 특성 세가지를 알 수 있다. 
 
 - 메시지를 화면 하단의 영역에 표시한다.
 - 메시지를 \*Message\* 버퍼에 기록한다.
@@ -62,7 +62,7 @@ built-in 함수
 
 또한 message 함수의 인자중 하나인 FORMAT-STRING의 사용법 또한 간단하게 기술되어
 있다. (다른 언어와는 달리 Lisp에서는 '-', '?', '!'등은 합법적인 글자이며,
-FORMAT-STRING은 하나의 변수 이름을 의미한다.)
+"FORMAT-STRING"는 함수인자의 이름을 나타낸다.)
 
     The first argument is a format control string, and the rest are data
     to be formatted under control of the string.  See `format' for details.
@@ -70,7 +70,7 @@ FORMAT-STRING은 하나의 변수 이름을 의미한다.)
     Note: Use (message "%s" VALUE) to print the value of expressions and
     variables to avoid accidentally interpreting `%' as format specifiers.
 
-위의 주어진 설명을 따라 message함수를 실행해 보자. \*scratch\* 버퍼로 이동
+위의 주어진 설명을 따라 message 함수를 실행해 보자. \*scratch\* 버퍼로 이동
 (\k{C-x b} 이후 \*scratch*\선택) 한 후 아래와 같이 함수를 실행해 본다.
 
     (message "%s %s" "hello" (buffer-name))
