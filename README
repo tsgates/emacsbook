@@ -1,4 +1,4 @@
-= Taesoo Kim
+= Emacsbook
 
 This is repo for emacsbook, written in Korean.
 
@@ -6,3 +6,13 @@ This is repo for emacsbook, written in Korean.
   Github: git://github.com/tsgates/emacsbook.git
 
 I will update license if I have some time to kill.
+
+= Help
+
+I need many helps:
+ - For whom can edit figures:
+   I need one more layer to explain snapshots, like
+   explaining and highlighting each section in fig.1
+ - For whom are good at grammars:
+   Admittedly I am terrible at grammars, so I'd love
+   any comment on this!
