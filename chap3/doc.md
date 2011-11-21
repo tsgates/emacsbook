@@ -79,15 +79,16 @@ message 함수를 70의 인자를 가지고 evaluate하는 과정에서 에러�
 
 Lisp은 LISt Processing의 약자이다. 즉 
 
-# Special Forms
+# 함수 (function)
+ - defun (define function)
+
+# 특별 형태 (special forms)
 
 - evaluate
-- calling function
+ - eval & apply
 - control
-- loop
-- define function
-
-- special forms
  - if/else
+- loop
+ - while/for alternatives
+- scope
  - let
- - defun (define function)

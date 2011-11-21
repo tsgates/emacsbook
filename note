@@ -1,12 +1,79 @@
-* todo
- - emacs screen shots
- - html generator: ref. (design) http://emacsrookie.com/
-                   ref. (design) http://www.djangobook.com/en/1.0/
-* chap1: help
-* chap2: lisp
-* chap3: emacs
- - .emacs
-* chap4: programming
+This note is supposed to be a private file.
+======================================================================
+
+* TODO
+ - DONE emacs screen shots
+ - DONE html generator: ref. (design) http://emacsrookie.com/
+                        ref. (design) http://www.djangobook.com/en/1.0/
+* chap1: intro
+* chap2: help
+* chap4: lisp-understanding
+* chap5: lisp-and-emacs
+* chap6: lisp-programming
+
+* chap7: emacs & programmings
+ - theme
+ - change keybinding
+ - autoload
+ - key macro
+ - tags
+ 
+* Tips: 
+ - alternative OS specific comments 
+ - changing ctrl key
+   - ref. (Windows) http://technet.microsoft.com/en-us/sysinternals/bb897578.aspx
+   - ref. (Linux & MAC)  
+ - emacsclient
+ - emacsdump
+
+* deps:
+ - cabal pandoc (>1.8)
+
+* markdown
+ - http://johnmacfarlane.net/pandoc/demo/example9/pandocs-markdown.html
+ - http://johnmacfarlane.net/pandoc/demos.html
+
+** annotating code 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ {.scheme}
+(message "hello world")
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+(define md-insert-code (opt)
+ (interative "u")
+ (dotimes (i 65) (insert "~"))
+ (insert " {.scheme}")
+ (dotimes (i 70) (insert "~")))
+
+** list-1
+* fruits
+    + apples
+        - macintosh
+        - red delicious
+    + pears
+    + peaches
+* vegetables
+    + brocolli
+    + chard
+
+** list-2
+1.  one
+2.  two
+3.  three
+
+ 9)  Ninth
+10)  Tenth
+11)  Eleventh
+       i. subone
+      ii. subtwo
+     iii. subthree
+
+** definition
+Term 1
+:   Definition 1
+
+======================================================================
+sketching idea
+======================================================================
 
 * getting motivated
   - vi-vi-vi
@@ -109,64 +176,8 @@
 ** tool: vi-mode
 ** wiki: emacs-wiki-mode
 ** tool: bugzilla (?bug-reference-mode)
-   
-* alternative OS specific comments
-** Windows
-** MAC
 
-* tips
-** changing ctrl key
- - ref. (Windows) http://technet.microsoft.com/en-us/sysinternals/bb897578.aspx
- - ref. (Linux & MAC)  
-  
 * refs
  - emacs FAQ: http://www.gnu.org/software/emacs/emacs-faq.html#Origin-of-the-term-Emacs
  - http://www.gnu.org/fun/jokes/gnuemacs.acro.exp.html
  - http://www.gnu.org/software/emacs/emacs-paper.html
-
-* deps:
- - cabal pandoc (>1.8)
- 
-* markdown
- - http://johnmacfarlane.net/pandoc/demo/example9/pandocs-markdown.html
- - http://johnmacfarlane.net/pandoc/demos.html
- 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ {.haskell .numberLines}
-qsort []     = []
-qsort (x:xs) = qsort (filter (< x) xs) ++ [x] ++
-               qsort (filter (>= x) xs) 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ {.scheme}
-(message "hello world")
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-* fruits
-    + apples
-        - macintosh
-        - red delicious
-    + pears
-    + peaches
-* vegetables
-    + brocolli
-    + chard
-
-1.  one
-2.  two
-3.  three
-
- 9)  Ninth
-10)  Tenth
-11)  Eleventh
-       i. subone
-      ii. subtwo
-     iii. subthree
-
-Term 1
-:   Definition 1
-
-Term 1
-  ~ Definition 1
-Term 2
-  ~ Definition 2a
-  ~ Definition 2b
