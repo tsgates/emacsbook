@@ -79,8 +79,30 @@ message 함수를 70의 인자를 가지고 evaluate하는 과정에서 에러�
 
 Lisp은 LISt Processing의 약자이다. 즉 
 
+# 특별 형태 (special forms)
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ {.scheme}
+(defun tetris-draw-shape ()
+  (loop for y from 0 to (1- (tetris-shape-height)) do
+	(loop for x from 0 to (1- (tetris-shape-width)) do
+	      (let ((c (tetris-get-shape-cell x y)))
+		(if (/= c tetris-blank)
+		    (gamegrid-set-cell (+ tetris-top-left-x
+					  tetris-pos-x
+					  x)
+				       (+ tetris-top-left-y
+					  tetris-pos-y
+					  y)
+				       c))))))
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 # 함수 (function)
+
  - defun (define function)
+
+# 조건문 (control)
+
+# 제어문 (loop)
 
 # 특별 형태 (special forms)
 

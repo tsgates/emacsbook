@@ -9,8 +9,10 @@ This note is supposed to be a private file.
 * chap2: help
 * chap4: lisp-understanding
 * chap5: lisp-and-emacs
+ - .emacs
+ - mode
+ - buffer (in terms of lisp)
 * chap6: lisp-programming
-
 * chap7: emacs & programmings
  - theme
  - change keybinding
