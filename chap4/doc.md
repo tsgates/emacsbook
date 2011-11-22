@@ -3,7 +3,7 @@
 %
 % title: Emacs
 %
-% abstract: 이멕스
+% abstract: 이맥스
 %
 
 # emacs
