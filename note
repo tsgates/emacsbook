@@ -16,6 +16,7 @@ This note is supposed to be a private file.
  - if
  - loop
 * chap5: lisp-and-emacs
+ - environment
  - lexical binding & mode/buffer
  - .emacs
  - mode
