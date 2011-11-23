@@ -1,0 +1,15 @@
+#!/bin/bash
+
+echo "[!] Checking deps"
+which pandoc &>/dev/null || {
+    echo "apt-get install pandoc"
+    exit 1
+}
+
+echo "[!] Generating .markdown from .md"
+make chap*/doc.markdown >/dev/null
+
+for f in chap*/doc.markdown ; do
+    echo "[!] Parsing $f"
+    pandoc -f markdown -t html $f > /dev/null
+done
