@@ -279,3 +279,4 @@ td { vertical-align: top; }
 /* disqus */
 #dsq-content div, #dsq-content p, #dsq-content h3 { clear:none !important; }
 #dsq-reply h3 { display:none !important; }
+#dsq-content ul li:before { content: "" !important; }
