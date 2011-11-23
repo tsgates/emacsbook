@@ -7,16 +7,25 @@ This note is supposed to be a private file.
                         ref. (design) http://www.djangobook.com/en/1.0/
 * chap1: intro
 * chap2: help
-* chap4: lisp-understanding
+* chap3: lisp basic
+ - list
+ - symbol
+ - eval
+* chap4: reading/writing lisp
+ - defun
+ - if
+ - loop
 * chap5: lisp-and-emacs
+ - lexical binding & mode/buffer
  - .emacs
  - mode
  - buffer (in terms of lisp)
 * chap6: lisp-programming
+ - module
+ - autoload
 * chap7: emacs & programmings
  - theme
  - change keybinding
- - autoload
  - key macro
  - tags
  
