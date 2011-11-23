@@ -7,7 +7,7 @@ OUT_MD   := $(MD:.md=.markdown)
 OUT_HTML := $(patsubst chap%/doc.md, html/chap%.html, $(MD))
 OUT_INDX := html/index.html
 
-all: doc.pdf
+all: html
 
 %.markdown: %.md
 	./make-md $^
