@@ -11,7 +11,8 @@ This note is supposed to be a private file.
  - list
  - symbol
  - eval
-* chap4: reading/writing lisp
+* chap4: reading lisp
+ - tetris
  - defun
  - if
  - loop
@@ -21,14 +22,14 @@ This note is supposed to be a private file.
  - .emacs
  - mode
  - buffer (in terms of lisp)
-* chap6: lisp-programming
- - module
- - autoload
 * chap7: emacs & programmings
  - theme
  - change keybinding
  - key macro
  - tags
+* chap6: simple mode programming
+ - module
+ - autoload
  
 * Tips: 
  - alternative OS specific comments 
