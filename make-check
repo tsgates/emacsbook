@@ -1,0 +1,9 @@
+#!/bin/bash
+
+make chap*/doc.markdown
+
+for f in chap*/doc.markdown ; do
+    perl -pi -e 's/이멕스/이맥스/g' $f
+done
+
+git diff
