@@ -5,7 +5,13 @@ This is repo for emacsbook, written in Korean.
   Web: emacsbook.taesoo.org
   Github: git://github.com/tsgates/emacsbook.git
 
-= Help
+= Commits
+
+Before submitting your changes, please run "./make-test" and
+see if there are any trivial error in case you don't have
+complete compilation environment.
+
+= Helps
 
 I need many helps:
  - For whom can edit figures:
@@ -14,9 +20,11 @@ I need many helps:
  - For whom are good at grammars:
    Admittedly I am terrible at grammars, so I'd love
    any comment on this!
+ - For whom have some interests: 
+   See TODO!
 
-= Commits
+= Contributors
 
-Before submitting your changes, please run "./make-test" and
-see if there are any trivial error in case you don't have
-complete compilation environment.
+ Namhyung Kim
+   - fix typo for chap1/chap2
+
