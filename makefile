@@ -31,4 +31,13 @@ snap: $(MD)
 clean:
 	rm -f doc.pdf $(OUT_MD) $(OUT_HTML) $(OUT_INDX)
 
+post: $(OUT_INDX)
+	@echo "- github: git clone git://github.com/tsgates/emacsbook.git"
+	@echo "- index: http://emacsbook.taesoo.org"
+	@for l in `grep -w -o chap. $(OUT_INDX)` ; do \
+		echo "- $$l: http://emacsbook.taesoo.org/$$l.html"; \
+	done
+	@echo "===================="
+	@w3m -dump $(OUT_INDX) | grep -v Fork
+
 .PHONY: all clean html snap
