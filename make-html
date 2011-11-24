@@ -66,7 +66,7 @@ figures do
       puts "Got error on executing pondoc"
       exit 1
     end
-    
+
     chap = /chap(\d+)/.match(file)[1]
     date = html_mtime(chap)
     File.open("#$here/html/chap#{chap}.html", 'w') do |file|

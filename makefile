@@ -13,7 +13,8 @@ all: html
 %.markdown: %.md
 	./make-md $^
 
-html/%.html: %/doc.markdown html/template-chap.html
+html/%.html: html/template-chap.html
+html/%.html: %/doc.markdown 
 	./make-html $^
 
 pdf: $(OUT_PDF)
