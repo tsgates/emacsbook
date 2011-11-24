@@ -3,7 +3,7 @@
 
 $LOAD_PATH.push("script")
 
-load 'make-html-common'
+load 'make-common'
 
 def usage
 	puts <<USAGE

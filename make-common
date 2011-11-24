@@ -127,6 +127,7 @@ $config = YAML.load_file("#$here/latex/config.yml")
 $base_template  = ERB.new(File.read("#$here/html/template.html"))
 $chap_template  = ERB.new(File.read("#$here/html/template-chap.html"))
 $index_template = ERB.new(File.read("#$here/html/template-index.html"))
+$latex_template = ERB.new(File.read("#$here/latex/template.tex"))
 
 # common debug flag
 ARGV.delete_if{|arg| $DEBUG = true if arg == '-d' or arg == '--debug'}
