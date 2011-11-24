@@ -141,6 +141,10 @@ h3 {
   background: rgba(238, 238, 238, 0.19);
 }
 
+#container footer {
+ margin: auto;
+}
+
 #social_buttons {
   margin-top: 15px;
 }
