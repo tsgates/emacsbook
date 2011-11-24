@@ -143,6 +143,8 @@ h3 {
 
 #container footer {
  margin: auto;
+ margin-top: 10px;
+ text-align: center;
 }
 
 #social_buttons {
