@@ -13,6 +13,21 @@ USAGE
 	exit
 end
 
+def latex_pre_pandoc(string, config)
+  replace(string) do
+    # Inc one category depth
+    s /^\#/, '##'
+
+    # title
+    s /^%[ ]*title:(.*)/, '# \1'
+
+    # fix image path
+    #  XXX. direct to specially crafted image folder for pdf
+    s '../img/', 'img/'
+  end
+end
+
+
 # enforce
 lang = "ko"
 
@@ -25,10 +40,10 @@ figures do
 
   print "\tParsing markdown... "
   latex = pipe('pandoc -p --no-wrap -f markdown -t latex') do |stdin, stdout, stderr|
-    # fix image path
-    #  XXX. direct to specially crafted image folder for pdf
-    markdown = markdown.gsub('../img/', 'img/')
+    # latex specific pre-processing
+    markdown = latex_pre_pandoc(markdown, config)
     
+    # common pre-processing
     stdin.write(pre_pandoc(markdown, config))
     stdin.close
     post_pandoc(stdout.read, config)

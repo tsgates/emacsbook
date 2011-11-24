@@ -22,6 +22,14 @@ if ARGV.empty?
   end
 end
 
+def html_pre_pandoc(string)
+  replace(string) do
+    # Inc one category depth
+    s /^\#/, '##'
+  end
+end
+
+
 figures do
   config = $config['default'].merge($config["ko"])
 
@@ -45,6 +53,9 @@ figures do
         blob.gsub("\n", "")
         info[key] = blob
       end
+
+      # pre-processing for html
+      markdown = html_pre_pandoc(markdown)
 
       stdin.write(pre_pandoc(markdown, config))
       stdin.close

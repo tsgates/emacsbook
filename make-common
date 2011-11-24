@@ -45,11 +45,7 @@ end
 
 def pre_pandoc(string, config)
   replace(string) do
-    # Inc one category depth
-    s /^\#/, '##'
-    
     # Ignore comments
-    # XXX. extract abstract & title
     s /^%.*/, ''
     
     # Pandoc discards #### subsubsections #### - this hack recovers them

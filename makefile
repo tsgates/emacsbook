@@ -6,30 +6,29 @@ MD := $(wildcard chap*/doc.md)
 OUT_MD   := $(MD:.md=.markdown)
 OUT_HTML := $(patsubst chap%/doc.md, html/chap%.html, $(MD))
 OUT_INDX := html/index.html
+OUT_PDF  := latex/main.pdf
 
 all: html
 
 %.markdown: %.md
 	./make-md $^
 
-html/%.html: %/doc.markdown
+html/%.html: %/doc.markdown html/template-chap.html
 	./make-html $^
 
-doc.pdf: latex/main.pdf
-	cp -f $^ $@
-
-latex/main.pdf: $(OUT_MD) latex/template.tex latex/config.yml
+pdf: $(OUT_PDF)
+$(OUT_PDF): $(OUT_MD) latex/template.tex latex/config.yml
 	./make-pdf
 
 html: $(OUT_HTML) $(OUT_INDX)
-$(OUT_INDX): $(OUT_HTML)
+$(OUT_INDX): $(OUT_HTML) html/template-index.html
 	./make-html-index
 
 snap: $(MD)
 	PATH=$(PWD)/script:$$PATH DISPLAY=$(PORT) ./make-snap $^
 
 clean:
-	rm -f doc.pdf $(OUT_MD) $(OUT_HTML) $(OUT_INDX)
+	rm -f $(OUT_PDF) $(OUT_MD) $(OUT_HTML) $(OUT_INDX)
 
 post: $(OUT_INDX)
 	@echo "- github: git clone git://github.com/tsgates/emacsbook.git"
@@ -40,4 +39,4 @@ post: $(OUT_INDX)
 	@echo "===================="
 	@w3m -dump $(OUT_INDX) | grep -v Fork
 
-.PHONY: all clean html snap
+.PHONY: all clean html pdf snap post
