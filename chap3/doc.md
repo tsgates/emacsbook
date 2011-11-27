@@ -26,7 +26,7 @@
 우리가 이미 알고 있는 방법으로 \*scratch\* 버퍼에서 표현식 끝에서 \k{C-j}을
 입력하면 표현식을 계산해 볼 수 있다.
 
-![\n{img} \*scratch\* 버퍼에서 계산(evaluate)하기](\s{snap -s 80x25 -o eval-in-scratch.png -c 
+![\n{img} \*scratch\* 버퍼에서 계산(evaluate)하기](\s{snap -s 80x10 -o eval-in-scratch.png -c 
    C-x b "\"*sc\"" TAB RET "\"(message \\\"hello world\\\")\"" C-j})
 
 ## 미니 버퍼
@@ -45,8 +45,8 @@ REPL(__R__ead-__Eval__-__P__rint __L__oop)과 같은 환경이다. \k{M-x ielm}�
 입력하면 아래와 같은 화면이 보이는데, 현재 프롬프트에서 표현식을 입력하면
 다음라인에서 표현식을 계산하고 그 결과값을 출력해 준다.
 
-![\n{img} IELM 모드에서 표현식 계산하기](\s{snap -s 80x5 -o
-eval-in-ielm.png -c M-x ielm RET "\"(message \\\"hello world\\\")\"" C-j})
+![\n{img} IELM 모드에서 표현식 계산하기](\s{snap -s 80x10 -o
+eval-in-ielm.png -c M-x \"ielm\" RET w1 "\"(message \\\"hello world\\\")\"" C-j})
 
 독자들은 제시된 방법들중 간편한 방법으로 앞으로 나오는 표현식을 자유롭게 계산해
 보면 된다.

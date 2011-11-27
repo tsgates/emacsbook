@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 import os
+import re
 import sys
 import time
 import optparse
@@ -154,6 +155,12 @@ if __name__ == '__main__':
     
     # feed key
     for cmd in args:
+        # wait
+        if re.match("w[0-9.]+", cmd):
+            dbg("[!] wait %ss" % cmd)
+            time.sleep(int(cmd[1:]))
+            continue
+
         # if type
         if cmd.startswith('"') and cmd.endswith('"'):
             send_type(res, cmd[1:-1])
