@@ -29,6 +29,16 @@ def html_pre_pandoc(string)
   end
 end
 
+def html_post_pandoc(string, config)
+  replace(string) do
+    space = /\s/
+
+    # Enable proper cross-reference
+    pre  = config['prechap' ].gsub(space, '\s')
+    post = config['postchap'].gsub(space, '\s')
+    s /#{pre}\s*(\d+)(\s*)#{post}/, '<a href="chap\1.html">\0</a>'
+  end
+end
 
 figures do
   config = $config['default'].merge($config["ko"])
@@ -59,7 +69,7 @@ figures do
 
       stdin.write(pre_pandoc(markdown, config))
       stdin.close
-      post_pandoc(stdout.read, config)
+      html_post_pandoc(stdout.read, config)
     end
 
     unless html
