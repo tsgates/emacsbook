@@ -34,7 +34,7 @@
 두번째 방법은 버퍼를 변경하지 않고 현재 버퍼의 환경안에서 표현식을 계산하는
 방법으로 \k{M-:}를 입력하면 미니버퍼에서 표현식을 계산해볼 수 있다.
 
-![\n{img} 미니 버퍼에서 표현식 계산(evaluate)하기](\s{snap -s 80x5 -o
+![\n{img} 미니 버퍼에서 표현식 계산(evaluate)하기](\s{snap -s 80x10 -o
 eval-in-screen.png -c M-: "\"(message \\\"hello world\\\")\""})
 
 ## IELM 모드 (Inferior Emacs Lisp)
