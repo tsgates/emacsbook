@@ -35,7 +35,7 @@ def todo_binding(md, opt):
     return ""
 
 def snap_binding(md, opt):
-    out = re.findall("-o ([^ ]+)", opt)
+    out = re.findall("-o[ ]+([^ ]+)", opt)
     if out:
         # append image path
         return "../img/%s" % out[0]
