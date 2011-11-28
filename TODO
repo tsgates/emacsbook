@@ -1,8 +1,12 @@
 = hunting errata
- convert 'evaluate' -> 해석? in proper context
- what is the 'element' in Korean? 원소? 요소? find & unify
- chap2 summary
- code syntax highlighting in pdf
- evalation result seems to be confusion with same syntax highlight as code
+ - convert 'evaluate' -> 해석? in proper context
+ - what is the 'element' in Korean? 원소? 요소? find & unify
+ - add chap2's summary
+ - code syntax highlighting in pdf
+ - evalation result seems to be confusion with same syntax highlight as code
    itself
- put off downloading googlefont after rendering contents with a proper width
+ - put off downloading googlefont after rendering contents with a proper width
+
+= latex
+ - margin after <p>
+ - retwick definition
