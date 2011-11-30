@@ -56,8 +56,9 @@ Lisp에서 심볼(symbol)을 계산(evaluate)하면 정수(integer), 문자열(s
 
 # 특별 형태 (Special Forms)
 
-![\n{img} 테트리스 실행하기](\s{snap -s 80x25 -o tetris-screen.png -c 
- M-x "\"tetris\"" RET M-: "\"(setq tetris-score 100)\"" RET SPACE w3})
+![\n{img} 테트리스 실행하기](\s{snap -s 80x25 -o tetris-score.png -c 
+ M-x "\"tetris\"" RET M-: "\"(set 'tetris-score 100)\"" RET SPACE w3
+ M-: "\"(set 'tetris-score 100)\""})
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ {.scheme}
 (defun tetris-draw-shape ()
