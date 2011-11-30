@@ -109,7 +109,8 @@ mmap = {
     ">"  : "shift+greater", 
     "\t" : "Tab", 
     "TAB": "Tab", 
-    "\b" : "BackSpace", 
+    "\b" : "BackSpace",
+    "SPACE": "space", 
     }
 
 if __name__ == '__main__':

@@ -15,37 +15,49 @@
 
 # 환경 (Environment)
 
+Lisp에서 심볼(symbol)을 계산(evaluate)하면 정수(integer), 문자열(string),
+심볼(symbol), 그리고 리스트(list)의 값(value)이 된다. 이렇게 값을 가지고있는
+심볼들을 변수(variable)라고 부른다. 만약 값이 없는 심볼을 계산하면 어떻게 될까?
+
+    ELISP> no-such-a-var
+    *** Eval error ***  Symbol's value as variable is void: no-such-a-var
+
+즉, 주어진 심볼의 변수로서의 값이 없다는 에러를 볼 수 있다. 특히 이러한 변수 및
+함수가 저장되는 공간을 환경(environment)라고 부른다. 위의 에러를 다시 해석하면,
+주어진 환경에 심볼에 해당하는 값을 찾을 수 없다고 이해할 수 있겠다. 간단하게
+말해서 환경은 이름 -> 값의 단순한 형태의 저장소이다.
+
+테트리스를 \k{M-x tetris}를 실행해보자.
+
 ![\n{img} 테트리스 실행하기](\s{snap -s 80x25 -o tetris-screen.png -c 
  M-x "\"tetris\"" RET w3})
 
-이는 no-such-a-var라는 심볼에 바인드된 값(void-variable)이 없음을 의미한다.
-그러면 다음과 같은 표현식은 어떻게 해석될까?
+테트리스 프로그램에서는 무엇을 변수로 정의하고 있을까? 많은 변수들이 있겠지만,
+오른쪽 화면에 보이는 점수가 쉽게 변수로 정의되어 사용되고 있음을 추측해 볼 수
+있다. 테트리스에서는 \v{tetris-score}가 변수로 사용되고 있고, 이는 \k{C-h v: 변수
+도움말} (__h__elp __v__ariable)을 통해서 어떻게 쓰이고, 어떠한 값을 갖고 있는지
+쉽게 알아 볼 수 있다.
 
-    (message fill-column)
+    tetris-score is a variable defined in `tetris.el'.
+    Its value is 0
+    Local in buffer *Tetris*; global value is 0
+    
+      Automatically becomes buffer-local when set in any fashion.
+    
+    Documentation:
+    Not documented as a variable.
 
-아래와 같은 에러가 발생하고,
+위의 도움말의 용어들은 프로그래머들에게 친숙해 상식선에서 모두 이해가 된다.
+\v{tetris-score}의 값은 0이고, \*Tetris\* 버퍼에 지역 변수(local variable)며,
+전역 변수(global variable)의 값은 0이다. 만약 값을 할당하면 자동적으로 버퍼의
+지역 변수가 된다.
 
-    Debugger entered--Lisp error: (wrong-type-argument stringp 70)
-      message(70)
-      eval((message fill-column))
-      ...
+그러면 어떻게 심볼에 값을 할당할 수 있을까?
 
-이전과 다른점은 message와 fill-column 각각의 심볼에 바인드된 함수와 값을 찾았고
-message 함수를 70의 인자를 가지고 evaluate하는 과정에서 에러가 발생함을 알 수
-있다. "(message 70)"이 아니라 "message(70)"임을 확인해보자. 위의 에러는 message의
-첫 인자는 문자열이어야 하는데, 우리는 string이 아닌 70을 가지고 호출했기 때문에
-발생했다.
+# 특별 형태 (Special Forms)
 
-자 그럼 message는 c 언어의 rvalue처럼 함수정의를 나타낸다는 것을 이해했을
-것이다. 그러면 message라는 심볼을 어떻게 표현 할까? Lisp에서는 ' 를 앞에 붙여
-'message라고 쓰면 message라는 이름의 심볼을 의미한다.
-
-
-앞으로 설명하겠지만 한가지 차이점은 \k{M-:}을 이용한 해석은 현재 사용자에게
-보이는 버퍼의 환경에서 해석이되는 것이고, \*scratch\* 버퍼에서 해석한 경우
-\*scratch\* 버퍼의 환경에서 표현식을 해석하는 것이다.
-
-# 특별 형태 (special forms)
+![\n{img} 테트리스 실행하기](\s{snap -s 80x25 -o tetris-screen.png -c 
+ M-x "\"tetris\"" RET M-: "\"(setq tetris-score 100)\"" RET SPACE w3})
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ {.scheme}
 (defun tetris-draw-shape ()

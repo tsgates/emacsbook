@@ -18,6 +18,10 @@ def key_binding(md, opt):
     # collect them later
     return "`" + opt + "`"
 
+def var_binding(md, opt):
+    # collect them later
+    return "`" + opt + "`"
+
 def link_binding(md, opt):
     # collect them later
     return "`" + opt + "`"
