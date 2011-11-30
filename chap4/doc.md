@@ -77,12 +77,46 @@ Eval: (setq tetris-score 100)
 점수가 화면에 곧바로 반영되지 않는데, 테트리스는 정상적으로 점수를 획득하는
 순간마다 화면에 업데이트하기 때문이다. 현재 블락을 밑으로 내려 볼까?
 
-![\n{img} 테트리스 실행하기](\s{snap -s 80x25 -o tetris-score.png -c 
+![\n{img} 테트리스 점수 수정하기](\s{snap -s 80x25 -o tetris-score.png -c 
  M-x "\"tetris\"" RET M-: "\"(setq tetris-score 100)\"" RET SPACE w3
  M-: "\"(setq tetris-score 100)\""})
 
+위의 리스트 형태의 표현식을 Lisp의 계산식 방법에 따라 계산해 보자.
 
+1. \f{setq}의 심볼에 해당하는 함수를 찾고,
+1. \v{tetris-score}의 심볼에 해당하는 값 0과,
+1. 100(아톰)은 그대로의 값을 갖으므로, 값 100을 인자로
+1. \f{setq}의 함수를 호출 한다.
 
+\f{setq} 함수는 정수 0과 100을 인자로 받았는데, 어떻게 \v{tetris-score}의 값을
+변경할 수 있었던 것일까? 실재로 두번째 과정에서 \v{tetris-score}이 값으로
+계산되지 않고 심볼이 전달된다. 도움말을 살펴 보자.
+
+    setq is a special form in `eval.c'.
+    
+    (setq [SYM VAL]...)
+    
+    Set each SYM to the value of its VAL.
+    The symbols SYM are variables; they are literal (not evaluated).
+    The values VAL are expressions; they are evaluated.
+    Thus, (setq x (1+ y)) sets `x' to the value of `(1+ y)'.
+    ...
+
+우리는 Lisp의 일반적인 계산법을 따르지 않는 연산자를 특수 연산자 (special
+operator) 또는 특수 형태 (special form)이라고 부른다. Lisp에 이러한 특수
+연산자들에는 심볼에 값을 할당, 함수를 선언, 조건문, 메크로가 있다.
+
+심볼을 생성하는것, 함수를 선언하는것은 기본적인 계산 규칙으로 할 수 없으므로
+특수형태를 띄어야 할 것 같은데 왜 조건문은 특수형태를 띄어야 할까?
+
+# 조건문 (Condition)
+
+사실 모든 함수형 (pure functional language)에서 대부분의 조건문은 특수한 형태를
+갖는다. Lisp도 예외는 아닌데, 먼저 어떻게 사용하는지 알아보자.
+
+![\n{img} 테트리스의 종료조건](\s{snap -s 80x25 -o tetris-end.png -c 
+ M-x "\"tetris\"" RET SPACE SPACE SPACE SPACE SPACE SPACE SPACE SPACE}
+ 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ {.scheme}
 (defun tetris-draw-shape ()
   (loop for y from 0 to (1- (tetris-shape-height)) do
