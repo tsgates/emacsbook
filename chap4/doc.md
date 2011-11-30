@@ -30,7 +30,7 @@ Lisp에서 심볼(symbol)을 계산(evaluate)하면 정수(integer), 문자열(s
 테트리스를 \k{M-x tetris}를 실행해보자.
 
 ![\n{img} 테트리스 실행하기](\s{snap -s 80x25 -o tetris-screen.png -c 
- M-x "\"tetris\"" RET w3})
+ M-x "\"tetris\"" RET M-x "\"tetris\"" w3})
 
 테트리스 프로그램에서는 무엇을 변수로 정의하고 있을까? 많은 변수들이 있겠지만,
 오른쪽 화면에 보이는 점수가 쉽게 변수로 정의되어 사용되고 있음을 추측해 볼 수
@@ -112,11 +112,72 @@ operator) 또는 특수 형태 (special form)이라고 부른다. Lisp에 이러
 # 조건문 (Condition)
 
 사실 모든 함수형 (pure functional language)에서 대부분의 조건문은 특수한 형태를
-갖는다. Lisp도 예외는 아닌데, 먼저 어떻게 사용하는지 알아보자.
+갖는다. Lisp도 예외는 아닌데, 먼저 어떻게 사용하는지 알아보자. 그럼 테트리스의
+어떤 코드가 조건문을 사용할까? 쉽게 추측건데 종료하는 조건을 확인하는 함수가
+있을 것이다.
 
 ![\n{img} 테트리스의 종료조건](\s{snap -s 80x25 -o tetris-end.png -c 
- M-x "\"tetris\"" RET SPACE SPACE SPACE SPACE SPACE SPACE SPACE SPACE}
- 
+ M-x "\"tetris\"" RET SPACE SPACE SPACE SPACE SPACE SPACE SPACE SPACE})
+
+테트리스가 작동하는 원리는 생각해볼까? 테트리스에서 일단 블락이 하나 만들어지면,
+블락이 주기적으로 화면에서 한칸씩 내려오게 되다. 이 주기에 맞추어 사용자가 입력을
+하면 입력에 따라 좌/우로 블럭을 움직이게 되고, 블럭이 화면의 끝이나 다른 블럭에
+닿은 경우 새로운 블락이 생성된다. 만약 화면에 새로운 블락이 생성될 곳이 없으면
+게임이 종료된다. 아하, 새로운 블락이 생성되는 함수?
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ {.scheme}
+(defun tetris-new-shape ()
+  (setq tetris-shape tetris-next-shape)
+  (setq tetris-rot 0)
+  (setq tetris-next-shape (random 7))
+  (setq tetris-pos-x (/ (- tetris-width (tetris-shape-width)) 2))
+  (setq tetris-pos-y 0)
+  (if (tetris-test-shape)
+      (tetris-end-game)
+    (tetris-draw-shape)
+    (tetris-draw-next-shape)
+    (tetris-update-score)))
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+위에서 부터 한줄 한줄 살펴보자. 첫 줄에서 \f{tetris-new-shape} 함수를 선언
+\f{defun: __def__ine __fun__ction}하고, 두번째 줄 부터 함수의 정의가 시작된다.
+
+자자. 그만 읽고 1분동아나 위의 코드를 보자.
+
+이제 아래 설명을 보자.
+
+    set tetris's shape with next-shape (in left of screen);
+    set tetris's rotation with 0;
+    set tetris's next-shape with a random shape ranging upto 7;
+    set tetris's pos-x with a half of tetris board (center);
+    set tetris's pos-y with starting y-point 0;
+    if testing shape turns out to be overlapped, then finish the game;
+    otherwise,
+     - draw shape on board;
+     - draw next-shape on left of screen;
+     - update score.
+
+관행적으로 Lisp 모듈에서 사용되는 함수/변수 앞은 모듈의 이름으로 시작한다. 즉
+테트리스 모듈에서는 tetris를 앞글자로 사용한다. 재미있는 실험을 하자. 변수의
+이름에 있는 "tetris"는 "tetris's"로 함수에 있는 tetris는 제거해볼까?
+
+    defun new-shape
+      set tetris's shape (with) tetris's next-shape
+      set tetris's rot (with) 0
+      set tetris's next-shape (with) random 7
+      set tetris's pos-x (with) (/ (- tetris's width (tetris's shape-width)) 2)
+      set tetris's pos-y (with) 0
+      if test-shape
+           end-game
+        draw-shape
+        draw-next-shape
+        update-score
+
+조금 코드를 보기 수월한가? 함수(리스트의 첫 원소)는 모두 동사 (명령)으로
+시작하고, 변수들은 모두 명사로 시작하는 것을 알아차렸는가? Lisp은 일반적인
+언어에서 infix로 사용하는 연산자를 prefix로 사용한다. 그 결과 신기하게도 동사인
+함수(연산자)와 명사의 인자들이 영어의 문법 그대로 읽혀지는 현상을 볼 수 있다.
+
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ {.scheme}
 (defun tetris-draw-shape ()
   (loop for y from 0 to (1- (tetris-shape-height)) do
