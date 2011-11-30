@@ -1,7 +1,7 @@
 %
 % Taesoo Kim
 %
-% title: Lisp 이해하기
+% title: Lisp 이해하기1
 %
 % abstract: 이맥스를 확장하고 이해하기 위한 Lisp의 문법(Form),
 % abstract: 이를 계산(Evaluate)하는과정,
