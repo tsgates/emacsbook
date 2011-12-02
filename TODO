@@ -10,3 +10,6 @@
 = latex
  - margin after <p>
  - retwick definition
+
+= web
+ - lisp (ELISP> aware, reg-exp based highlighter) pygment is so ugly
