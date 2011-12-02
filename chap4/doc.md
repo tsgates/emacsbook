@@ -19,8 +19,10 @@ Lisp에서 심볼(symbol)을 계산(evaluate)하면 정수(integer), 문자열(s
 심볼(symbol), 그리고 리스트(list)의 값(value)이 된다. 이렇게 값을 가지고있는
 심볼들을 변수(variable)라고 부른다. 만약 값이 없는 심볼을 계산하면 어떻게 될까?
 
-    ELISP> no-such-a-var
-    *** Eval error ***  Symbol's value as variable is void: no-such-a-var
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ {.scheme}
+ELISP> no-such-a-var
+*** Eval error ***  Symbol's value as variable is void: no-such-a-var
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 즉, 주어진 심볼의 변수로서의 값이 없다는 에러를 볼 수 있다. 특히 이러한 변수 및
 함수가 저장되는 공간을 환경(environment)라고 부른다. 위의 에러를 다시 해석하면,
@@ -140,22 +142,36 @@ operator) 또는 특수 형태 (special form)이라고 부른다. Lisp에 이러
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 위에서 부터 한줄 한줄 살펴보자. 첫 줄에서 \f{tetris-new-shape} 함수를 선언
-\f{defun: __def__ine __fun__ction}하고, 두번째 줄 부터 함수의 정의가 시작된다.
+\f{defun: 함수 정의}(__def__ine __fun__ction)하고, 두번째 줄 부터 함수의 정의가
+시작된다.
 
 자자. 그만 읽고 1분동아나 위의 코드를 보자.
 
-이제 아래 설명을 보자.
+이제 아래 설명과 같이 읽어 보자.
 
-    set tetris's shape with next-shape (in left of screen);
-    set tetris's rotation with 0;
-    set tetris's next-shape with a random shape ranging upto 7;
-    set tetris's pos-x with a half of tetris board (center);
-    set tetris's pos-y with starting y-point 0;
-    if testing shape turns out to be overlapped, then finish the game;
-    otherwise,
-     - draw shape on board;
-     - draw next-shape on left of screen;
-     - update score.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ {.scheme}
+(defun tetris-new-shape ()
+  ;; 다음 블럭(오른쪽 상단의) 을 현재 블럭으로 지정
+  (setq tetris-shape tetris-next-shape)
+  ;; 초기 블럭 방향
+  (setq tetris-rot 0)
+  ;; 랜덤으로 다음 블럭을 지정
+  (setq tetris-next-shape (random 7))
+  ;; 블럭을 x축 중심에 놓음
+  (setq tetris-pos-x (/ (- tetris-width (tetris-shape-width)) 2))
+  ;; 블럭을 y축 시작에 놓음
+  (setq tetris-pos-y 0)
+  ;; 만약 블럭이 겹치면, 
+  (if (tetris-test-shape)
+      ;; 게임을 종료
+      (tetris-end-game)
+    ;; 아니면, 블럭을 화면에 출력하고
+    (tetris-draw-shape)
+    ;; 다음 블럭도 (오른쪽 상단에) 출력 하고
+    (tetris-draw-next-shape)
+    ;; 점수를 반영한다.
+    (tetris-update-score)))
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 관행적으로 Lisp 모듈에서 사용되는 함수/변수 앞은 모듈의 이름으로 시작한다. 즉
 테트리스 모듈에서는 tetris를 앞글자로 사용한다. 재미있는 실험을 하자. 변수의
@@ -176,42 +192,157 @@ operator) 또는 특수 형태 (special form)이라고 부른다. Lisp에 이러
 조금 코드를 보기 수월한가? 함수(리스트의 첫 원소)는 모두 동사 (명령)으로
 시작하고, 변수들은 모두 명사로 시작하는 것을 알아차렸는가? Lisp은 일반적인
 언어에서 infix로 사용하는 연산자를 prefix로 사용한다. 그 결과 신기하게도 동사인
-함수(연산자)와 명사의 인자들이 영어의 문법 그대로 읽혀지는 현상을 볼 수 있다.
+함수(연산자)와 명사의 인자들이 영어의 문법에 맞추어 읽혀지는 현상을 볼 수 있다.
+
+이번절의 목적인 조건문(if statement)에 대해 다시 살펴보면,
+
+    if is a special form in `eval.c'.
+    
+    (if COND THEN ELSE...)
+    
+    If COND yields non-nil, do THEN, else do ELSE...
+    Returns the value of THEN or the value of the last of the ELSE's.
+    THEN must be one expression, but ELSE... can be zero or more expressions.
+    If COND yields nil, and there are no ELSE's, the value is nil.
+
+Lisp의 조건문은 특성은 아래와 같이 정리 할 수 있다. 
+
+1. 특별 형태 (special form)
+1. 조건문 `COND`이 \v{nil}이 아니면 `THEN` 표현식을 계산 후 결과를 리턴
+1. 그렇지 않으면 나머지 모든 표현식 `ELSE...`를 계산 후 마지막 표현식의 결과를 리턴
+
+조건문은 왜 특수형태일까? 만약 특수형태가 아닌 리스트 형태의 표현식이었다면
+계산하기 위해 함수 인자 위치에 있는 `THEN`과 `ELSE...`의 모든 표현식들 계산해야
+한다. 즉 조건문은 `COND`의 표현식에 결과에 따라 선택적으로 `THEN`과
+`ELSE...`표현식을 계산해야 하므로, 조건문은 특수형태를 갖게 되었다.
+
+하나더 강조하자면 조건문의 표현식도 계산후 결과 값을 갖는다. 다음의 예를 보자. 
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ {.scheme}
-(defun tetris-draw-shape ()
-  (loop for y from 0 to (1- (tetris-shape-height)) do
-	(loop for x from 0 to (1- (tetris-shape-width)) do
-	      (let ((c (tetris-get-shape-cell x y)))
-		(if (/= c tetris-blank)
-		    (gamegrid-set-cell (+ tetris-top-left-x
-					  tetris-pos-x
-					  x)
-				       (+ tetris-top-left-y
-					  tetris-pos-y
-					  y)
-				       c))))))
+ELISP> (message "hello %s" (if (= 1 2) "hello" "world"))
+"hello world"
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-# 함수 (function)
+위의 조건문의 조건이 \v{nil}이므로 후자의 표현식을 계산후 결과값인 "world"
+문자열을 조건문의 결과값으로 리턴하였다.
 
- - defun (define function)
+# 함수 정의 (defun)
 
-# 조건문 (control)
+환경의 이름(심볼)을 생성하는 방법은 크게 두가지, 변수를 선언하거나 함수를 선언
+하는 방법이 있다. 우리가 이미 살펴본 방법은 변수 중 전역 변수(심볼과 해당 값)를
+생성 하는 방법으로 특수형태의 함수, \f{setq}를 이용하는 방법이었다. 이번 절에서는
+변수중 지역 변수(새로운 환경안에서의 심볼과 해당 값)를 생성하는 함수(연산자)와
+함수를 선언하는 특수형태의 함수(연산자)를 알아 보겠다. 
 
-# 제어문 (loop)
+두가지의 함수 형태를 볼것인데, 하나는 테트리스를 시작하는 함수
+`tetris-start-game`이고 나머지 하나는 주기적으로 게임을 진행하는 함수
+`tetris-update-game` 함수이다. 잘 따라오면서 코드를 읽기 바란다. 
 
-# 특별 형태 (special forms)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ {.scheme}
+;; defun = define function, 함수를 정의
+;;  - tetris-start-game의 심볼에 해당 값으로 함수 정의를 바인딩 한다.
+;;  - `()`는 `nil`과 같은 심볼로 인자를 받지 않음을 뜻한다.
+(defun tetris-start-game ()
+  ;; defun 함수의 첫 번째 표현식(리스트의 첫번째 인자)은 해당함수의 문서로 문자열
+  "Starts a new game of Tetris"
+  ;; 해당 함수를 사용자에게 노출 (2장 참고 - 상호작용하는 함수) 
+  (interactive)
+  ;; 게임을 리셋
+  (tetris-reset-game)
+  ;; map: 키와 해당 함수를 담고 있는 변수
+  ;;  (예)
+  ;;  - "n" -> 'tetris-start-game
+  ;;  - "q" -> 'tetris-end-game
+  ;; 현재키에 테트리스 게임용 함수를 바인딩
+  (use-local-map tetris-mode-map)
+  ;; let: period의 심볼에 오른쪽 값을 바인딩 (밑에서 살펴본다)
+  ;; 테트리스가 업데이트되는 주기를 결정
+  (let ((period (or (tetris-get-tick-period)
+                    tetris-default-tick-period)))
+    ;; 주기 (period)마다 tetris-update-game 함수를 호출하는 타이머 시작
+    (gamegrid-start-timer period 'tetris-update-game)))
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-- evaluate
- - eval & apply
-- control
- - if/else
-- loop
- - while/for alternatives
-- scope
- - let
+복잡한가? 코드를 보는 관점을 바꾸어 보자. \f{tetris-start-game}의 함수는 어떠한
+일을 할까? 함수 정의를 읽지 않고는 함수의 정확한 일을 알 수가 없다. 하지만 우리가
+추측 할 수 있는 방법들이 있는데 첫째는 함수의 이름을 통해서고, 둘째는 주석을
+통해서다. 즉 \f{tetris-start-game}의 이름을 통해서 우리는 새로운 게임을 시작하는
+함수라는 추측을 할 수 있다. 그 내부는 어떠한가? \f{let}을 제외하고는 단순 함수
+호출의 나열이다. 같은 맥락으로 호출하는 함수내부를 들여다 보지 않아도 함수
+이름을 통한 추측(abstraction)만으로도 정의 하는 함수를 이해하는데 문제가 없다. 
 
-# emacs
+그러면 \f{let}은 왜 사용하는가? 코드를 명확하게 하는 또 한가지 방법은 값들에
+프로그래머가 읽을 수 있는 이름을 주는것인데 \f{let} 구문 없이 아래와 같이
+코드가 짜였다고 생각해 보자. 
 
-- universal argument C-u
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ {.scheme}
+  (gamegrid-start-timer (or (tetris-get-tick-period)
+                            tetris-default-tick-period)
+                        'tetris-update-game)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ {.scheme}
+
+위의 코드를 글을 읽듯이 읽어보면, 문장이 길어지고 하고자 하는 일이 무엇인지
+한눈에 파학하기 힘들어진다. 프로그래머가 \f{let}을 사용하면,
+`gamegrid-start-timer`의 첫 인자에 들어가는 값은 '주기'다 라고 명시적으로 말을 할
+수 있게 된다. 위의 함수가 주석하나 없이 짜였음에도 불구하고 코드를 읽는
+사람에게 정확한 목적을 전달할 수 있는것은 명확한 함수와 변수의 심볼(이름)을
+사용하고 있기 때문이다.
+
+스스로 다음 코드를 읽어보자.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ {.scheme}
+(defun tetris-update-game (tetris-buffer)
+  "Called on each clock tick.
+Drops the shape one square, testing for collision."
+  (if (and (not tetris-paused)
+           (eq (current-buffer) tetris-buffer))
+      (let (hit)
+        (tetris-erase-shape)
+        (setq tetris-pos-y (1+ tetris-pos-y))
+        (setq hit (tetris-test-shape))
+        (if hit
+            (setq tetris-pos-y (1- tetris-pos-y)))
+        (tetris-draw-shape)
+        (if hit
+            (tetris-shape-done)))))
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+잘 읽히는가? 그러면 `tetris-shape-done` 함수는 무슨 일을 할까? 만약 우리가 처음
+살펴본 `tetris-new-shape`를 호출할 것이라는 추측을 했다면! 이번장도
+대성공이다. 위의 함수는 매주기마다 호출되어 현재 블락을 아래로 한칸씩 내리고
+만약에 화면이나 다른 블락에 닿았다면 블럭을 멈추고 새로운 블락을 생성하는
+코드이다.
+
+`tetris-update-game` 함수가 `tetris-start-game` 함수와 다른 점 두가지는 아래와 같다.
+
+1. `tetris-buffer`를 인자로 받고, 
+1. \f{interactive}의 호출이 없다. 
+
+즉, `tetris-start-game` 함수는 사용자에게 노출되어 'n'을 입력하거나 \k{M-x
+tetris-start-game}를 통해 함수를 호출 할 수 있는데 반하여, `tetris-update-game`은
+사용자가 직접 호출 할 수 없고 타이머에 의하여 간접적으로 호출 된다는 점이다.
+
+자 정리하면, 함수를 정의하는 방법은? 문서를 찾아보는게 빠르지 않을까? 
+
+    defun is a special form in `eval.c'.
+    
+    (defun NAME ARGLIST [DOCSTRING] BODY...)
+    
+    Define NAME as a function.
+    The definition is (lambda ARGLIST [DOCSTRING] BODY...).
+    See also the function `interactive'.
+
+`interactive` 링크를 따라가고 싶은가? (다음장에서 알아본다!)
+
+# 정리
+
+이번 장에서는 다음과 같은 Lisp의 특수형태들에 대해서 알아 보았다.
+
+- \f{if} : 조건문
+- \f{defun} : 함수 심볼 -> 함수 정의
+- \f{setq} : 전역 변수 심볼 -> 값
+- \f{let} : 지역 변수 심볼 -> 값
+
+다음 장에서는 이맥스 관점에서 Lisp이 어떠한 DSL(Domain Specific Language)를
+제공하는지, 어떠한 특징들이 이맥스를 확장가능하게 하는건지, 그리고 재미있는
+Lisp 함수를 같이 구현해 보도록 할것이다. 코딩타임!

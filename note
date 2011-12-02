@@ -13,13 +13,15 @@ This note is supposed to be a private file.
  - eval
 * chap4: reading lisp
  - tetris
+ - environment
  - defun
  - if
- - loop
+ - loop (later)
 * chap5: lisp-and-emacs
- - environment
- - lexical binding & mode/buffer
  - .emacs
+ - interactive
+ - universal argument C-u
+ - lexical binding & mode/buffer
  - mode
  - buffer (in terms of lisp)
 * chap7: emacs & programmings
