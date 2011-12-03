@@ -131,8 +131,10 @@ ELISP> (message "width %d" fill-column)
 경우는 값으로 계산된다. 예를 들어 message 심벌은 값으로 계산하려고 하면 아래와
 같이 값을 찾을 수 없다는 에러가 발생한다.
 
-    ELISP> message
-    *** Eval error ***  Symbol's value as variable is void: message
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ {.cl}
+ELISP> message
+*** Eval error ***  Symbol's value as variable is void: message
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 심벌의 앞에 **'** (quote, 작은 따옴표)를 붙여 계산을 미룰수 있는데, 아래의 표현식을
 계산해보자.
