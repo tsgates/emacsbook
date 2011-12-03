@@ -1,10 +1,6 @@
 This note is supposed to be a private file.
 ======================================================================
 
-* TODO
- - DONE emacs screen shots
- - DONE html generator: ref. (design) http://emacsrookie.com/
-                        ref. (design) http://www.djangobook.com/en/1.0/
 * chap1: intro
 * chap2: help
 * chap3: lisp basic
@@ -19,20 +15,27 @@ This note is supposed to be a private file.
  - loop (later)
 * chap5: lisp-and-emacs
  - .emacs
+ - mode
+ - hook
  - interactive
  - universal argument C-u
  - lexical binding & mode/buffer
- - mode
  - buffer (in terms of lisp)
-* chap7: emacs & programmings
+ - customization
+* chap6: getting fun
+ - keyboard tab
  - theme
- - change keybinding
+ - font
+ - keybinding
  - key macro
+* chap7: emacs for programmings
+ - make
  - tags
-* chap6: simple mode programming
+* chap8: major/minor mode programming
  - module
+* chap9: engineering .emacs
  - autoload
- 
+ - make
 * Tips: 
  - alternative OS specific comments 
  - changing ctrl key
@@ -176,7 +179,7 @@ sketching idea
 ** languages: javascript
 ** languages: php
 ** languages: xml/html
-** languages: haskel
+** languages: haskell
 ** scm: cvs/svn/git
 ** email: mule
 ** tool: yas
@@ -196,3 +199,5 @@ sketching idea
  - emacs FAQ: http://www.gnu.org/software/emacs/emacs-faq.html#Origin-of-the-term-Emacs
  - http://www.gnu.org/fun/jokes/gnuemacs.acro.exp.html
  - http://www.gnu.org/software/emacs/emacs-paper.html
+ - (design) http://emacsrookie.com/
+ - (design) http://www.djangobook.com/en/1.0/

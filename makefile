@@ -32,12 +32,13 @@ clean:
 	rm -f $(OUT_PDF) $(OUT_MD) $(OUT_HTML) $(OUT_INDX)
 
 post: $(OUT_INDX)
+	@perl -e 'print "="x79,"\n"'
 	@echo "- github: git clone git://github.com/tsgates/emacsbook.git"
 	@echo "- index: http://emacsbook.taesoo.org"
 	@for l in `grep -w -o chap. $(OUT_INDX)` ; do \
 		echo "- $$l: http://emacsbook.taesoo.org/$$l.html"; \
 	done
-	@echo "===================="
-	@w3m -dump $(OUT_INDX) | grep -v Fork
+	@perl -e 'print "="x79,"\n"'
+	@w3m -dump $(OUT_INDX) | grep -v "\(Fork\|Disqus\|CC\|Home\|Blog\|About\)"
 
 .PHONY: all clean html pdf snap post

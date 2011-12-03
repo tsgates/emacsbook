@@ -13,3 +13,6 @@
 
 = web
  - lisp (ELISP> aware, reg-exp based highlighter) pygment is so ugly
+
+= tools
+ - release a tool to take a snapshot of emacs (snap)
