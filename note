@@ -34,12 +34,12 @@ This note is supposed to be a private file.
 * chap6: simple mode programming
  - module
  - autoload
- 
-* Tips: 
- - alternative OS specific comments 
+
+* Tips:
+ - alternative OS specific comments
  - changing ctrl key
    - ref. (Windows) http://technet.microsoft.com/en-us/sysinternals/bb897578.aspx
-   - ref. (Linux & MAC)  
+   - ref. (Linux & MAC)
  - emacsclient
  - emacsdump
 
@@ -55,11 +55,18 @@ This note is supposed to be a private file.
 (message "hello world")
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-(define md-insert-code (opt)
- (interative "u")
- (dotimes (i 65) (insert "~"))
- (insert " {.scheme}")
- (dotimes (i 70) (insert "~")))
+(defun markdown-code-region (beg end)
+  "Insert syntax-highlighting tags on pre region"
+ (interactive "r")
+ (let ((lang (read-from-minibuffer "Lang >> ")))
+   (save-excursion
+     (goto-char end)
+     (dotimes (i (- fill-column 1)) (insert "~"))
+     (insert "\n")
+     (goto-char beg)
+     (let ((tag (format "{.%s}\n" lang)))
+       (dotimes (i (- fill-column (length tag))) (insert "~"))
+       (insert tag)))))
 
 ** list-1
 * fruits
