@@ -22,6 +22,8 @@ This note is supposed to be a private file.
  - interactive
  - universal argument C-u
  - lexical binding & mode/buffer
+ - hooks
+ - advising
  - mode
  - buffer (in terms of lisp)
 * chap7: emacs & programmings
@@ -135,6 +137,7 @@ sketching idea
   - VS like compilation window
 ** search 
 ** tag/cscope/ebrowse
+** inferier modes
    
 * utils
 ** ref: font/color/ascii/rfc
