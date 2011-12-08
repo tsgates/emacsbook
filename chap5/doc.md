@@ -7,6 +7,10 @@
 % abstract: 
 %
 
+ido 소개
+-> permenant?
+-> init file
+
 두가지 종류의 초기화 파일
 1. site-lisp
     /etc/emacs/site-start.d
@@ -15,10 +19,27 @@
     ~/.emacs
     --no-init-file
 
-탭과 스페이스
- - hook
- - mode
- - c-mode
+기본틀 -> 설명?
+- basic option feilds
+- linux kernel mode?
+
+모드
+- .bashrc 파일 열어보기
+- 개념
+- 키 -> 함수
+- .c
+
+=> so a way to recognize this: auto-mode-alist
+
+refs/linux-3.0-git/test.c
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.cl}
+(add-to-list auto-mode-alist
+             '(".*/linux-[0-9.git-]+/.*\\.[ch]$" . linux-c-mode))
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+=> regex-build
+
+응용예) 탭과 스페이스
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.cl}
 (setq-default indent-tabs-mode nil ; off tab mode
@@ -26,15 +47,9 @@
               fill-column      80) ; fill width
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+show:
  whitespace-mode
  untabify
-
-mode
-
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.cl}
-(add-to-list auto-mode-alist
-             '(".*/linux-[0-9]\\.[0-9]+\\.[0-9]+*/.*\\.[ch]$" . linux-c-mode))
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 hook
 
