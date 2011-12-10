@@ -59,7 +59,7 @@ $ ls -A /etc/emacs/site-start.d
 $ ls ~/.emacs
 /home/taesoo/.emacs
 $ ls configs/.lisp/
-addons  dev  info  org  os  soo  makefile  pkgs  soodir.mk  soo.mk
+addons/  dev/  info/  org/  os/  soo/  makefile  pkgs  soodir.mk  soo.mk
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 ido 소개
