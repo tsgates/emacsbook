@@ -7,6 +7,8 @@
 % abstract: 
 %
 
+% http://www.masteringemacs.org/articles/2011/01/14/effective-editing-movement/
+% http://blog.interlinked.org/tutorials/emacs.html
 % http://www.gnu.org/software/emacs/tour/
 
 - moving
