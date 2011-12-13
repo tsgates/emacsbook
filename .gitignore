@@ -7,11 +7,8 @@ chap*/*.markdown
 /latex/main.pdf
 /latex/main.tex
 /latex/main.toc
-/html/chap2.html
-/html/chap3.html
+/html/chap*.html
 /html/index.html
-/html/chap1.html
 /.snap-dep
 /script/out.png
 /script/screen.jpg
-/html/chap4.html
