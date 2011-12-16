@@ -9,7 +9,7 @@
 
 XXX.
 
-= 키맵 (keymap)
+# 키맵 (keymap)
 
 사용자가 키를 입력하면 이맥스는 키입력에 바인드된 함수를 찾아 호출 한다. 키입력과
 바인드된 해당 함수의 정보를 담고있는 변수를 맵(map)이라고 부른다. 맵은 아래와
@@ -58,7 +58,7 @@ XXX.
 사용자가 현재 버퍼에 대하여 입력할 수 있는 모든 키 입력와 해당 하는 함수를
 한눈에 볼 수 있어 유용하게 쓰인다.
 
-= 모드 (mode)
+# 모드 (mode)
 
 일반적으로 우리가 특정 파일을 이맥스에서 열었을때 이맥스는 열린 파일에 대한
 버퍼를 생성하하고, "버퍼"의 이름에서 알 수 있듯이 사용자는 파일을 직접 수정하는
@@ -90,48 +90,113 @@ XXX.
 정의된 맵이 가장 우선순위를 갖게 되고, `minor-mode`와 `major-mode`가 차례로
 검색이 된다.
 
-= 커서이동 (moving)
+# 커서이동 (Moving)
 
 이맥스의 기본적인 에디팅 기능들(커서이동, 수정, 검색 ..)은 모든 버퍼에 일관적으로
-요구되는 기능이기 때문에 \v{global-map}에 정의 되어 있다. \k{C-h t:튜토리얼}에서
-살펴본 대부분의 에디팅 기능들 역시 \v{global-map}에 정의되어 있으며, 대부분의
-경우 특정 모드에 상관 없이 대부분 적용되는 기능들로 이맥스의 일관적인 철학을
-엿볼 수 있기도 하다. 이번 절에서 간단한 커서 이동법을 살펴보도록 하자.
+요구되는 기능이기 때문에 \v{global-map}에 정의 되어 사용된다. \k{C-h
+t:튜토리얼}에서 살펴본 대부분의 에디팅 기능들 역시 \v{global-map}에 정의되어
+있으며, 대부분의 경우 특정 모드에 상관 없이 대부분 적용되는 기능들로 이맥스의
+일관적인 철학을 엿볼 수 있기도 하다. 이번 절에서 간단한 커서 이동법을 살펴보도록
+하자.
 
-- moving
+\t{show where the current curosor moves after pressing each key}
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.cl}
 
-	C-f (**f**orward-char)
-	C-b (**b**ackward-char)
-
-	M-f (**f**orward-word)
-	M-b (**b**ackword-word)
-
-        C-M-f (**f**orward-sexp)
-        C-M-b (**b**acword-sexp)
+(defun tetris-new-shape ()
+  (setq tetris-shape tetris-next-shape)
+  (setq tetris-rot 0)
+  (setq tetris-next-shape (random 7))
+  (setq tetris-pos-x (/ (- tetris-width (tetris-shape-width)) 2))
+  (setq tetris-pos-y 0)
+  (if (tetris-test-shape)
+      (tetris-end-game)
+    (tetris-draw-shape)
+    (tetris-draw-next-shape)
+    (tetris-update-score)))
     
-	C-n (**n**ext-line)
-	C-p (**p**revious-line)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-	C-a (beginning-of-line, **a**head of line)
-	C-e (**e**nd-of-line)
+첫번째, 가장 세밀한 커서 이동은 **글자(char)** 단위의 이동인데, 앞으로 한 글자
+\f{forward-char}, 뒤로 한 글자 \f{backward-char} 이동하는 함수들로 `C-`에 바인딩
+되어 있다.
 
-	M-a (backward-sentence, **a**head of sentence)
-	M-e (forward-sentence, **e**nd of sentence)
+    C-f: forward-char
+    C-b: backward-char
 
-        M-{ (backward-paragraph)
-        M-} (forward-paragraph)
-	
-        C-M-a (beginning-of-defun, **a**head of defun)
-        C-M-e (end-of-defun, **e**nd of defun)
+두번째, **단어(word)** 단위의 커서 이동으로, \f{forward-word}와
+\f{backward-word}의 함수로 `M-`에 바인딩 되어 있다.
 
-        C-M-d (down-list)
-	C-M-u (backward-up-list)
-	
-        C-v (scroll-up)
-        M-v (scroll-down)
+    M-f: forward-word
+    M-b: backword-word
 
-        C-M-v (scroll-other-window-up)
-        C-M-S-v (scroll-other-window-down)
+세번째, **표현식(s-exp: symbolic expression)** 단위의 커서 이동으로, 첫번째
+두번째 커서이동과 유사하게 \f{forward-sexp}, \f{backward-sexp}의 함수들로
+`C-M-`에 바인딩 되어 있다.
+
+    C-M-f: forward-sexp
+    C-M-b: bacword-sexp
+    
+현재 위치에서 앞(**f**orward), 뒤(**b**ackward)로 움직이는 단위는 `C-` (글자) <
+`M-` (단어) < `C-M-` (sexp)의 단위로 각각 `f`(앞), `b`(뒤)의 키로 바인딩 되어
+있다. s-exp (sexp)의 단위는 다소 생소한 개념인데, Lisp에서 "표현식 하나의
+단위"라고 생각할 수 있다. 예를 들면 아래와 같다.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.cl}
+(setq tetris-next-shape (random 7))
+;     o                  : current cursor
+;     >o                 : C-f
+;     ----->o            : M-f
+;     ---------------->o : C-M-f
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+현재 커서의 위치 "t"에서 "tetris"는 하나의 단어(word) 단위고,
+"tetris-next-shape"은 sexp의 단위이다. 왜냐하면 현재 위치에서 하나의 표현식이
+"-"을 포함한 "tetris-next-shape"이기 때문이다.
+
+이번에는 앞에서 알아본 단위들 보다 조금 큰 범위를 갖는 라인(line),
+문장(sentence), 함수(defun) 단위를 알아본다.
+
+첫번째, **라인(line)**단위의 움직임으로 \f{beginning-of-line}과 \f{end-of-line}
+함수 들로 `C-`에 바인딩 되어 있다. 이미 `C-b`는 **b**ackward에 바인딩 되어
+있으므로, beginning = **a**head로 (또는 첫 알파벳, a) 기억하면 쉽게 기억할 수 있겠다.
+
+	C-a: beginning-of-line (ahead of line)
+	C-e: end-of-line
+
+두번째, **문장(sentence)**단위의 움직임은 \f{backward-sentence}와
+\f{forward-sentence}의 함수로 `M-`로 바인딩되어 있다.
+
+	M-a: backward-sentence (ahead of sentence)
+	M-e: forward-sentence
+
+세번째, **함수(defun)**단위로, 역시 Lisp에서 정의하는 함수 범위의 처음과 끝으로
+이동하는 \f{beginning-of-defun}과 \f{end-of-defun}함수들로 `C-M-`에 바인딩 되어
+있다.
+
+    C-M-a: beginning-of-defun (ahead of defun)
+    C-M-e: end-of-defun
+
+현재위치에서 처음(**a**head)과 끝(**e**nd)으로 움직이며 `C-` (라인) < `M-`
+(문장) < `C-M-` (함수)의 단위가 있고, 각각 "a"(처음)과 "e"(끝)에 바인딩 되어
+있다. 참고로 `C-M-a/e`의 함수(defun) 단위의 움직임은 언어마다 다른 함수 정의와
+범위를 가지고 있으므로, 해당 언어의 모드에서 특화된 함수, 예를 들면 C언어의
+`c-beginning-of-defun`과 같은 함수로 바인딩 시켜 이맥스의 "관행"을 지켜
+사용자가 자연스럽게 사용할 수 있도록 도와준다.
+
+    C-n: next-line
+    C-p: previous-line
+
+    M-{: backward-paragraph
+    M-}: forward-paragraph
+
+    C-M-n: forward-list
+	C-M-p: backward-list
+
+    C-v: scroll-up
+    M-v: scroll-down
+
+    C-M-v: scroll-other-window-up
+    C-M-S-v: scroll-other-window-down
 	
 - jumping
 
