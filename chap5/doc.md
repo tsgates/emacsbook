@@ -52,7 +52,7 @@ XXX.
 있다.
 
 ![\n{img} \v{global map}](\s{snap -o emacs-help-binding.png
-  -c C-h b C-x 0 C-s global})
+  -c C-h b C-x 0 C-s "\"global\""})
 
 \k{C-h k}의 입력된 키에 대한 함수를 찾는 것과는 달리, 지금 알아본 \k{C-h b}는
 사용자가 현재 버퍼에 대하여 입력할 수 있는 모든 키 입력와 해당 하는 함수를
