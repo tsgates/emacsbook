@@ -146,6 +146,9 @@ if __name__ == '__main__':
     cmdargs = opts.args.split()
     if opts.size:
         cmdargs.append("--geometry=" + opts.size + "+0+0")
+    else:
+        cmdargs.append("--geometry=80x25+0+0")
+        
     if opts.clean:
         cmdargs.append("--no-init")
         

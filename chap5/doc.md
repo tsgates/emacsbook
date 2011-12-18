@@ -68,6 +68,10 @@
 
 # 모드 (mode)
 
+![\n{img} Major/Minor Modes](\s{snap -o emacs-modes.png -s 80x15
+  -c -a /usr/include/stdio.h C-x 1 C-s "\"STDIO\"" 
+  C-g M-x "\"flyspell-prog-mode\"" RET})
+
 일반적으로 우리가 특정 파일을 이맥스에서 열었을때 이맥스는 열린 파일에 대한
 버퍼를 생성하하고, "버퍼"의 이름에서 알 수 있듯이 사용자는 파일을 직접 수정하는
 것 대신 버퍼를 수정하게 된다. 이때 현재 작업하는 버퍼(파일)에 대하여 특별히
