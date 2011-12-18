@@ -144,3 +144,53 @@ hook
                                        filename))
                 (setq indent-tabs-mode t)
                 (c-set-style "linux-tabs-only")))))
+                
+                
+
+
+- jumping
+
+    C-u C-SPC 
+    M-g g (goto-line)
+    M-g n (next-error)
+    M-g p (previous-error)
+    
+- search
+
+    C-s isearch-forward
+    C-r isearch-backward
+
+    C-M-s isearch-forward-regexp
+    C-M-r isearch-backward-regexp
+    
+- editing
+
+    DEL delete-backward-char
+    M-DEL backward-kill-word
+    C-DEL delete-kill-word
+    C-d delete-char
+    M-d kill-word
+    M-k kill-line
+    C-M-k kill-sexp
+    M-z zap-to-char
+    C-t 
+    M-t 
+    C-M-t
+    C-o
+    C-x C-o
+    C-j
+    C-space
+
+- windowing
+
+    C-x 1
+    C-x 2
+    C-x 3
+    C-x 5
+    C-M-v: scroll-other-window-up
+    C-M-S-v: scroll-other-window-down
+    
+- register
+
+=> end with how to modify global-map and permanently change it
+                

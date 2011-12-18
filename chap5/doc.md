@@ -1,19 +1,24 @@
 %
 % Taesoo Kim
 %
-% title: Emacs 시작하기
+% title: 키맵과 커서이동
 %
-% abstract: 
-% abstract: 
+% abstract: 이맥스에서 어떻게 키입력을 처리하며 어떠한 Lisp의 구조를 사용하는지
+% abstract: 이해하고, 전역적으로 사용되는 키입력과 함수 중 특별히 커서의 이동과
+% abstract: 관련된 함수들을 살펴본다.
 %
 
-XXX.
+이번 장에서는 이맥스에서 사용자의 키입력을 어떻게 처리하는지, 또 어떠한 Lisp의
+데이터구조로 이를 표현하는지 이해해보고, 더불어 이맥스의 가장 기본적인 편집기능
+인 커서이동에 관한 함수들을 하나하나 살펴보도록 한다.
 
-# 키맵 (keymap)
+# 키맵 (Keymap)
 
 사용자가 키를 입력하면 이맥스는 키입력에 바인드된 함수를 찾아 호출 한다. 키입력과
-바인드된 해당 함수의 정보를 담고있는 변수를 맵(map)이라고 부른다. 맵은 아래와
-같이 키와 값을 짝으로 갖는 Associate List(ALIST)의 구조로 표현된다.
+바인드된 해당 함수의 정보를 담고있는 변수를 이맥스에서 맵(map)이라고 부른다. 맵은
+아래와 같이 키와 값을 짝으로 갖는 Associate List(Alist)의 구조로
+표현된다. Alist는 리스트의 특별한 형태로, 키와 해당 값이 리스트의 하나의 원소로
+저장된다.
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.cl}
 ;; global-map
@@ -22,9 +27,11 @@ XXX.
       ...)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-즉 맵의 한원소는 \f{car}의 키값 \f{cdr}의 해당 함수의 심볼로 이루어진다. 또한
-여러개의 맵이 체인으로 아래와 같이 엮어 있고, 키를 입력하면 왼쪽으로 부터
-순차적으로 해당 함수를 찾게 된다.
+즉 맵의 한원소는 "C-a"와 같은 입력키, \f{move-beginning-of-line}와 같은 해당
+함수의 심볼로 이루어진다. 이맥스는 여러개의 맵을 가지고 있고, 이들 체인으로 엮어
+관리한다. 사용자가 키를 입력하면 위의 맵 부터 아래로, 순차적으로 해당 함수를 찾게
+되며 가장 먼저 찾은 키의 해당함수를 호출 한다. 체인으로 엮인 구조를 살펴보면
+아래와 같다.
 
              +---------- 사용자의 키 입력
              |
@@ -41,14 +48,14 @@ XXX.
     | global-map      | (("C-a" . `move-beginning-of-line) ...)
     +-----------------+
 
-왼쪽의 3개의 맵들, \v{local-map}, \v{minor-mode-map}, \v{major-mode-map}은 해당
-버퍼 안에서의 키입력에 영향을 미치는 맵이고, \v{global-map}은 global한 이맥스의
-키입력에 영향을 미치는 맵이다. 
+위쪽 부터 3개의 맵들, \v{local-map}, \v{minor-mode-map}, \v{major-mode-map}은
+현재 버퍼 안에서의 키입력에 영향을 미치는 맵이고, \v{global-map}은 전역적인
+이맥스의 키입력에 영향을 미치는 맵이다.
 
 이맥스에서 우리의 키입력이 현재 버퍼에서 어떤 맵에 의해서 어떠한 함수로
 해석되는지 알아 볼 수 있는데, \k{C-h b:바인딩 도움말} (**h**elp **b**inding)을
-실행시켜보자. 입력한 키에 대해서 위에서 부터 차례로 해당하는 함수를 찾게되며 그
-중 우리가 특별하게 관심있는 \t{global-map}을 찾아 보면, 아래와 같은 화면을 볼 수
+입력해보자. 입력한 키에 대해서 위에서 부터 차례로 해당하는 함수를 찾게되며 그 중
+우리가 특별하게 관심있는 \t{global-map}을 찾아 보면, 아래와 같은 화면을 볼 수
 있다.
 
 ![\n{img} \v{global map}](\s{snap -o emacs-help-binding.png
@@ -56,7 +63,8 @@ XXX.
 
 \k{C-h k}의 입력된 키에 대한 함수를 찾는 것과는 달리, 지금 알아본 \k{C-h b}는
 사용자가 현재 버퍼에 대하여 입력할 수 있는 모든 키 입력와 해당 하는 함수를
-한눈에 볼 수 있어 유용하게 쓰인다.
+한눈에 볼 수 있다. 즉 사용자가 현재 수정하고 있는 버퍼에 어떠한 특별한 기능들이
+제공되고 있으며, 어떠한 함수들이 바인딩 되어 있는지 하나하나 살펴볼 수 있다.
 
 # 모드 (mode)
 
@@ -99,9 +107,7 @@ t:튜토리얼}에서 살펴본 대부분의 에디팅 기능들 역시 \v{globa
 일관적인 철학을 엿볼 수 있기도 하다. 이번 절에서 간단한 커서 이동법을 살펴보도록
 하자.
 
-\t{show where the current curosor moves after pressing each key}
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.cl}
-
+\t{show where the current curosor moves after pressing each key with below codes:
 (defun tetris-new-shape ()
   (setq tetris-shape tetris-next-shape)
   (setq tetris-rot 0)
@@ -112,9 +118,7 @@ t:튜토리얼}에서 살펴본 대부분의 에디팅 기능들 역시 \v{globa
       (tetris-end-game)
     (tetris-draw-shape)
     (tetris-draw-next-shape)
-    (tetris-update-score)))
-    
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    (tetris-update-score)))}
 
 첫번째, 가장 세밀한 커서 이동은 **글자(char)** 단위의 이동인데, 앞으로 한 글자
 \f{forward-char}, 뒤로 한 글자 \f{backward-char} 이동하는 함수들로 `C-`에 바인딩
@@ -135,7 +139,14 @@ t:튜토리얼}에서 살펴본 대부분의 에디팅 기능들 역시 \v{globa
 
     C-M-f: forward-sexp
     C-M-b: bacword-sexp
-    
+
+네번째, **문단(paragraph)** 단위의 커서 이동은 \f{forward-paragraph}과
+\f{backward-paragraph}으로 `M-}` (C언어에서 함수의 끝을 나타내는 닫힌 괄호로),
+`M-{` (C언어에서 함수의 시작을 나타내는 열린 괄호)로 각각 바인딩 되어 있다.
+
+    M-}: forward-paragraph
+    M-{: backward-paragraph
+
 현재 위치에서 앞(**f**orward), 뒤(**b**ackward)로 움직이는 단위는 `C-` (글자) <
 `M-` (단어) < `C-M-` (sexp)의 단위로 각각 `f`(앞), `b`(뒤)의 키로 바인딩 되어
 있다. s-exp (sexp)의 단위는 다소 생소한 개념인데, Lisp에서 "표현식 하나의
@@ -156,26 +167,33 @@ t:튜토리얼}에서 살펴본 대부분의 에디팅 기능들 역시 \v{globa
 이번에는 앞에서 알아본 단위들 보다 조금 큰 범위를 갖는 라인(line),
 문장(sentence), 함수(defun) 단위의 시작과 끝으로 이동하는 방법들을 알아본다.
 
-첫번째, **라인(line)**단위의 움직임으로 \f{beginning-of-line}과 \f{end-of-line}
-함수 들로 `C-`에 바인딩 되어 있다. 이미 `C-b`는 **b**ackward에 바인딩 되어
-있으므로, beginning = **a**head로 (또는 첫 알파벳, a) 기억하면 쉽게 기억할 수 있겠다.
+첫번째, **라인(line)**단위의 커서 이동은 \f{beginning-of-line}과 \f{end-of-line}
+함수들로 `C-`에 바인딩 되어 있다. 이미 `C-b`는 **b**ackward에 바인딩 되어
+있으므로, beginning = **a**head로 (또는 첫 알파벳, a) 기억하면 쉽게 기억할 수
+있겠다.
 
 	C-a: beginning-of-line (ahead of line)
 	C-e: end-of-line
 
-두번째, **문장(sentence)**단위의 움직임은 \f{backward-sentence}와
-\f{forward-sentence}의 함수로 `M-`로 바인딩되어 있다.
+두번째, **문장(sentence)**단위의 커서 이동은 \f{backward-sentence}와
+\f{forward-sentence}의 함수들로 `M-`로 바인딩되어 있다.
 
 	M-a: backward-sentence (ahead of sentence)
 	M-e: forward-sentence
 
-세번째, **함수(defun)**단위로, 역시 Lisp에서 정의하는 함수 범위의 처음과 끝으로
-이동하는 \f{beginning-of-defun}과 \f{end-of-defun}함수들로 `C-M-`에 바인딩 되어
-있다.
+세번째, **함수(defun)**단위의 커서 이동은, Lisp에서 정의하는 함수 범위의 처음과
+끝으로 이동하는 \f{beginning-of-defun}과 \f{end-of-defun}함수들로 `C-M-`에 바인딩
+되어 있다.
 
     C-M-a: beginning-of-defun (ahead of defun)
     C-M-e: end-of-defun
 
+네번째, **버퍼(buffer)**단위의 커서 이동은 "<" 와 ">"의 키로 `M-`에 바인딩
+되어, 버퍼의 시작과 끝으로 커서를 이동시킨다.
+    
+    M-<: beginning-of-buffer
+    M->: end-of-buffer
+ 
 현재위치에서 처음(**a**head)과 끝(**e**nd)으로 움직이며 `C-` (라인) < `M-`
 (문장) < `C-M-` (함수)의 단위가 있고, 각각 "a"(처음)과 "e"(끝)에 바인딩 되어
 있다. 참고로 `C-M-a/e`의 함수(defun) 단위의 움직임은 언어마다 다른 함수 정의와
@@ -183,24 +201,15 @@ t:튜토리얼}에서 살펴본 대부분의 에디팅 기능들 역시 \v{globa
 `c-beginning-of-defun`과 같은 함수로 바인딩 시켜 이맥스의 "관행"을 지켜
 사용자가 자연스럽게 사용할 수 있도록 도와준다. 
 
-다음으로 알아볼 이동 단위는 라인(line), 문단(paragraph), 화면(page) 단위의
-움직임이다. 
+다음으로 알아볼 단위는 다음/이전 줄(line), 화면(page)으로 이동하는 함수들이다.
 
-첫번째, 다음(**n**ext)/이전(**p**revious) 라인으로 이동하는 함수는
+첫번째, 다음(**n**ext)/이전(**p**revious) **줄(line)**로 이동하는 함수는
 \f{next-line}과 \f{previous-line}으로 `C-`에 바인딩 되어 있다.
 
     C-n: next-line
     C-p: previous-line
 
-두번째, 다음(forward)/이전(backward) 문단(paragraph)으로 이동하는 함수는,
-\f{forward-paragraph}과 \f{backward-paragraph}으로 `M-}` (C언어에서 함수의 끝을
-나타내는 닫힌 괄호로), `M-{` (C언어에서 함수의 시작을 나타내는 열린 괄호)로 각각
-바인딩 되어 있다.
-
-    M-}: forward-paragraph
-    M-{: backward-paragraph
-
-세번째, 다음(down)/이전(up)의 화면(page)으로 이동하는 함수는 \f{scroll-up}과
+두번째, 다음(down)/이전(up)의 **화면(page)**으로 이동하는 함수는 \f{scroll-up}과
 \f{scroll-down}으로 각각 `C-`와 `M-`의 대칭의 키에 `v`(아래방향의 화살표) 키로
 바인딩 되어 있다.
 
@@ -222,7 +231,7 @@ t:튜토리얼}에서 살펴본 대부분의 에디팅 기능들 역시 \v{globa
 한 글자 앞으로 이동하는 함수 \f{forward-char}는 \k{C-f}와 \k{<right>}(오른쪽
 화살표)로 바인딩 되어 있다. 눈에 띄는 점은 함수가 `N`의 인자를
 선택적(&optional)으로 받는데, 위의 설명에 따르면 `N`글자만큼 앞으로 이동하며
-음수를 받으면 뒤로 이동한다고 한다. 
+음수를 받으면 뒤로 이동한다고 한다.
 
 맵(map)의 구조를 살펴보면, 이맥스는 주어진 키에 대한 함수를 호출 한다. 그러면
 어떻게 \f{forward-char}함수를 인자를 가지고 호출 할 수 있을까?
@@ -247,45 +256,24 @@ t:튜토리얼}에서 살펴본 대부분의 에디팅 기능들 역시 \v{globa
 입력되며, \f{C-u 80}이후 `#`를 입력하면 "#"가 80개 입력된다. 이를 통해 단순히
 반복되는 입력작업을 피할 수 있다.
 
-    C-M-v: scroll-other-window-up
-    C-M-S-v: scroll-other-window-down
-	
-- jumping
+# 정리
 
-    C-u C-SPC 
-    M-< (beginning-of-buffer)
-    M-> (end-of-buffer)
-    M-g g (goto-line)
-    M-g n (next-error)
-    M-g p (previous-error)
-    C-M-v
-    C-M-S-v
-    
-- search
+이번장에서는 어떻게 이맥스에서 키입력을 관리하는지, 또한 저역 키맵(global
+keymap)에 정의된 커서 이동하는 법들을 알아 보았다. 
 
-    C-s isearch-forward
-    C-r isearch-backward
+- `C-f/b`: forward/backward-char
+- `M-f/b`: forward/backword-word
+- `C-M-f/b`: forward/backword-sexp
+- `M-}/{`: forward/backword-paragraph
 
-    C-M-s isearch-forward-regexp
-    C-M-r isearch-backward-regexp
-    
-- editing
+- `C-a/e`: beginning/end-of-line
+- `M-a/e`: backward/forward-sentence
+- `C-M-a/e`: beginning/end-of-defun
+- `M-</>`: beginning/end-of-buffer
 
-    DEL delete-backward-char
-    M-DEL backward-kill-word
-    C-DEL delete-kill-word
-    C-d delete-char
-    M-d kill-word
-    M-k kill-line
-    C-M-k kill-sexp
-    M-z zap-to-char
-    C-t 
-    M-t 
-    C-M-t
-    C-o
-    C-x C-o
-    C-j
-    
-- register
+- `C-n/p`: next/previous-line
+- `C/M-v`: scroll-up/down
 
-=> end with how to modify global-map and permanently change it
+위의 관련된 함수와 키는 필자가 임의적으로 기억하기 쉽도록 나눈것으로 이맥스의
+개발의도와는 다를 수 있다. 다음 장에서는 이맥스의 시작 과정과 함께 편집, 검색,
+윈도우 등의 기능을 알아보도록 할것이다.
