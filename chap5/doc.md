@@ -154,7 +154,7 @@ t:튜토리얼}에서 살펴본 대부분의 에디팅 기능들 역시 \v{globa
 "-"을 포함한 "tetris-next-shape"이기 때문이다.
 
 이번에는 앞에서 알아본 단위들 보다 조금 큰 범위를 갖는 라인(line),
-문장(sentence), 함수(defun) 단위를 알아본다.
+문장(sentence), 함수(defun) 단위의 시작과 끝으로 이동하는 방법들을 알아본다.
 
 첫번째, **라인(line)**단위의 움직임으로 \f{beginning-of-line}과 \f{end-of-line}
 함수 들로 `C-`에 바인딩 되어 있다. 이미 `C-b`는 **b**ackward에 바인딩 되어
@@ -181,19 +181,71 @@ t:튜토리얼}에서 살펴본 대부분의 에디팅 기능들 역시 \v{globa
 있다. 참고로 `C-M-a/e`의 함수(defun) 단위의 움직임은 언어마다 다른 함수 정의와
 범위를 가지고 있으므로, 해당 언어의 모드에서 특화된 함수, 예를 들면 C언어의
 `c-beginning-of-defun`과 같은 함수로 바인딩 시켜 이맥스의 "관행"을 지켜
-사용자가 자연스럽게 사용할 수 있도록 도와준다.
+사용자가 자연스럽게 사용할 수 있도록 도와준다. 
+
+다음으로 알아볼 이동 단위는 라인(line), 문단(paragraph), 화면(page) 단위의
+움직임이다. 
+
+첫번째, 다음(**n**ext)/이전(**p**revious) 라인으로 이동하는 함수는
+\f{next-line}과 \f{previous-line}으로 `C-`에 바인딩 되어 있다.
 
     C-n: next-line
     C-p: previous-line
 
-    M-{: backward-paragraph
-    M-}: forward-paragraph
+두번째, 다음(forward)/이전(backward) 문단(paragraph)으로 이동하는 함수는,
+\f{forward-paragraph}과 \f{backward-paragraph}으로 `M-}` (C언어에서 함수의 끝을
+나타내는 닫힌 괄호로), `M-{` (C언어에서 함수의 시작을 나타내는 열린 괄호)로 각각
+바인딩 되어 있다.
 
-    C-M-n: forward-list
-	C-M-p: backward-list
+    M-}: forward-paragraph
+    M-{: backward-paragraph
+
+세번째, 다음(down)/이전(up)의 화면(page)으로 이동하는 함수는 \f{scroll-up}과
+\f{scroll-down}으로 각각 `C-`와 `M-`의 대칭의 키에 `v`(아래방향의 화살표) 키로
+바인딩 되어 있다.
 
     C-v: scroll-up
     M-v: scroll-down
+
+이번 절에서 특정 단위들의 앞/뒤, 시작/끝, 다음/이전으로 이동하는 법들을 알아
+보았는데, 이 중 가장 처음 알아본 함수, \f{forward-char} 정의를 한번 찾아 볼까?
+
+    C-f runs the command forward-char, which is an interactive built-in function in
+    `C source code'.
+    
+    It is bound to C-f, <right>.
+    
+    (forward-char &optional N)
+    
+    Move point right N characters (left if N is negative).
+
+한 글자 앞으로 이동하는 함수 \f{forward-char}는 \k{C-f}와 \k{<right>}(오른쪽
+화살표)로 바인딩 되어 있다. 눈에 띄는 점은 함수가 `N`의 인자를
+선택적(&optional)으로 받는데, 위의 설명에 따르면 `N`글자만큼 앞으로 이동하며
+음수를 받으면 뒤로 이동한다고 한다. 
+
+맵(map)의 구조를 살펴보면, 이맥스는 주어진 키에 대한 함수를 호출 한다. 그러면
+어떻게 \f{forward-char}함수를 인자를 가지고 호출 할 수 있을까?
+
+# 범용 인자 (Universal Argument)
+
+우리가 알아본 커서를 이동시키는 함수들은 하나의 인자를 선택적으로 받는데,
+일반적으로 함수에 해당하는 이동단위를 "몇번" 반복하라는 의미를 갖는다. 예를 들면
+앞서 알아본 \f{forward-char} 함수는 "몇 글자" 앞으로 가라 \f{next-line}은 "몇
+줄" 앞으로 가라라는 인자를 선택적으로 받는다.
+
+\k{C-f}에 바인딩된 \f{forward-char}의 함수에 5(다섯 글자 앞으로 가라)를 인자로
+주기 위해서는, \k{C-u 5} 이후 \k{C-f}를 입력하면된다. \k{C-u}를 범용
+인자(**u**niversal arguement)라고 부른다. 예를 들면 10줄 아래로 이동하기
+위해서는 \k{C-u 10} 이후 \k{C-n}를 입력하면된다.
+
+특별히 \k{C-u}이후 아무 숫자도 입력하지 않으면 가장 일반적인 숫자라고 여겨지는
+정수 4를 앞으로 호출될 함수의 인자로 넘긴다.
+
+모든 알파벳에 바인딩된 함수 \f{self-insert-command}를 기억하는가? 이 함수 역시
+범용 인자를 추가적으로 받는데, \f{C-u} 이후 `a`를 입력하면 알파벳 "a"가 4개
+입력되며, \f{C-u 80}이후 `#`를 입력하면 "#"가 80개 입력된다. 이를 통해 단순히
+반복되는 입력작업을 피할 수 있다.
 
     C-M-v: scroll-other-window-up
     C-M-S-v: scroll-other-window-down
