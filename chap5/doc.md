@@ -283,12 +283,10 @@ keymap)에 정의된 커서 이동하는 법들을 알아 보았다.
 - `M-f/b`: forward/backword-word
 - `C-M-f/b`: forward/backword-sexp
 - `M-}/{`: forward/backword-paragraph
-
 - `C-a/e`: beginning/end-of-line
 - `M-a/e`: backward/forward-sentence
 - `C-M-a/e`: beginning/end-of-defun
 - `M-</>`: beginning/end-of-buffer
-
 - `C-n/p`: next/previous-line
 - `C/M-v`: scroll-up/down
 
