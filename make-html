@@ -51,7 +51,7 @@ figures do
       "title" => "",
       "abstract" => "",
     }
-    
+
     html = pipe("pandoc -f markdown -t json \
                     | runhaskell #$here/script/pygments.hs \
                     | pandoc -s -p --no-wrap -f json -t html \

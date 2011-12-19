@@ -55,7 +55,7 @@
 이맥스에서 우리의 키입력이 현재 버퍼에서 어떤 맵에 의해서 어떠한 함수로
 해석되는지 알아 볼 수 있는데, \k{C-h b:바인딩 도움말} (**h**elp **b**inding)을
 입력해보자. 입력한 키에 대해서 위에서 부터 차례로 해당하는 함수를 찾게되며 그 중
-우리가 특별하게 관심있는 \t{global-map}을 찾아 보면, 아래와 같은 화면을 볼 수
+우리가 특별하게 관심있는 \v{global-map}을 찾아 보면, 아래와 같은 화면을 볼 수
 있다.
 
 ![\n{img} \v{global map}](\s{snap -o emacs-help-binding.png
@@ -279,16 +279,26 @@ t:튜토리얼}에서 살펴본 대부분의 에디팅 기능들 역시 \v{globa
 이번장에서는 어떻게 이맥스에서 키입력을 관리하는지, 또한 전역 키맵(global
 keymap)에 정의된 커서 이동하는 법들을 알아 보았다.
 
+글자, 단어, 표현식, 문단의 앞/뒤로 이동하는 함수들:
+
 - `C-f/b`: forward/backward-char
 - `M-f/b`: forward/backword-word
 - `C-M-f/b`: forward/backword-sexp
 - `M-}/{`: forward/backword-paragraph
+
+줄, 문장, 함수, 버퍼의 시작/끝으로 이동하는 함수들:
+
 - `C-a/e`: beginning/end-of-line
 - `M-a/e`: backward/forward-sentence
 - `C-M-a/e`: beginning/end-of-defun
 - `M-</>`: beginning/end-of-buffer
+
+다음/이전 줄, 화면으로 이동하는 함수들:
+
 - `C-n/p`: next/previous-line
 - `C/M-v`: scroll-up/down
+
+이들 함수는 범용인자를 받으며, `C-u N`로 N번 반복 할 수 있다.
 
 참고로 위의 관련된 함수와 키는 필자가 임의적으로 기억하기 쉽도록 나눈것으로
 이맥스의 개발의도와는 다를 수 있다. 다음 장에서는 이맥스의 시작 과정과 함께
