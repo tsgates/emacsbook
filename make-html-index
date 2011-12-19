@@ -49,8 +49,6 @@ items = ARGV.sort.map do |path|
   info
 end
 
-print items
-
 # generate rss feed
 print "\tCreating rss.xml ... " if $DEBUG
 rssfeed = RSS::Maker.make("2.0") do |m|
