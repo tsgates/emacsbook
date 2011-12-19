@@ -2,16 +2,17 @@
 # -*- coding: utf-8 -*-
 
 load 'make-common'
+require 'rss/maker'
 
 def usage
-	puts <<USAGE
+  puts <<USAGE
 Usage:
   make-html-index
 
 Options:
   -d, --debug   : debuging
 USAGE
-	exit
+  exit
 end
 
 # re-generate all if nothing
@@ -22,51 +23,90 @@ if ARGV.empty?
   end
 end
 
-figures do
-  config = $config['default'].merge($config["ko"]) rescue $config['default']
+# extract info
+items = ARGV.sort.map do |path|
+  chap = /chap(\d+)/.match(path)[1]
+  date = html_mtime(chap)
+  link = path["#$here/html/".length..-1]
   
-  print "\tCreating index.html ... " if $DEBUG
-  File.open("#$here/html/index.html", 'w') do |file|
-    html = "<ul>\n"
-    ARGV.sort.map do |path|
-      chap = /chap(\d+)/.match(path)[1]
-      date = html_mtime(chap)
-      link = path["#$here/html/".length..-1]
-      
-      info = {
-        "title" => "",
-        "abstract" => "",
-      }
-      
-      # extract info
-      markdown = File.read("#$here/chap#{chap}/doc.markdown")
-      info.each_key do |key|
-        blob = markdown.scan(/^% #{key}:(.*)/).join
-        blob.gsub("\n", "")
-        info[key] = blob
-      end
+  info = {
+    "title" => "",
+    "abstract" => "",
+  }
 
-      html += <<DONE
+  # extract info
+  markdown = File.read("#$here/chap#{chap}/doc.markdown")
+  info.each_key do |key|
+    blob = markdown.scan(/^% #{key}:(.*)/).join
+    blob.gsub("\n", "")
+    info[key] = blob
+  end
+
+  info["chap"] = chap
+  info["date"] = date
+  info["link"] = link
+  
+  info
+end
+
+print items
+
+# generate rss feed
+print "\tCreating rss.xml ... " if $DEBUG
+rssfeed = RSS::Maker.make("2.0") do |m|
+  
+  # rss info
+  m.channel.title = "Emacsbook"
+  m.channel.link = "http://emacsbook.taesoo.org"
+  m.channel.description = "이맥스 이해하기"
+  m.items.do_sort = true # sort items by date
+
+  items.each do |info|
+    # create new rss item
+    i = m.items.new_item
+    i.title = "Chap ##{info["chap"]}. #{info["title"]}"
+    i.link = info["link"]
+    i.date = Time.parse(info["date"])
+    i.description = info["abstract"]
+  end
+end
+
+# flush rss
+File.open("#$here/html/rss.xml","w") do |f|
+  f.write(rssfeed)
+end
+print "done\n"
+
+# generate html index
+print "\tCreating index.html ... " if $DEBUG
+
+html = "<ul>\n"
+items.each do |info|
+  # create html item
+  html += <<DONE
 <li>
   <article class="post">
     <header>
       <h3>
-        <span class="hint">Chap ##{chap}</span>
-        #{date}
+        <span class="hint">Chap ##{info["chap"]}</span>
+        #{info["date"]}
       </h3>
       <h1>
-        <a href="#{link}">#{info["title"]}</a>
+        <a href="#{info["link"]}">#{info["title"]}</a>
       </h1>
      </header>
      <p>#{info["abstract"]}</p>
   </article>
 </li>
 DONE
-    end
-    html += "</ul>"
-    
+end
+html += "</ul>"
+
+# flush index.html
+File.open("#$here/html/index.html", 'w') do |file|
     template = $index_template.result(binding)
     file.write($base_template.result(binding))
-  end
-  puts "done" if $DEBUG
 end
+
+puts "done" if $DEBUG
+

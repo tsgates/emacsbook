@@ -8,6 +8,7 @@ chap*/*.markdown
 /latex/main.tex
 /latex/main.toc
 /html/chap*.html
+/html/rss.xml
 /html/index.html
 /.snap-dep
 /script/out.png
