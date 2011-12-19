@@ -6,7 +6,7 @@
 
 import Text.Pandoc
 import Text.Pandoc.Shared
-import Char(toLower)
+import Data.Char(toLower)
 import System.Process (readProcess)
 import System.IO.Unsafe
 
