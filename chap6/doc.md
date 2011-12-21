@@ -7,6 +7,16 @@
 % abstract: 
 %
 
+ - with a c example
+ - editing/searching
+ 
+ - modifying global-map (C-z -> undo or C-q -> kill-buffer)
+ - explain init process
+
+ => next chapter (tools, compile ...)
+ => windowing
+ => modifying local-map
+ 
 앞선 1장~4장에서는 이맥스을 이해하기 위한 가장 기초적인 Lisp의 개념을 알아
 보았다. C 언어를 이해했다고 해서 Linux 커널을 모두 이해했다고 할 수 없듯이,
 기본적인 Lisp의 특성을 이해했다고 해서 이맥스를 모두 이해했다고 할 수
