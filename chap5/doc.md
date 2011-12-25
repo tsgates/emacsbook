@@ -1,7 +1,7 @@
 %
 % Taesoo Kim
 %
-% title: 키맵과 커서이동
+% title: 키맵(Keymap)과 커서이동
 %
 % abstract: 이맥스에서 어떻게 키입력을 처리하며 어떠한 Lisp의 구조를 사용하는지
 % abstract: 이해하고, 전역적으로 사용되는 키입력과 함수 중 특별히 커서의 이동과
