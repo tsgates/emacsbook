@@ -25,7 +25,7 @@ end
 def html_pre_pandoc(string)
   replace(string) do
     # Inc one category depth
-    s /^\#/, '##'
+    s /^\# /, '## '
   end
 end
 
