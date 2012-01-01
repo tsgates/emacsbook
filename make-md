@@ -8,6 +8,7 @@ import re
 import os
 import sys
 import optparse
+import subprocess
 
 from collections import defaultdict
 
@@ -57,6 +58,17 @@ def num_binding(md, opt):
     print("error on parsing snapshot commands")
     return ""
 
+def sh(md, opt):
+    def __in_cwd(d, cmd):
+        old = os.getcwd()
+        os.chdir(d)
+        rtn = subprocess.check_output(cmd)
+        os.chdir(old)
+        return str(rtn, "utf8", "ignore")
+        
+    (d, _) = os.path.split(md)
+    return __in_cwd(d, opt.split())
+    
 def preprocess(md, marks, src, dumps=[]):
     dst = []
 
@@ -107,7 +119,8 @@ if __name__ == "__main__":
     # create marks
     marks = {k[0]:v for k, v in globals().items() \
                  if k.endswith("binding")}
-
+    marks["!"] = sh
+    
     # create markdown files
     for f in args:
         ifn = f
