@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ROOT=`dirname $0`
-PORT=":11"
+PORT=":15"
 
 kill_vnc() {
     vncserver -kill $PORT &> /dev/null
