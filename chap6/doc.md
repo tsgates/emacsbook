@@ -13,16 +13,16 @@
 
 # 파일 열기
 
-앞으로 같이 작성해볼 프로그램은, 시져 암호화(ceaser cipher) 프로그램으로 암호화할
-텍스트를 인자로 받아, 암호화한 텍스트를 출력해 준다. 먼저 C언어로 프로그래밍
-해보자. 이맥스를 실행하고, 파일을 열기위해 \k{C-x C-f: 파일 열기} 을 입력하여
-\f{find-file}을 실행하자.
+앞으로 같이 작성해볼 프로그램은 시져 암호화(caeser cipher) 알고리즘으로 암호화할
+텍스트를 인자로 받아 암호화한 텍스트를 출력한다. 먼저 가장 일반적으로 알려진
+C언어로 프로그래밍 해보자. 이맥스를 실행하고, 파일을 열기위해 \k{C-x C-f:
+파일 열기}을 입력하여 \f{find-file}을 실행하자.
 
 ![\n{img} 파일 열기](\s{snap -o emacs-find-file.png -s 80x10 -c
-C-x C-f TAB TAB C-x o C-x 0})
+    C-x C-f TAB TAB C-x o C-x 0})
 
-미니버퍼에 나타난 프롬프트가 보이는가? 미니버퍼에서 (관행적으로) 3가지 기능을 제공하는
-데, 각각을 나열하면 아래와 같다.
+미니버퍼에 나타난 프롬프트가 보이는가? 미니버퍼에서 3가지 기능을 제공하는데,
+각각을 나열하면 아래와 같다.
 
 - \k{M-n: next-history-element}: 다음 입력 히스로리
 - \k{M-p: previous-history-element}: 이전 입력 히스토리
@@ -32,9 +32,57 @@ C-x C-f TAB TAB C-x o C-x 0})
 \*Completions\* 버퍼에서 확인해 볼 수 있고, 부분적인 파일이름 입력후 자동
 완성됨을 확인해 볼 수 있다.
 
-자 정말로 파일을 열어 볼까? 현재 폴더에 파일을 만들기 위해 "enc.c"을 입력해보자.
+또한 이전에 입력했던 히스토리를 \k{M-n}(**n**ext)와 \k{M-p}(**p**revious)의
+키입력으로 찾아 볼 수 있다. 이맥스에서 사용자의 입력은 \f{completing-read}를
+기본적으로 사용하여 구현되어 있으며, 함수의 설명을 찾아 보면 아래와 같다.
+
+    completing-read is a built-in function in `C source code'.
+    
+    (completing-read PROMPT COLLECTION &optional PREDICATE REQUIRE-MATCH
+    INITIAL-INPUT HIST DEF INHERIT-INPUT-METHOD)
+    ....
+
+몇몇 인자들을 사용자 입장에서 살펴보면, 사용자는 `INITIAL-INPUT`이 기본적으로
+입력되어 있는 입력을 `PROMPT`를 보게되고, `TAB`으로 자동완성을 하려고하면
+`COLLECTION`에 있는 인자를 찾아 자동완성해준다. 또한 이전에 입력된 히스토리는
+`HIST`에 기록되어 있으며 \k{M-n}과 \k{M-p}로 찾아 입력할 수 있다. \f{find-file}의
+입장에서 간략히 살펴보면,
+
+PROMT
+:    "Find File" 프롬프트
+INITIAL-INPUT
+:    현재 디렉토리
+COLLECTION
+:    현재 디렉토리에 있는 파일들
+HIST
+:    \v{file-name-history} 변수로 사용자가 열어본 파일들을 기록
+
+사용자의 입력은 항상 이와 같은 방법으로 이루어 지지만, 파일을 읽는다거나
+디렉토리를 읽는것 같은 일반적인 일들은, \f{read-file-name}과
+\f{read-directory-name}과 같은 특화된 함수로 더욱 쉽게 호출이 가능하다. 
+
+자 만약 특정 파일이나, 특정 패턴을 버전컨트롤 시스템에서 제외하고 싶다고하면,
+이를 입력받기위해서 아래와 같은 코드를 작성할 수 있다. 기본적으로 자주 입력되는
+패턴들은 `COLLECTION`인자로, 현제버퍼의 파일이름을 `INITIAL-INPUT`으로, 사용자가
+열어본 파일 히스트로를 `HIST`인자로 전달할 수 있겠다.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.scheme}
+(completing-read "Add to .gitignore >> "           ; prompt
+                 '(".o", "*~", ".#*") nil nil      ; list of completions
+                 (buffer-file-name)                ; initial input
+                 'file-name-history)               ; reuse file-name-history
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+이제 어떻게 사용자로부터 파일이름을 입력받았는지 이해했으니, 정말로 파일을
+입력하고 생성해볼까? \k{C-x C-f}를 입력하고 앞으로 작성할 파일이름 "enc.c"을
+입력해보자.
 
 # 버퍼 상태바
+
+![\n{img} 파일 열기](\s{snap -o emacs-find-file-enc.png -s 80x10 
+    -c -a ~/tmp/enc.c})
+
+파일을 열었다면 
 
 % basic info
 % major/minor
