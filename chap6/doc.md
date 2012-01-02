@@ -18,7 +18,7 @@
 해보자. 이맥스를 실행하고, 파일을 열기위해 \k{C-x C-f: 파일 열기} 을 입력하여
 \f{find-file}을 실행하자.
 
-![\n{img} 파일 열기](\s{snap -o emacs-find-file.png -c C-x f TAB})
+![\n{img} 파일 열기](\s{snap -o emacs-find-file.png -c C-x C-f TAB TAB})
 
 미니버퍼에 나타난 프롬프트가 보이는가? 미니버퍼에서 (관행적으로) 제공하는
 일반적인 3가지 기능은 아래와 같다.
