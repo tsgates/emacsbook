@@ -80,7 +80,7 @@ HIST
 # 버퍼 상태바
 
 ![\n{img} 파일 열기](\s{snap -o emacs-find-file-enc.png -s 80x10 
-    -c -a ~/tmp/enc.c})
+    -c -a ~/tmp/enc.c C-x 1})
 
 파일을 열었다면 
 
