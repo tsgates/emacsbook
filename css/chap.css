@@ -320,11 +320,17 @@ ol, ul {
   line-height: 28px;
   padding: 0;
   margin-top: 10px;
-  margin-bottom: 5px;
+  margin-bottom: 10px;
+}
+
+.figure img {
+    margin-top: 10px;
 }
 
 .figure p {
   text-align: center;
   font-weight: bold;
   font-style: italic;
+  margin-top: 3px;
+  margin-bottom: 10px;
 }
