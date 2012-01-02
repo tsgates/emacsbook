@@ -18,10 +18,11 @@
 해보자. 이맥스를 실행하고, 파일을 열기위해 \k{C-x C-f: 파일 열기} 을 입력하여
 \f{find-file}을 실행하자.
 
-![\n{img} 파일 열기](\s{snap -o emacs-find-file.png -c C-x C-f TAB TAB})
+![\n{img} 파일 열기](\s{snap -o emacs-find-file.png -c
+C-x C-f TAB TAB C-x o C-x 0})
 
-미니버퍼에 나타난 프롬프트가 보이는가? 미니버퍼에서 (관행적으로) 제공하는
-일반적인 3가지 기능은 아래와 같다.
+미니버퍼에 나타난 프롬프트가 보이는가? 미니버퍼에서 (관행적으로) 3가지 기능을 제공하는
+데, 각각을 나열하면 아래와 같다.
 
 - \k{M-n: next-history-element}: 다음 입력 히스로리
 - \k{M-p: previous-history-element}: 이전 입력 히스토리
