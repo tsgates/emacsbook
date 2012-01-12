@@ -1,6 +1,8 @@
 This note is supposed to be a private file.
 ======================================================================
 
+also include explanation of aspect-oriented: hook/advice
+
 * chap1: intro
 * chap2: help
 * chap3: lisp basic
