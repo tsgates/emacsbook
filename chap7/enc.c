@@ -5,6 +5,11 @@
 #define PRIME (17)
 #define SHIFT (11)
 
+/**
+ * @plain: input text
+ * @shift: an integer
+ * @prime: a prime number
+ */
 char* ceaser(const char *plain, int shift, int prime) {
   const int len = strlen(plain);
   char *cipher = (char *)malloc(len);
