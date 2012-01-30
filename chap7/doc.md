@@ -41,8 +41,8 @@ C언어로 프로그램을 작성해보자. 먼저 \k{C-x C-f}를 입력하여 "
 동적 자동완성은 앞문자들이 일치하는 단어들 중 가장 최근에 나타난 (앞선) 단어를
 찾아 완성해 준다.
 
-![\n{img} 자동 완성](\s{snap -o emacs-abbrev.png -c -a /tmp/enc.c
-    "\"#include <stdio.h>\n#include <string.h>\n#inc\"" C-h m})
+![\n{img} 자동 완성](\s{snap -s 80x20 -o emacs-abbrev.png -c -a /tmp/enc.c
+    "\"#include <stdio.h>\"" C-j "\"#include <string.h>\"" C-j "\"#inc\"" C-h m})
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
 #include <stdio.h>
