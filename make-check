@@ -1,9 +1,8 @@
 #!/bin/bash
 
-make chap*/doc.markdown
-
-for f in chap*/doc.markdown ; do
+for f in chap*/doc.md ; do
     perl -pi -e 's/이멕스/이맥스/g' $f
+    perl -pi -e 's/해더/헤더/g' $f
 done
 
 git diff
