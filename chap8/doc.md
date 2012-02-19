@@ -4,11 +4,194 @@
 % title: 프로그래밍하기: C언어-2
 %
 % abstract: C언어로 프로그래밍을 위해 이맥스가 어떠한 편리한 기능들을
-% abstract: 제공하는지 살펴본다. 더 나아가 이맥스가 어떻게 내부적으로 C언어를
-% abstract: 이해하고 들여쓰기를 제공하는지 이해해보도록 하자.
 %
 
-"managing processes in emacs"
+고전 "The Art of Unix Programming"에서 이멕스와 Vi의 소위 "Holy War"에 대한
+이야기를 소개하고 있다. Eric S. Raymond에 따르면, 이멕스의 가장 큰 장점 중 첫째가
+우리가 3장, 4장에서 알아본 확장성 있는 내장언어인, Lisp에 관한 이야기
+였다. 두번째 장점은 이멕스가 프로그래머들이 즐겨 사용하는 다양한 외부 프로그램과
+손쉽게 통합되어 이멕스를 떠나지 않고 활용할 수 있다는 점이었다. 이번 장에서는
+이멕스가 가지고 있는 확장성, 외부 프로그램과의 커뮤니케이션에 집중하여 7장에서
+부터 만들고 있는 시져 암호화 프로그램을 마무리 지어 보자.
+
+# Man vs Woman
+
+지적 호기심을 해결 하고싶은 마음, 궁금증을 해결하고 싶은마음은 프로그래머로
+갖추어야할 기본적인 아니 필수적인 자세이다. 언어의 특성, 큰 그림, 기반한
+아키텍쳐와 환경을 이해 했다면 그 언어를 전통할 수 있는 가장 중요한 '리소스'는
+쉽게 이미 준비되고 테스트된 모듈, 클레스, 함수를 재활용하는 것이다. 이러한
+이유해서 이멕스를 배우기에 가장 쉬운 방법이 1장, 2장을 통해 설명한 도움말에 쉽게
+접근하는 것이다.
+
+C프로그래밍을 하다 모르는 함수가 나오면, 모호하게 사용되고 있는 상수들이 나오면
+어떻게 하고 있는가? 리눅스/유닉스 사용자라면 잘 알려진, 아니 너무 자세하고
+불?친절한, `man` (manual) 명령을 통해 문서를 찾아 읽어 볼 것이다. 일반적으로
+`man` 페이지를 튜토리얼 처럼 생각하고 읽으면, 더없이 불필요하고 딱딱한
+문서이다. 그런데 레퍼런스로 생각하고 읽으면 더없이 잘 정돈되어 있고, 간략하게
+느껴지는 도움말이기도하다.
+
+POSIX 표준이 아니라, `err()` 어떠한 함수인지 모르는 독자들이 있을 것이다.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
+int main(int argc, char *argv[]) {
+  if (argc != 2) {
+    []err(1, "usage: %s [text]\n", argv[0]);
+  }
+  ...
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+자 그럼 `err()`에 커서를 놓고 \k{M-x man}을 입력해보자. 다른 창에 해당하는
+도움말이 나타났는가? 그러면 해당 버퍼 '\*Man err\*'로 이동해서 `TAB`을 입력해
+볼까? 오랜 리눅스 사용자였다면 기본 `man` 페이지에 있는 다른 링크들(SEE ALSO
+색션)을 보고 관련된 명령을, `man`을 종료한후 다시 입력하는 습관을 가지고
+있을것이다. 신기하게도 `man`에서는 그러한 기능이 없다.  이멕스는 Lisp으로 짜여진
+더욱 편하고, 아름다운? `woman`이 있다. 관심있는 독자는 실행해 보고, 문서가 눈에
+더 잘들어오도록 설정해 보기바란다.
+
+자 그럼! 사용자가 이멕스의 \f{man} 리습함수를 호출 하면, 이멕스에서는 어떠한 일이
+일어나고 있는 것일까?
+
+# 프로세스 호출 하기
+
+\f{man}의 함수정의를 찾아 가볼까?
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.scheme}
+(defun man (man-args)
+  "Get a Un*x manual page and put it in a buffer. ...."
+
+  (interactive
+   (list (let* ((default-entry (Man-default-man-entry))
+		;; case-insensitive completition
+		(completion-ignore-case t)
+		(input (completing-read
+			(format "Manual entry%s"
+				(if (string= default-entry "")
+				    ": "
+				  (format " (default %s): " default-entry)))
+                        'Man-completion-table
+			nil nil nil 'Man-topic-history default-entry)))
+	   (if (string= input "")
+	       (error "No man args given")
+	     input))))
+
+  ;; translate the "subject(section)" syntax
+  (setq man-args (Man-translate-references man-args))
+
+  (Man-getpage-in-background man-args))
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+당황해 하지 말고, 다시 위로 돌아가서 함수의 정의를 차근차근 읽어보자. 모두
+우리가 이미 살펴본 문법, 함수들을 사용하고있다. 위의 함수가 아래와 같이 눈에
+들어와야 할것이다.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.scheme}
+(defun man (man-args)
+  "설명이군"
+
+  ;; 인자를 받네, 자동완성/히스토리도 지원하군.
+  (interactive
+   (list (let* ((default-entry (Man-default-man-entry))
+        ;; 무시!
+        (completion-ignore-case t)
+        (input (completing-read
+            (format "Manual entry%s"
+                (if (string= default-entry "")
+                    ": "
+                  (format " (default %s): " default-entry)))
+                        'Man-completion-table
+            nil nil nil 'Man-topic-history default-entry)))
+       ;; 인자가 없으면 안되겠지?
+       (if (string= input "")
+           (error "No man args given")
+         input))))
+
+  ;; 내가 입력한 인자를 왜 덮어쓰지? 설명이 잔뜩있네.
+  ;; 아하 "3 err"말고도 "err(3)" 이렇게 입력해도 된다네!
+  (setq man-args (Man-translate-references man-args))
+
+  ;; 드디어 'man'을 호출하고 버퍼로 가져 오구나.
+  (Man-getpage-in-background man-args))
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+`man`의 기능은 해당하는 문서파일을 찾아 압축을 풀고, 렌더링을 해서 화면에
+출력하는 것이다. "SEE ALSO" 섹션의 관련 명령들은 '링크'라기보다 꾸며진 '글자'라고
+보는것이 맞을 것이다. 이멕스의 `man`에서 하는 일은 SEE ALSO 섹션에 나열되어있는
+글자들도 `man`이 이해하는 인자로 변경하고, `man`을 호출하여 문서를 버퍼로 가져온
+다음 버퍼의 필요한 곳곳에 링크를 만들었다.
+
+그러면 `man` 함수의 핵심(gist!)인 \f{Man-getpage-in-background}를 살펴볼까?
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.scheme}
+;; 자 함수를 읽기전에, 함수가 무슨일을 할까? 잠시 생각해보자. 아마도 버퍼를
+;; 새로 만들고, man 프로세스를 호출하고 .. 아! background로 프로세스를 실행하면 
+;; 함수는 바로 리턴이 될테고, 누군가 프로세스를 감시하고 있어야 될텐데?
+;;
+(defun Man-getpage-in-background (topic)
+
+  (let* ((man-args topic)
+         (bufname (concat "*Man " man-args "*"))
+         (buffer  (get-buffer bufname)))
+         
+      ;; 역시 버퍼를 만드는군
+      ...
+      (message "Invoking %s %s in the background" manual-program man-args)
+      (setq buffer (generate-new-buffer bufname))
+      (with-current-buffer buffer
+        (setq buffer-undo-list t)
+        (setq Man-original-frame (selected-frame))
+        (setq Man-arguments man-args))
+        
+      ;; 아 맞아. man이 내 터미널에 환경을 알아야 꾸며 주지! 맞아 맞아 터미널을
+      ;; 줄여도 자기가 막 알아서 조절했었지 ...
+      (let ((process-environment (copy-sequence process-environment)))
+       ....
+        ;; 머 이것저것 많이 하네 .. 터미널 타입, 스크린크기 머 그쯤 아닌가 ..
+        (setenv "TERM" "dumb")
+        (unless (or (getenv "MANWIDTH") (getenv "COLUMNS"))
+          (setenv "COLUMNS" (number-to-string
+          ...
+        (setenv "MAN_KEEP_FORMATTING" "1")
+        
+        ;; 아하! 여기다
+        (if (fboundp 'start-process)
+            ;; 친절하기도 하시지 cygwin, windows 환경도 고려하네 하하
+            ;; 딱보니 'sh -c man err' 정도를 호출하구만 ...
+            (set-process-sentinel
+             (start-process manual-program buffer
+                            (if (memq system-type '(cygwin windows-nt))
+                                shell-file-name
+                              "sh")
+                            shell-command-switch
+                            (format (Man-build-man-command) man-args))
+             ;; 아 .. 이게 함수 심볼인가? 이걸 asynchronous하게 호출 하나?
+             'Man-bgproc-sentinel)
+             ...
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+코드를 훑어 보았는가? 우리를 흥분되게 만드는 두개의 함수
+\f{set-process-sentinel}와 \f{start-process}를 살펴보자.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.scheme}
+;; 이름(닉네임), 버퍼(프로그램의 stdin/out), 프로그램, 인자들 ...
+(start-process "gedit" nil "gedit" "/etc/passwd")
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+이렇게 간단하게 프로그램을 호출 할수 있다. 첫 인자 '이름'은 이멕스 내부의 PID라고
+생각할 수 있다. 프로세스 고유의 이름으로, 우리가 앞으로 "gedit"라고 호명하면
+이멕스는 지금 실행될 프로세스를 지칭하는지 이해할 수 있다.
+
+그럼 어떤 프로세스들을 이멕스가 관리하고 있는 것일까? \f{M-x list-process}를 실행
+해보자.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.scheme}
+(let ((buf (generate-new-buffer "DATE")))
+  (set-process-sentinel
+   (start-process "date" buf "date")
+   (lambda (proc out) (message "Done!"))))
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+(start-process 
 
 - compilation
   regexp
