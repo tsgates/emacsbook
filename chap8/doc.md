@@ -3,7 +3,9 @@
 %
 % title: 프로그래밍하기: C언어-2
 %
-% abstract: C언어로 프로그래밍을 위해 이맥스가 어떠한 편리한 기능들을
+% abstract: 이멕스가 프로세스를 어떻게 관리하고, 상호작용하는지, 또 이를 활용한 
+% abstract: 기능들이 어떻게 사용되는지 C언어로 프로그래밍하면서 하나하나 
+% abstract: 알아본다.
 %
 
 고전 "The Art of Unix Programming"에서 이멕스와 Vi의 소위 "Holy War"에 대한
