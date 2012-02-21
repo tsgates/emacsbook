@@ -309,6 +309,8 @@ shell-commnad}를 실행해본다. 그리고 프롬프트가 나오면 아래와
 
     'good' =enc->> 'aiio' =dec->> 'V^^d'
 
+\todo{I forgot this is where gdb takes in}
+
 # 프로세스와 상호작용하기
 
 자 그러면 한발 더 나아가서, 어떻게 프로세스와 상호작용할까? 
