@@ -51,7 +51,7 @@ int main(int argc, char *argv[]) {
 자 그럼! 사용자가 이멕스의 \f{man} 리습함수를 호출 하면, 이멕스에서는 어떠한 일이
 일어나고 있는 것일까?
 
-# 프로세스 호출 하기
+# 자식 프로세스 만들기
 
 \f{man}의 함수정의를 찾아 가볼까?
 
@@ -180,187 +180,158 @@ int main(int argc, char *argv[]) {
 생각할 수 있다. 프로세스 고유의 이름으로, 우리가 앞으로 "gedit"라고 호명하면
 이멕스는 지금 실행될 프로세스를 지칭하는지 이해할 수 있다.
 
-그럼 어떤 프로세스들을 이멕스가 관리하고 있는 것일까? \f{M-x list-process}를 실행
+그럼 어떤 프로세스들을 이멕스가 관리하고 있는 것일까? \f{M-x list-processes}를 실행
 해보자.
 
+    Proc  Status   Buffer Tty	      Command
+    ----  ------   ------ ---	      -------
+    gedit run      (none) /dev/pts/5  gedit /etc/passwd
+
+이멕스가 `gedit` 에디터를 실행과 종료의 프로세스 상태, 입/출력을 관리하고 있음을
+알수있다. 그러면 어떻게 프로세스를 종료 할까? \f{kill-process: 프로세스
+종료하기}와 우리가 생성할때 명명한 닉네임 "gedit"을 이용하면 실행한 프로세스를
+종료 할 수 있다. 아래를 실행시켜 보자.
+
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.scheme}
+(kill-process "gedit")
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+프로세스는 생각보다? 쉽게 생성할 수있었다. 그러면 어떻게 자식 프로세스가
+종료되는지 알 수 있을까?
+
+# 프로세스 이벤트
+
+먼저 프로세스가 종료하면 (이벤트가 발생하면), 특정 함수를 호출하게 해보자. 
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.scheme}
+;; DATE 이름의 버퍼를 생성
 (let ((buf (generate-new-buffer "DATE")))
+  ;; 프로세스를 감시할 함수를 지정
   (set-process-sentinel
-   (start-process "date" buf "date")
-   (lambda (proc out) (message "Done!"))))
+    ;; 생성할 프로세스
+    (start-process "date" buf "date")
+    ;; 프로세스의 상태가 바뀔때 마다,
+    ;; 프로세스 오브젝트(proc)와 상태 문자열(out)을 인자로 호출
+    (lambda (proc out) (message "Done!"))))
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+위의 코드를 실행하면 "Done"의 메시지가 출력된다. 우리가 명명한 "DATE"의 버퍼를
+살펴볼까? 현재 시간이 기록되어 있는가? 이멕스는 버퍼를 입/출력 단위로
+사용한다. 왜 버퍼를 사용할까? 이미 이멕스는 수많은 기능들 버퍼를 수정하고,
+꾸미고, 관리하는 기능들을 가지고 있는데, 버퍼의 입출력은 특별히 이러한 기능들을
+쉽게 재사용하능하게 한다. 
 
-(start-process 
+"man" 함수에서 볼 수 있듯이, 출력을 버퍼로 받아와서 꾸미고, 링크를 만들고,
+바인딩을 변경하는 일들이 특별히 쉬워진다. 이제 외부 프로세스를 제어 할 수
+있으니, 할 수 있는 일들이 무궁무진 해졌다.
 
-- compilation
-  regexp
-  child process invocation (async)
-- gdb
-  process control in emacs
-- woman
-- c-macro-expand
-  sync process invocation
+# CPP 호출 하기 (프리프로세싱)
 
-- tips:
-  regexp-assign
-  c-warn mode
-  eshell
+C프로그래밍을 하다보면 소위 "macro"라고 불리우는 "#define"문이 절실히 필요할 때가
+많다. 하지만 남용되어져 프로그래밍 컨택스트를 잃어버리기 마련이다. 컴파일러는
+소스를 컴파일 하기 전에 소스를 `cpp` 프로그램을 통해 프리프로세싱하여
+"#include"와 "#define"등을 문자열로 변경한다. 이멕스에서 특정 줄의 표현식의
+프리프로세싱된 결과를 볼 수 있는 기능이 있다. 
 
-=> chap8: python/ruby or haskell (interpreter)
-=> chap9: init (permanent)
+아래의 두줄을 선택하고 \k{C-space: 선택 시작} 이후 커서를 움직여 원하는 영역을
+선택하고, \k{M-x c-macro-expand}를 실행하자.
 
-응용예) 탭과 스페이스
-
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.cl}
-(setq-default indent-tabs-mode nil ; off tab mode
-              tab-width        4   ; instead 4 spaces mode
-              fill-column      80) ; fill width
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
+  const char *encrypted = ceaser(argv[1], SHIFT, PRIME);
+  const char *decrypted = ceaser(encrypted, -SHIFT, PRIME);
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+아래와 같이 SHIFT와 PRIME이 우리가 정한 값으로 변경되었다.
 
-show:
- whitespace-mode
- untabify
-
-hook
-
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.cl}
-(defun check-tab-mode ()
-  "Determine tab mode and width"
-  (interactive)
-  (let ((width 4)
-        (mode nil))
-    (when (save-excursion
-            (goto-char (point-min))
-            (search-forward "\t" (min 3000 (point-max)) t))
-      (setq width 8)
-      (setq mode t))
-
-    (setq indent-tabs-mode mode)
-    (setq tab-width width)
-    (when mode (message "Set 'tab-mode' with %d" width))))
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
+  const char *encrypted = ceaser(argv[1], (11), (17));
+  const char *decrypted = ceaser(encrypted, -(11), (17));
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    
-(add-hook 'c-mode-hook
-          (lambda ()
-            (let ((filename (buffer-file-name)))
-              ;; Enable kernel mode for the appropriate files
-              (when (and filename
-                         (string-match (expand-file-name "~/src/linux-trees")
-                                       filename))
-                (setq indent-tabs-mode t)
-                (c-set-style "linux-tabs-only")))))
-                
 
+이 과정이 얼마나 단순한지 상상 할 수 있겠는가? 해당 파일을 `cpp`로 호출 한 후,
+선택된 줄을 찾아 버퍼에 출력한다. 소스코드의 하이라팅을 위해 버퍼의 주모드를
+`c-mode`로 설정하면 된다.
 
-<!--  -->
-현재 버퍼의 주/부 모드에 관한 정보 및 모드에 대한 키바인딩은 \k{C-h m} (**h**elp
-**m**ode) 명령을 통해 살펴볼 수 있다.
+# 컴파일 하기
 
-C-c .
+나머지 시져 암호화 프로그램을 완성한 후, 컴파일하기 위해 \k{M-x compile}을
+실행하자. 
 
-% snap
-% C-h m
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.sh}
+make -k []
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-regexp
-dabbrev-expand
-man
-ido-mode
-comment-dwin
-c-macro
-c-up/down/next-conditional
-cwarn-mode
-highlight-parentheses-mode
-highlight-current-line-on
-flyspell-prog
-flymake
+(`make`의 "-k" 옵션은 `make`의 컴파일 과정에서 오류가 발생해도 끝까지 dependency
+그래프를 traverse 하라는 의미이다.\todo{traverse in korean})
 
-# 모드 (Mode)
+`make`의 기본 규칙을 활용해서, 실행파일의 이름 "enc"을 입력하고 현재 소스코드를
+컴파일 해본다. 
 
-일반적으로 우리가 특정 파일을 이맥스에서 열었을때 이맥스는 열린 파일에 대한
-버퍼를 생성하하고, "버퍼"의 이름에서 알 수 있듯이 사용자는 파일을 직접 수정하는
-것 대신 버퍼를 수정하게 된다. 이때 현재 작업하는 버퍼(파일)에 대하여 특별히
-유용한 함수들와 키맵(map)의 그룹을 불러 들이게 된다. 예를 들면 C언어로 짜여진
-파일을 열었을 경우, C언어에 특화된 함수와 변수(코드 하이라이팅, 주석 처리 등)를
-불러들이고, 이러한 함수와 변수를 하나로 모아서 모드(mode)라고 부른다. 즉 C언어로
-짜여진 파일을 열면 (".c"나 ".h"의 확장자를 갖는 파일을 열면), 현재 버퍼의
-`major-mode`가 `c-mode`가 된다. 버퍼를 기능별로 분류하다 보니, 자연스럽게 하나의
-버퍼당 하나의 `major-mode`를 갖게 되며, 현재 버퍼의 모드는 `major-mode`의 변수에
-기록이 된다. \f{C-h v: 변수 도움말}을 현재 버퍼의 주모드가 무엇인지 확인해 보도록
-하자.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.sh}
+make -k enc
+cc     enc.c   -o enc
+enc.c: In function ‘ceaser’:
+enc.c:15:26: warning: incompatible implicit declaration of built-in function ‘malloc’
+enc.c:17:3: error: ‘for’ loop initial declarations are only allowed in C99 mode
+enc.c:17:3: note: use option -std=c99 or -std=gnu99 to compile your code
+make: *** [enc] Error 1
 
+Compilation exited abnormally with code 2 at Tue Feb 21 02:55:55
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
- - with a c example
- - editing/searching
- 
- - modifying global-map (C-z -> undo or C-q -> kill-buffer)
- - explain init process
+더 컴파일 과정을 진행하기 전에, 우리가 어떤일을 하고 있는지 알아보자. "make"
+프로세스를 호출 했고, 해당하는 결과를 버퍼로 받아 왔다. 컴파일 결과가 담긴
+버퍼의 오류가난 줄들을 하이라이팅했고(face), 링크를 만들었다. `man`에서와
+마찬가지로 `regexp`\todo{korean}를 활용해서 특정 패턴을 찾고, 해당하는 face를
+만들어 하이라이팅 한것이다. 별로 특별한 것이 하나도 없다.
 
- => next chapter (tools, compile ...)
- => windowing
- => modifying local-map
- 
+그러면 오류가 난 곳으로 이동하기 위해서는 아래와 같은 명령을 활용한다.
 
-ido 소개
--> permenant?
--> init file
+- \k{M-g n: go next error}: 오류가 난 다음 줄로 이동
+- \k{M-g p: go previous error}: 오류가 난 이전 줄로 이동
 
-기본틀 -> 설명?
-- basic option feilds
-- linux kernel mode?
+오류는 우리가 다소 최신(?) 표준인 `for`문 안에 변수를 선언했기 때문인데, 다음과
+같은 명령으로 컴파일 할 수 있다. \k{M-x compile} 이후 "CFLAGS=-std=c99 make -k
+enc"를 입력해서 프로그램을 컴파일 해 본다.
 
-모드
-- .bashrc 파일 열어보기
-- 개념
-- 키 -> 함수
-- .c
+# 프로그램 실행하기
 
-=> so a way to recognize this: auto-mode-alist
+모두 같은 맥락으로, 컴파일된 프로그램을 실행 할 수도 있다. \k{C-!} 또는 \k{M-x
+shell-commnad}를 실행해본다. 그리고 프롬프트가 나오면 아래와 같이 입력한다.
 
-- jumping
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.c}
+./enc good
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    C-u C-SPC 
-    M-g g (goto-line)
-    M-g n (next-error)
-    M-g p (previous-error)
-    
-- search
+출력 창에 아래와 같은 이쁜? 이모티콘을 볼 수 있을 것이다.
 
-    C-s isearch-forward
-    C-r isearch-backward
+    'good' =enc->> 'aiio' =dec->> 'V^^d'
 
-    C-M-s isearch-forward-regexp
-    C-M-r isearch-backward-regexp
-    
-- editing
+# 프로세스와 상호작용하기
 
-    DEL delete-backward-char
-    M-DEL backward-kill-word
-    C-DEL delete-kill-word
-    C-d delete-char
-    M-d kill-word
-    M-k kill-line
-    C-M-k kill-sexp
-    M-z zap-to-char
-    C-t 
-    M-t 
-    C-M-t
-    C-o
-    C-x C-o
-    C-j
-    C-space
+자 그러면 한발 더 나아가서, 어떻게 프로세스와 상호작용할까? 
 
-- windowing
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.scheme}
+(let ((buf (generate-new-buffer "PYTHON")))
+  (start-process "python" buf "python" "-i"))
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    C-x 1
-    C-x 2
-    C-x 3
-    C-x 5
-    C-M-v: scroll-other-window-up
-    C-M-S-v: scroll-other-window-down
-    
-- register
+파이선 프로세스를 생성시키고, "PYTHON" 버퍼로 이동해 볼까? 우리가 파이선의 초기화
+메시지들이 출력되었는가? (참고로 "-i" 옵션은 "interactive" 모드로 출력을 버퍼링
+하지 않는다.)
 
-=> end with how to modify global-map and permanently change it
-                
+그리고 \f{list-processes}를 실행해 보면, 파이선 프로세스가 실행되고 있음을 알 수
+있다. 자 파이선을 제어하기 위해서는 \f{process-send-string: 프로세스에 문자열
+보내기}와 \f{process-send-eof: 프로세스의 종료문자 보내기}을 활용하면
+된다. 아래의 예를 보자.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.scheme}
+(process-send-string "python" "print 'hello world from emacs!'\n")
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+위의 예제를 실행하고 "PYTHON" 버퍼로 이동하면 "hello world from emacs!"가
+출력되었음을 알 수 있다. 아하! 파이선과 같은 인터프리터형 프로그램을 위와 같이
+제어 하면, 내가 프로그래밍하면서 현재 버퍼의 함수/클레스를 보내 파이선
+인터프리터에 보내 실행해 볼 수 있지 않을까? 이와 관련된 궁금증이 바로 우리가
+다음장에서 같이 해결해 볼 내용이다.
+
