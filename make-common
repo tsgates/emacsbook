@@ -90,7 +90,7 @@ $latex_template = ERB.new(File.read("#$here/latex/template.tex"))
 ARGV.delete_if{|arg| $DEBUG = true if arg == '-d' or arg == '--debug'}
 
 # check pandoc version
-unless `pandoc --version | head -1`.include? "1.8"
+unless `pandoc --version | head -1`.include? "1.9"
   puts "Install the latest version of pandoc"
   exit
 end
