@@ -8,6 +8,8 @@
 % abstract: 
 %
 
+
+
 - inferior (comint)
 - maps
   C-c </>
@@ -23,10 +25,10 @@
   pdb
   next/prev-error
 
-- fly-make (pylint/pycheck)
+- flymake (pylint/pycheck)
 - eldoc/imenu
 - hippie expand
 - pymacs
 
 => installing pylookup
-
+=> chap10
