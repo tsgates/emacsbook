@@ -70,7 +70,7 @@ end
 lang = "ko"
 
 figures do
-  config = $config['default'].merge($config["ko"])
+  config = $config['default'].merge($config[lang])
 
   markdown = Dir["#$root/chap*/doc.markdown"].sort.map do |file|
     File.read(file)

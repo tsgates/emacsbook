@@ -103,10 +103,28 @@ import os
 import sys
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-\t{statement/syntax in korean}
-"import" statement는 어떠한 syntax를 가지고 있을까? 또 "os" 모듈은 어떠한
+Python의 import 문은 어떠한 규칙을 가지고 있을까? 또 "os" 모듈은 어떠한
 함수들을 제공하는가? 이를 알아보기 위해서는 각각의 문자열 위에서 \k{C-c C-f:
 python-describe-symbol}을 호출해 보자. 
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Help on module os:
+
+NAME
+    os - OS routines for Mac, NT, or Posix depending on what system we're on.
+
+MODULE REFERENCE
+    http://docs.python.org/3.2/library/os
+...    
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+import문과, os와 sys 모듈은 정적으로 (문자적으로) 도움말을 찾아 보여줄 수
+있다. 하지만 동적으로 코드의 의미가 결정되는 Python은 완벽하게 개발자의 
+
+# Python 인터프리터 호출하기
+
+
+
 
 - inferior (comint)
 - maps
