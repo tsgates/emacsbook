@@ -1,17 +1,7 @@
--- A Pandoc filter to use Pygments for Pandoc
--- Code blocks in HTML output 
--- Matti Pastell 2011 <matti.pastell@helsinki.fi> 
--- More filters in https://bitbucket.org/mpastell/pandoc-filters/
--- Requires Pandoc 1.8
-
 import Text.Pandoc
-import Text.Pandoc.Shared
 import Data.Char(toLower)
 import System.Process (readProcess)
 import System.IO.Unsafe
-
-
-import Text.Pandoc
 
 main = toJsonFilter highlight
 
