@@ -334,3 +334,9 @@ ol, ul {
     margin-top: 3px;
     margin-bottom: 10px;
 }
+
+.footnotes ol {
+    list-style-type: decimal;
+    padding-left: 20px;
+    text-indent: 0px;
+}
