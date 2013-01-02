@@ -13,5 +13,8 @@ pygments code options
          | (length options) == 1 = doPygmentize []
          | (length options) == 2 = doPygmentize ["-O linenos"]
          | otherwise = "<div class =\"highlight\"><pre>" ++ code ++ "</pre></div>"
-  where doPygmentize opts = unsafePerformIO $
-          readProcess "pygmentize" (["-l", (map toLower $ head options), "-f", "html"] ++ opts) code
+  where lang = (map toLower $ head options)
+        doPygmentize opts = unsafePerformIO $
+          readProcess "pygmentize" (["-l", lang,
+                                     "-f", "html",
+                                     "-O", "encoding=utf-8"] ++ opts) code
