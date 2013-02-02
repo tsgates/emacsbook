@@ -1,0 +1,200 @@
+<!doctype html>
+<!-- paulirish.com/2008/conditional-stylesheets-vs-css-hacks-answer-neither/ -->
+<!--[if lt IE 7]> <html class="no-js ie6 oldie" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="no-js ie7 oldie" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="no-js ie8 oldie" lang="en"> <![endif]-->
+<!-- Consider adding an manifest.appcache: h5bp.com/d/Offline -->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+
+  <!-- Use the .htaccess and remove these lines to avoid edge case issues.
+       More info: h5bp.com/b/378 -->
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+  <title>Emacsbook</title>
+  <meta name="description" content="Emacsbook">
+  <meta name="author" content="Taesoo Kim">
+
+  <!-- Mobile viewport optimized: j.mp/bplateviewport -->
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+
+  <!-- Place favicon.ico and apple-touch-icon.png in the root directory: mathiasbynens.be/notes/touch-icons -->
+
+  <!-- CSS: implied media=all -->
+  <!-- CSS concatenated and minified via ant build script-->
+  <link rel="stylesheet" href="css/style.css">
+  <!-- end CSS-->
+
+  <!-- More ideas for your <head> here: h5bp.com/d/head-Tips -->
+
+  <!-- All JavaScript at the bottom, except for Modernizr / Respond.
+       Modernizr enables HTML5 elements & feature detects; Respond is a polyfill for min/max-width CSS3 Media Queries
+       For optimal performance, use a custom Modernizr build: www.modernizr.com/download/ -->
+  <script src="js/libs/modernizr-2.0.6.min.js"></script>
+</head>
+
+<body>
+  <a href="http://github.com/tsgates">
+  <img alt="Fork me on GitHub" src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" 
+       style="position: absolute; top: 0; right: 0; border: 0;">
+  </a>
+
+
+<link rel="stylesheet" href="css/chap.css" type="text/css" media="screen, projection" />
+<link rel="stylesheet" href="css/code.css" type="text/css" media="screen, projection" />
+
+<div id="container">
+  <header>
+  </header>
+
+  <nav id="main_nav">
+    <ul>
+      <li><a href="/index.html">Home</a></li>
+      <li><a href="http://blog.taesoo.org/">Blog</a></li>
+      <li><a href="http://pdos.csail.mit.edu/~taesoo/">About</a></li>
+      <li><a href="/rss.xml">RSS</a></li>
+    </ul>
+  </nav>
+  
+  <div id="main" role="main">
+    <article class="post">
+      <header>
+        <h3><span class="hint">Chap #9</span>December 26, 2012</h3>
+        <h1> 프로그래밍하기: Python</h1>
+      </header>
+      
+      <p><a href="chap7.html">7장</a>과<a href="chap8.html"> 8장</a>을 통해 컴파일형 언어인 C언어를 사용하여 프로그래밍하는 방법을 알아보았다. 특히<a href="chap8.html"> 8장</a>에서는 이맥스가 다른 프로세스와 통신하는 방법을 알아보았고, 이를 활용하여 <code>man</code>, <code>cpp</code>, <code>gcc</code> 와 이맥스가 어떻게 상호작용하는지 살펴보았다. 이번장에서는 인터프리터형 언어로 대표되는 Python 언어<sup><a href="#fn1" class="footnoteRef" id="fnref1">1</a></sup>를 어떻게 이맥스에서 사용하며, 점진적(incrementally)으로 개발하는 REPL (read-eval-print loop) 개발 방법론이 어떻게 적용되는지 살펴볼 것이다.</p><h2 id="코드-작성하기">코드 작성하기</h2><p>우리가 작성할 코드는<a href="chap7.html"> 7장</a>~<a href="chap8.html">8장</a>에서 작성했던 시저암호화 프로그램이다. 이번장을 더 읽기 전에 직접 한번 구현해 보도록 하자.</p><div class="highlight"><pre><span class="c">#!/usr/bin/python</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="k">def</span> <span class="nf">ceaser</span><span class="p">(</span><span class="n">plain</span><span class="p">,</span> <span class="n">shift</span><span class="p">,</span> <span class="n">prime</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_group</span><span class="p">(</span><span class="n">c</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">chr</span><span class="p">((</span><span class="nb">ord</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="o">-</span> <span class="nb">ord</span><span class="p">(</span><span class="s">&quot;a&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="n">shift</span><span class="p">)</span> <span class="o">%</span> <span class="n">prime</span> <span class="o">+</span> <span class="nb">ord</span><span class="p">(</span><span class="s">&quot;a&quot;</span><span class="p">))</span>
+    <span class="k">return</span> <span class="s">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">_group</span><span class="p">,</span> <span class="n">plain</span><span class="p">))</span>
+
+<span class="k">if</span> <span class="n">__init__</span> <span class="o">==</span> <span class="s">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">PRIME</span> <span class="o">=</span> <span class="mi">17</span>
+    <span class="n">SHIFT</span> <span class="o">=</span> <span class="mi">11</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">&quot;usage: </span><span class="si">%s</span><span class="s"> [text]&quot;</span> <span class="o">%</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="nb">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">txt</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">enc</span> <span class="o">=</span> <span class="n">ceaser</span><span class="p">(</span><span class="n">txt</span><span class="p">,</span>  <span class="n">SHIFT</span><span class="p">,</span> <span class="n">PRIME</span><span class="p">)</span>
+    <span class="n">dec</span> <span class="o">=</span> <span class="n">ceaser</span><span class="p">(</span><span class="n">enc</span><span class="p">,</span> <span class="o">-</span><span class="n">SHIFT</span><span class="p">,</span> <span class="n">PRIME</span><span class="p">)</span>
+
+    <span class="k">print</span><span class="p">(</span><span class="s">&quot;&#39;</span><span class="si">%s</span><span class="s">&#39; =enc-&gt;&gt; &#39;</span><span class="si">%s</span><span class="s">&#39; =dec-&gt;&gt; &#39;</span><span class="si">%s</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">txt</span><span class="p">,</span> <span class="n">enc</span><span class="p">,</span> <span class="n">dec</span><span class="p">))</span>
+</pre></div>
+<p>코드를 작성하는 동안 적절한 코드 색깔 (syntax highlight)과 자동 들여 쓰기가 되었는가? 어떻게 사용자가 입력하는 언어에 해당하는 주모드를 자동으로 결정한것일까? 이맥스는 몇가지 힌트와 추측을 통하여 파일에 (파일에 해당하는 버퍼) 해당하는 주 모드를 결정한다. 첫번째는 파일의 확장자, C언어에서는 <code>enc.c</code>의 <code>.c</code>, <code>enc.py</code>의 <code>.py</code>를 보고 해당하는 주모드를 추측한다. <code>C-h v: help variable</code>을 통해서 <code>auto-mode-alist: 자동 주모드 리스트</code> 변수의 값을 살펴보자.</p><div class ="highlight"><pre>auto-mode-alist is a variable defined in `files.el'.
+...
+Value: (
+ ...
+ ("\\.cs$" . c++-mode)
+ ("\\.CPP$" . c++-mode)
+ ...
+ ("\\.[ch]\\'" . c-mode)
+ ...
+ ("\\.py\\'" . python-mode)
+ ...
+ (".*/emacs-book/chap[0-9]+/.*.md$" . emacs-book-mode)
+ (".*/linux-[0-9]\\.[0-9]+\\.[0-9]+*/.*\\.[ch]$" . linux-c-mode))</pre></div><p><code>alist</code> 타입의 <code>auto-mode-alist</code>는 <code>car</code>은 파일 이름에 해당하는 정규식과 <code>cdr</code>의 해당 주 모드 심볼의 리스트를 담고 있다. 사용자가 파일을 열면 파일이름을 바탕으로 일치하는 주 모드를 찾는다. 즉 <code>.c</code> 파일은 <code>c-mode</code>로 <code>.py</code>파일은 <code>python-mode</code>로 주 모드가 설정되는 것이다.</p><p>재미있는것은 필자가 이멕스책 (emacs-book) 디렉토리의 각 챕터 디렉토리의 파일들을 열면 이맥스 책을 작성하기에 편한 모드로 설정하고, 리눅스 커널 (linux-[0-9]) 디렉토의 파일을 열면 리눅스 커널 소스를 작업하기에 적합한 모드로 설정하게 된다.</p><p>그러면 <code>.py</code>의 확장자를 갖지 않는 <code>/usr/bin/pip</code>파일을 열어 볼까? 이멕스가 어떻게 해당 파일이 Python으로 작성되었는지 결정한것일까? 두번째로 이맥스가 파일의 첫라인의 인터프리터 선언문을 보고 주어진 파일에 대당하는 주 모드를 결정한다.</p><div class="highlight"><pre><span class="c">#!/usr/bin/python</span>
+</pre></div>
+<p>파일에 Python을 인터프리터로 선언한 경우, 이맥스는 <code>auto-mode-interpreter-regexp: 인터프리터 선언 정규식</code> 변수를 통해 해당하는 주모드를 추측한다.</p><div class ="highlight"><pre>auto-mode-interpreter-regexp is a variable defined in `files.el'.
+Its value is "#![   ]?\\([^     \n]*/bin/env[   ]\\)?\\([^  \n]+\\)"
+...</pre></div><p>즉 &quot;#!/usr/bin/env python&quot; 과 &quot;#!/usr/bin/python&quot;은 모두 &quot;python&quot;을 키위드로 <code>interpreter-mode-alist: 인터프리터 주모드 리스트</code> 변수를 통해 앞서 살펴본 <code>auto-mode-alist</code>와 같은 방법으로 주 모드를 결정한다. 이 변수는 아래와 같은 값을 가지고 있다.</p><div class ="highlight"><pre>interpreter-mode-alist is a variable defined in `files.el'.
+...
+Value: (
+ ("runhaskell" . haskell-mode)
+ ...
+ ("ruby" . ruby-mode)
+ ...
+ ("python" . python-mode)
+ ...)</pre></div><p>파일에 주모드가 결정되지 않으면 마지막으로 파일의 시그니처(file magic)를 바탕으로 주모드를 추측하는 <code>magic-mode-alist: 내용 주모드 리스트</code>하며, 주로 파일 앞부분에 시그니처가 분명한 'ps', 'xml', 'zip' 등의 파일들의 주모드가 이 리스트를 통해 결정된다.</p><h2 id="도움말-호출하기">도움말 호출하기</h2><p>차 첫째 줄을 작성했으니 반은 이루었고, 다음 줄을 살펴보자. <code>enc.py</code>에서 두가지의 모듈, <code>os</code>와 <code>sys</code>을 사용한다.</p><div class="highlight"><pre><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+</pre></div>
+<p>Python의 <code>import</code> 문은 어떠한 규칙을 가지고 있을까? 또 <code>os</code> 모듈은 어떠한 함수들을 제공하는가? 이를 알아보기 위해서는 각각의 문자열 위에서 <code>C-c C-f: python-describe-symbol</code>을 호출해 보자.</p><div class ="highlight"><pre>Help on module os:
+
+NAME
+    os - OS routines for Mac, NT, or Posix depending on what system we're on.
+
+MODULE REFERENCE
+    http://docs.python.org/3.2/library/os
+...    </pre></div><p><code>import</code>문과, <code>os</code>와 <code>sys</code> 모듈은 정적으로 (문자적으로) 도움말을 찾아 보여줄 수 있다. 하지만 동적으로 코드의 의미가 결정되는 Python과 같은 해석형 언어의 경우 완벽하게 개발자의 요구를 충족시키지는 못한다. 이를 보안할 수 있는 Python을 정적으로 해석하여 오류 확인과 자동완성을 제공하는 <a href="http://pymacs.progiciels-bpi.ca/index.html">pymacs</a>와 <a href="http://rope.sourceforge.net/ropemacs.html">ropemacs</a> 같은 프로젝트들이 있으니 관심있는 독자들은 참고하기 바란다. 또한 저자가 만든 <a href="http://github.com/tsgates/pylookup">pylookup</a>도 Python의 Reference Manual을 이멕스를 떠나지 않고 쉽게 찾을 수 있게 도와 주는 기능을 제공한다.</p><h2 id="python-인터프리터-호출하기">Python 인터프리터 호출하기</h2><p>이멕스를 떠나지 않고 Python의 인터프리터(대화형 쉘)를 호출 할 수 있다. <code>C-c C-z: run-python</code>을 실행하면 새로운 버퍼에 Python 프롬프트가 출력되었음을 볼 수 있을것이다. 새로운 버퍼로 이동하여 아래와 같이 입력해 볼까?</p><div class="highlight"><pre><span class="o">&gt;&gt;&gt;</span> <span class="k">def</span> <span class="nf">hello</span><span class="p">():</span> 
+<span class="o">...</span>     <span class="k">print</span><span class="p">(</span><span class="s">&quot;hello&quot;</span><span class="p">)</span>
+<span class="o">...</span> 
+<span class="o">&gt;&gt;&gt;</span> <span class="n">hello</span><span class="p">()</span>
+<span class="n">hello</span>
+</pre></div>
+<p>첫인상은 Python을 직접호출한것과 크게 다른것이 없어 보인다. 하지만 이렇게 로드된 Python은 이멕스의 버퍼와 쉽게 인터렉션할 수 있다. 예를 들면 우리가 이멕스 리습(elisp)을 해석하기 위해 <code>C-c M-x: eval-defun</code>을 실행하듯이, Python에서는 <code>C-c M-x: python-send-defun</code>을 실행하여 버퍼의 함수정의를 Python 버퍼에 로드할 수 있다. 이러한 일관성은 <code>ruby-mode</code>, <code>haskell-mode</code> 등의 대부분읜 REPL 환경을 제공하는 모드에서 동일하게 유지된다.</p><p>자 그럼 작성된 <code>ceaser</code> 함수에 커서를 움직인후, <code>C-M-x: python-send-defun</code>를 실행하여 인터프리터에 로드해 보자.</p><div class="highlight"><pre><span class="k">def</span> <span class="nf">ceaser</span><span class="p">(</span><span class="n">plain</span><span class="p">,</span> <span class="n">shift</span><span class="p">,</span> <span class="n">prime</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_group</span><span class="p">(</span><span class="n">c</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">chr</span><span class="p">((</span><span class="nb">ord</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="o">-</span> <span class="nb">ord</span><span class="p">(</span><span class="s">&quot;a&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="n">shift</span><span class="p">)</span> <span class="o">%</span> <span class="n">prime</span> <span class="o">+</span> <span class="nb">ord</span><span class="p">(</span><span class="s">&quot;a&quot;</span><span class="p">))</span>
+    <span class="k">return</span> <span class="s">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">_group</span><span class="p">,</span> <span class="n">plain</span><span class="p">))</span>
+</pre></div>
+<p>로드된 함수가 Python 인터프리터 버퍼에서 실행가능한가?</p><div class="highlight"><pre><span class="o">&gt;&gt;&gt;</span> <span class="n">ceaser</span><span class="p">(</span><span class="s">&quot;abcd&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="s">&#39;bcab&#39;</span>
+</pre></div>
+<p>이멕스의 이러한 기능은 개발자가 작성한 함수를 테스트하는 주기를 단축시킬 뿐만아니라, 단순한 문법, 알고리즘을 쉽게 확인해 볼 수 있게 도와준다.</p><p>어떻게 일관적인 기능을 제공할 수 있었을까? 이멕스의 Python모드는 <code>inferior-mode</code> (또는 commit-mode)를 확장하여 <code>inferior-python-mode</code>를 제공하며, <code>inferior-mode</code>의 기능들을 통하여 Python 인터프리터와 커뮤니케이션한다.</p><ul><li><code>C-M-x: python-send-defun</code>: 커서에 위치한 함수를 인터프리터에 로드</li><li><code>C-c C-r: python-send-region</code>: 선택된 영역의 파이선 코드를 인터프리터에 로드</li><li><code>C-c M-r: python-send-region-and-go</code>: 로드후 해당 버퍼로 이동</li><li><code>C-c C-c: python-send-buffer</code>: 전체 버퍼를 로드</li><li><code>C-c C-l: python-load-file</code>: 특정파일을 로드</li></ul><h2 id="외부-프로그램-호출하기">외부 프로그램 호출하기</h2><p>Python은 스페이스 문자에 의미를 부여함으로써 반 강제적으로 개발자들이 코드의 일관적인 코드를 작성하게 한다. 그럼에도 불구하고 많은 개발자들이 같이 프로그래밍하게 되면 제각각의 코드가 작성되는데, Python은 일반적인 관행(규칙)을 PEP8로 정하고 모두가 지키도록 권한다. 이러한 툴들을 Beautifier (tidy, lint 등)라고 부르며, 특별히 Python은 <code>pep8</code>이라는 툴을 제공한다.</p><p><code>M-!: shell-command</code>를 호출하고, &quot;pep8 enc.py&quot;를 직접 호출해 볼까? PEP8에서는 <code>import</code>문과 함수 정의 사이에 2개의 빈줄을 쓰기를 권한다는 출력결과를 확인할 수 있다.</p><div class ="highlight"><pre>enc.py:6:1: E302 expected 2 blank lines, found 1</pre></div><p><a href="chap7.html">7장</a>에서 살펴보았듯이 이멕스는 컴파일러의 출력 결과를 파싱하여 오류가있는 구문들을 찾는데, 이를 재사용하여 <code>pep8</code>의 출력결과를 파싱해 보자.</p><p><code>M-x compile: 컴파일</code>을 입력하고, &quot;pep8 enc.py&quot;를 입력해 볼까? 이제 익숙한 명령들을 <code>M-g n: next-error</code>, <code>M-g p:previous-error</code>을 이용해 쉽게 해당지점으로 이동이 가능하다. 저자는 위의 명령을 입력하는 대신 아래와 같이 간단한 코드를 작성하여 특정 키를 통하여 &quot;pep8&quot;을 호출 한다.</p><div class="highlight"><pre><span class="p">(</span><span class="nb">defun</span> <span class="nv">pep8</span> <span class="p">()</span>
+  <span class="p">(</span><span class="nv">interactive</span><span class="p">)</span>
+  <span class="p">(</span><span class="nb">compile</span> <span class="p">(</span><span class="nb">format</span> <span class="s">&quot;pep8 %s&quot;</span>
+                   <span class="p">(</span><span class="nv">file-name-nondirectory</span> <span class="nv">buffer-file-name</span><span class="p">))))</span>
+</pre></div>
+<p>더 나아가 이멕스의 Python모드는 <code>pychecker</code>와 <code>pylint</code>를 <code>C-c C-v: python-check</code>을 통하여 쉽게 호출 할 수 있으며, <code>flymake-mode</code>와 함께 코드의 중요 부분이 수정될때마다 자동으로 검사하게 할 수 있는데 이러한 부가적인 기능들은 관심있는 독자들에게 숙제로 남기도록 한다.</p><div class="footnotes"><hr /><ol><li id="fn1"><p>추상적인 인터프리터형, 컴파일러형 등의 언어적 특성의 분류는 사실상 특별한 의미가 없으며, 저자가 Python 류의 언어라고 하는것은 대화형 모드 (interactive shell)을 제공하는 언어들을 모두 일컫는다.<a href="#fnref1">↩</a></p></li></ol></div>
+
+
+      <div id="disqus_thread"></div>
+      <script type="text/javascript">
+        var disqus_shortname = 'emacsbook';
+
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+          var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+          dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+          (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+      </script>
+      <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+      <a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+      
+    </article>
+  </div>
+ 
+  <footer>
+    <a rel="license" href="http://creativecommons.org/licenses/by-nc/3.0/">
+      <img alt="CC" style="border-width:0" src="http://i.creativecommons.org/l/by-nc/3.0/88x31.png" />
+    </a>
+  </footer>
+</div>
+
+
+  <!-- JavaScript at the bottom for fast page loading -->
+
+  <!-- Grab Google CDN's jQuery, with a protocol relative URL; fall back to local if offline -->
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+  <script>window.jQuery || document.write('<script src="js/libs/jquery-1.6.2.min.js"><\/script>')</script>
+
+
+  <!-- scripts concatenated and minified via ant build script-->
+  <script defer src="js/plugins.js"></script>
+  <script defer src="js/script.js"></script>
+  <!-- end scripts-->
+
+  <script>
+    window._gaq = [['_setAccount','UA-9161381-1'],['_trackPageview'],['_trackPageLoadTime']];
+    Modernizr.load({
+      load: ('https:' == location.protocol ? '//ssl' : '//www') + '.google-analytics.com/ga.js'
+    });
+  </script>
+
+
+  <!-- Prompt IE 6 users to install Chrome Frame. Remove this if you want to support IE 6.
+       chromium.org/developers/how-tos/chrome-frame-getting-started -->
+  <!--[if lt IE 7 ]>
+    <script src="//ajax.googleapis.com/ajax/libs/chrome-frame/1.0.3/CFInstall.min.js"></script>
+    <script>window.attachEvent('onload',function(){CFInstall.check({mode:'overlay'})})</script>
+  <![endif]-->
+  
+</body>
+</html>

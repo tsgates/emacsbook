@@ -1,0 +1,166 @@
+<!doctype html>
+<!-- paulirish.com/2008/conditional-stylesheets-vs-css-hacks-answer-neither/ -->
+<!--[if lt IE 7]> <html class="no-js ie6 oldie" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="no-js ie7 oldie" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="no-js ie8 oldie" lang="en"> <![endif]-->
+<!-- Consider adding an manifest.appcache: h5bp.com/d/Offline -->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+
+  <!-- Use the .htaccess and remove these lines to avoid edge case issues.
+       More info: h5bp.com/b/378 -->
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+  <title>Emacsbook</title>
+  <meta name="description" content="Emacsbook">
+  <meta name="author" content="Taesoo Kim">
+
+  <!-- Mobile viewport optimized: j.mp/bplateviewport -->
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+
+  <!-- Place favicon.ico and apple-touch-icon.png in the root directory: mathiasbynens.be/notes/touch-icons -->
+
+  <!-- CSS: implied media=all -->
+  <!-- CSS concatenated and minified via ant build script-->
+  <link rel="stylesheet" href="css/style.css">
+  <!-- end CSS-->
+
+  <!-- More ideas for your <head> here: h5bp.com/d/head-Tips -->
+
+  <!-- All JavaScript at the bottom, except for Modernizr / Respond.
+       Modernizr enables HTML5 elements & feature detects; Respond is a polyfill for min/max-width CSS3 Media Queries
+       For optimal performance, use a custom Modernizr build: www.modernizr.com/download/ -->
+  <script src="js/libs/modernizr-2.0.6.min.js"></script>
+</head>
+
+<body>
+  <a href="http://github.com/tsgates">
+  <img alt="Fork me on GitHub" src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" 
+       style="position: absolute; top: 0; right: 0; border: 0;">
+  </a>
+
+
+<link rel="stylesheet" href="css/chap.css" type="text/css" media="screen, projection" />
+<link rel="stylesheet" href="css/code.css" type="text/css" media="screen, projection" />
+
+<div id="container">
+  <header>
+  </header>
+
+  <nav id="main_nav">
+    <ul>
+      <li><a href="/index.html">Home</a></li>
+      <li><a href="http://blog.taesoo.org/">Blog</a></li>
+      <li><a href="http://pdos.csail.mit.edu/~taesoo/">About</a></li>
+      <li><a href="/rss.xml">RSS</a></li>
+    </ul>
+  </nav>
+  
+  <div id="main" role="main">
+    <article class="post">
+      <header>
+        <h3><span class="hint">Chap #10</span>March 14, 2012</h3>
+        <h1></h1>
+      </header>
+      
+      <p>앞선<a href="chap1.html"> 1장</a>~<a href="chap4.html">4장</a>에서는 이맥스을 이해하기 위한 가장 기초적인 Lisp의 개념을 알아 보았다. C 언어를 이해했다고 해서 Linux 커널을 모두 이해했다고 할 수 없듯이, 기본적인 Lisp의 특성을 이해했다고 해서 이맥스를 모두 이해했다고 할 수 없다. 하지만 한가지 명확한것은 C 언어를 이해하지 못했다면 커널도 이해할 수 없다는 것이다. 이번 장에서는 Lisp이라는 언어적 특성이 어떻게 이맥스를 디자인하는데 핵심적인 역활을 하고 있는지, 더나아가 구체적인 이맥스의 구조를 언어적 특성에 비추어 알아보도록 할 것이다.</p><p>= 이맥스의 시작 과정</p><p>이맥스를 실행하면 C언어로 짜여진 함수들과, 이를 기반으로하여 Lisp으로 짜여진 표준 라이브러리들을 불러들인다. 이와 더불어 두가지 종류의 Lisp파일을 불러들이는데, 하나는 시스템에 추가적으로 설치되어 모든 사용자가 공유하는 라이브러리들이고, 나머지 하나는 개인의 사용자의 Lisp파일인 이다. 이 둘은 사용하는 배포판에 따라 다른 위치에 존재하지만, 필자가 사용하는 우분투에서는 아래와 같은 위치에 존재한다.</p><ul><li>: /etc/emacs/site-start.el 과 site-start.d/* 파일들</li><li>: $HOME/.emacs</li></ul><p>물론 표준 라이브러리를 제외하고 위의 추가적은 Lisp파일들은 사용자의 편의에 따라 각각 불러들이지 않을 수 있다.</p><div class="highlight"><pre><span class="nv">$ </span>emacs --help | grep <span class="s1">&#39;init-file\|site-file&#39;</span>
+--no-init-file, -q          load neither ~/.emacs nor default.el
+--no-site-file              <span class="k">do </span>not load site-start.el
+</pre></div>
+<p>시스템에 부가적으로 설치된 은 시스템의 모든 사용자가 공유하는 것으로, 사용자가 <code>apt-get</code>과 <code>yum</code>등의 Package Management System을 통해 설치한 경우 설치되는 파일들로 필자의 컴퓨터에는 다음과 같은 파일들이 존재한다.</p><div class="highlight"><pre><span class="nv">$ </span>ls -A /etc/emacs/site-start.d
+00debian-vars.el          50global.el            50notmuch.el
+50anything-el.el          50haskell-mode.el      50psvn.el
+50autoconf.el             50js2-mode.el          50python-guppy.el
+50auto-install-el.el      50latex-cjk-common.el  50thailatex.el
+50dictionaries-common.el  50latex-cjk-thai.el
+50emacs-goodies-el.el     50mmm-mode.el
+</pre></div>
+<p>일반 Linux의 설정파일과 같이 앞머리 숫자는 불러들일 순서를 나타내며, 각각의 파일들은 해당 모듈들의 시작파일들로 자신만의 초기화 함술를 가지고 있다. 기대와는 달리? 많지 않은 파일들이 있음을 눈치 챘을 것이다. 중요한 이유중에 하나는 필자는 즐겨쓰는 라이브러리들을 최신 버젼으로 관리하고 싶어서인데, 이맥스가 불러들이는 사용자 정의 파일을 통해 간편하게 자신만의 구조를 만들 수 있다.</p><div class="highlight"><pre><span class="nv">$ </span>ls ~/.emacs
+/home/taesoo/.emacs
+
+<span class="nv">$ </span>ls configs/.lisp/
+addons/  dev/  info/  org/  os/  soo/  makefile  pkgs  soodir.mk  soo.mk
+</pre></div>
+<p>간략하게 구조를 설명하면, 이맥스가 정한 사용자 지정파일()인 <code>$HOME/.emacs</code>(앞으로 <code>.emacs</code>)에서 부터 사용되는 운영체제, 터미널 환경에 따라 해당하는 설정파일을 불러들이게 된다.</p><p>일반적으로 이맥스 설정파일을 수정한다고 말할때 우리는 자신의 <code>.emacs</code> 파일을 수정하는 것을 의미하며, 특정 패키지를 설치한다고 말할때 우리는 패키지 파일들을 특정 장소에 저장한후 <code>.emacs</code> 파일에서 패키를 불러들이는 것을 의미한다.</p><p>= 잔소리 ;;</p><p>필자가 생각하는 이맥스를 배운다고 하는것은 세가지 관점에서 생각해 볼 수 있다. 첫째는 이맥스의 기반을 이루고 있는 Lisp의 특성들을 이해하는 것이고, 두번째는 이를 근간으로하는 이맥스의 Domain Specific한 특성들을 이해하는 것이다. 마지막으로 자신이 원하는 기능들을 찾아보고, 확장하는 것으로 이맥스를 자신만의 에디터로 만들어가는 것이다.</p><!-- refs/linux-3.0-git/test.c -->
+
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.cl} -->
+<!-- (add-to-list auto-mode-alist -->
+<!--              '(".*/linux-[0-9.git-]+/.*\\.[ch]$" . linux-c-mode)) -->
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+<p>=&gt; regex-build</p><ul><li>compilation regexp child process invocation (async)</li><li>gdb process control in emacs</li><li>woman</li><li><p>c-macro-expand sync process invocation</p></li><li><p>tips: regexp-assign c-warn mode eshell</p></li></ul><p>=&gt; chap8: python/ruby or haskell (interpreter) =&gt; chap9: init (permanent)</p><p>응용예) 탭과 스페이스</p><div class="highlight"><pre><span class="p">(</span><span class="nv">setq-default</span> <span class="nv">indent-tabs-mode</span> <span class="no">nil</span> <span class="c1">; off tab mode</span>
+              <span class="nv">tab-width</span>        <span class="mi">4</span>   <span class="c1">; instead 4 spaces mode</span>
+              <span class="nv">fill-column</span>      <span class="mi">80</span><span class="p">)</span> <span class="c1">; fill width</span>
+</pre></div>
+<p>show: whitespace-mode untabify</p><p>hook</p><div class="highlight"><pre><span class="p">(</span><span class="nb">defun</span> <span class="nv">check-tab-mode</span> <span class="p">()</span>
+  <span class="s">&quot;Determine tab mode and width&quot;</span>
+  <span class="p">(</span><span class="nv">interactive</span><span class="p">)</span>
+  <span class="p">(</span><span class="k">let</span> <span class="p">((</span><span class="nv">width</span> <span class="mi">4</span><span class="p">)</span>
+        <span class="p">(</span><span class="nv">mode</span> <span class="no">nil</span><span class="p">))</span>
+    <span class="p">(</span><span class="nb">when</span> <span class="p">(</span><span class="nv">save-excursion</span>
+            <span class="p">(</span><span class="nv">goto-char</span> <span class="p">(</span><span class="nv">point-min</span><span class="p">))</span>
+            <span class="p">(</span><span class="nv">search-forward</span> <span class="s">&quot;\t&quot;</span> <span class="p">(</span><span class="nb">min</span> <span class="mi">3000</span> <span class="p">(</span><span class="nv">point-max</span><span class="p">))</span> <span class="no">t</span><span class="p">))</span>
+      <span class="p">(</span><span class="k">setq</span> <span class="nv">width</span> <span class="mi">8</span><span class="p">)</span>
+      <span class="p">(</span><span class="k">setq</span> <span class="nv">mode</span> <span class="no">t</span><span class="p">))</span>
+
+    <span class="p">(</span><span class="k">setq</span> <span class="nv">indent-tabs-mode</span> <span class="nv">mode</span><span class="p">)</span>
+    <span class="p">(</span><span class="k">setq</span> <span class="nv">tab-width</span> <span class="nv">width</span><span class="p">)</span>
+    <span class="p">(</span><span class="nb">when</span> <span class="nv">mode</span> <span class="p">(</span><span class="nv">message</span> <span class="s">&quot;Set &#39;tab-mode&#39; with %d&quot;</span> <span class="nv">width</span><span class="p">))))</span>
+</pre></div>
+<p>(add-hook 'c-mode-hook (lambda () (let ((filename (buffer-file-name))) ;; Enable kernel mode for the appropriate files (when (and filename (string-match (expand-file-name &quot;~/src/linux-trees&quot;) filename)) (setq indent-tabs-mode t) (c-set-style &quot;linux-tabs-only&quot;)))))</p><p><!--  --> 현재 버퍼의 주/부 모드에 관한 정보 및 모드에 대한 키바인딩은 <code>C-h m</code> (<strong>h</strong>elp <strong>m</strong>ode) 명령을 통해 살펴볼 수 있다.</p><p>C-c .</p><p>regexp dabbrev-expand man ido-mode comment-dwin c-macro c-up/down/next-conditional cwarn-mode highlight-parentheses-mode highlight-current-line-on flyspell-prog flymake</p><h2 id="모드-mode">모드 (Mode)</h2><p>일반적으로 우리가 특정 파일을 이맥스에서 열었을때 이맥스는 열린 파일에 대한 버퍼를 생성하하고, &quot;버퍼&quot;의 이름에서 알 수 있듯이 사용자는 파일을 직접 수정하는 것 대신 버퍼를 수정하게 된다. 이때 현재 작업하는 버퍼(파일)에 대하여 특별히 유용한 함수들와 키맵(map)의 그룹을 불러 들이게 된다. 예를 들면 C언어로 짜여진 파일을 열었을 경우, C언어에 특화된 함수와 변수(코드 하이라이팅, 주석 처리 등)를 불러들이고, 이러한 함수와 변수를 하나로 모아서 모드(mode)라고 부른다. 즉 C언어로 짜여진 파일을 열면 (&quot;.c&quot;나 &quot;.h&quot;의 확장자를 갖는 파일을 열면), 현재 버퍼의 <code>major-mode</code>가 <code>c-mode</code>가 된다. 버퍼를 기능별로 분류하다 보니, 자연스럽게 하나의 버퍼당 하나의 <code>major-mode</code>를 갖게 되며, 현재 버퍼의 모드는 <code>major-mode</code>의 변수에 기록이 된다. <code>C-h v: 변수 도움말</code>을 현재 버퍼의 주모드가 무엇인지 확인해 보도록 하자.</p><ul><li>with a c example</li><li><p>editing/searching</p></li><li>modifying global-map (C-z -&gt; undo or C-q -&gt; kill-buffer)</li><li><p>explain init process</p></li></ul><p>=&gt; next chapter (tools, compile ...) =&gt; windowing =&gt; modifying local-map</p><p>ido 소개 -&gt; permenant? -&gt; init file</p><p>기본틀 -&gt; 설명? - basic option feilds - linux kernel mode?</p><p>모드 - .bashrc 파일 열어보기 - 개념 - 키 -&gt; 함수 - .c</p><p>=&gt; so a way to recognize this: auto-mode-alist</p><ul><li><p>jumping</p><p>C-u C-SPC M-g g (goto-line) M-g n (next-error) M-g p (previous-error)</p></li><li><p>search</p><p>C-s isearch-forward C-r isearch-backward</p><p>C-M-s isearch-forward-regexp C-M-r isearch-backward-regexp</p></li><li><p>editing</p><p>DEL delete-backward-char M-DEL backward-kill-word C-DEL delete-kill-word C-d delete-char M-d kill-word M-k kill-line C-M-k kill-sexp M-z zap-to-char C-t M-t C-M-t C-o C-x C-o C-j C-space</p></li><li><p>windowing</p><p>C-x 1 C-x 2 C-x 3 C-x 5 C-M-v: scroll-other-window-up C-M-S-v: scroll-other-window-down</p></li><li><p>register</p></li></ul><p>=&gt; end with how to modify global-map and permanently change it</p>
+
+
+      <div id="disqus_thread"></div>
+      <script type="text/javascript">
+        var disqus_shortname = 'emacsbook';
+
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+          var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+          dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+          (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+      </script>
+      <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+      <a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+      
+    </article>
+  </div>
+ 
+  <footer>
+    <a rel="license" href="http://creativecommons.org/licenses/by-nc/3.0/">
+      <img alt="CC" style="border-width:0" src="http://i.creativecommons.org/l/by-nc/3.0/88x31.png" />
+    </a>
+  </footer>
+</div>
+
+
+  <!-- JavaScript at the bottom for fast page loading -->
+
+  <!-- Grab Google CDN's jQuery, with a protocol relative URL; fall back to local if offline -->
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+  <script>window.jQuery || document.write('<script src="js/libs/jquery-1.6.2.min.js"><\/script>')</script>
+
+
+  <!-- scripts concatenated and minified via ant build script-->
+  <script defer src="js/plugins.js"></script>
+  <script defer src="js/script.js"></script>
+  <!-- end scripts-->
+
+  <script>
+    window._gaq = [['_setAccount','UA-9161381-1'],['_trackPageview'],['_trackPageLoadTime']];
+    Modernizr.load({
+      load: ('https:' == location.protocol ? '//ssl' : '//www') + '.google-analytics.com/ga.js'
+    });
+  </script>
+
+
+  <!-- Prompt IE 6 users to install Chrome Frame. Remove this if you want to support IE 6.
+       chromium.org/developers/how-tos/chrome-frame-getting-started -->
+  <!--[if lt IE 7 ]>
+    <script src="//ajax.googleapis.com/ajax/libs/chrome-frame/1.0.3/CFInstall.min.js"></script>
+    <script>window.attachEvent('onload',function(){CFInstall.check({mode:'overlay'})})</script>
+  <![endif]-->
+  
+</body>
+</html>
