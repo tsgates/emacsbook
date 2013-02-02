@@ -1,0 +1,280 @@
+<!doctype html>
+<!-- paulirish.com/2008/conditional-stylesheets-vs-css-hacks-answer-neither/ -->
+<!--[if lt IE 7]> <html class="no-js ie6 oldie" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="no-js ie7 oldie" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="no-js ie8 oldie" lang="en"> <![endif]-->
+<!-- Consider adding an manifest.appcache: h5bp.com/d/Offline -->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+
+  <!-- Use the .htaccess and remove these lines to avoid edge case issues.
+       More info: h5bp.com/b/378 -->
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+  <title>Emacsbook</title>
+  <meta name="description" content="Emacsbook">
+  <meta name="author" content="Taesoo Kim">
+
+  <!-- Mobile viewport optimized: j.mp/bplateviewport -->
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+
+  <!-- Place favicon.ico and apple-touch-icon.png in the root directory: mathiasbynens.be/notes/touch-icons -->
+
+  <!-- CSS: implied media=all -->
+  <!-- CSS concatenated and minified via ant build script-->
+  <link rel="stylesheet" href="css/style.css">
+  <!-- end CSS-->
+
+  <!-- More ideas for your <head> here: h5bp.com/d/head-Tips -->
+
+  <!-- All JavaScript at the bottom, except for Modernizr / Respond.
+       Modernizr enables HTML5 elements & feature detects; Respond is a polyfill for min/max-width CSS3 Media Queries
+       For optimal performance, use a custom Modernizr build: www.modernizr.com/download/ -->
+  <script src="js/libs/modernizr-2.0.6.min.js"></script>
+</head>
+
+<body>
+  <a href="http://github.com/tsgates">
+  <img alt="Fork me on GitHub" src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" 
+       style="position: absolute; top: 0; right: 0; border: 0;">
+  </a>
+
+
+<link rel="stylesheet" href="css/chap.css" type="text/css" media="screen, projection" />
+<link rel="stylesheet" href="css/code.css" type="text/css" media="screen, projection" />
+
+<div id="container">
+  <header>
+  </header>
+
+  <nav id="main_nav">
+    <ul>
+      <li><a href="/index.html">Home</a></li>
+      <li><a href="http://blog.taesoo.org/">Blog</a></li>
+      <li><a href="http://pdos.csail.mit.edu/~taesoo/">About</a></li>
+      <li><a href="/rss.xml">RSS</a></li>
+    </ul>
+  </nav>
+  
+  <div id="main" role="main">
+    <article class="post">
+      <header>
+        <h3><span class="hint">Chap #7</span>February 02, 2012</h3>
+        <h1> 프로그래밍하기: C언어-1</h1>
+      </header>
+      
+      <p><a href="chap6.html">6장</a>에서는 Lisp의 환경(environment)과 동적 바인딩(dynamic binding)의 특성을 활용하여 주 모드(mode)가 어떻게 구현되었는지 살펴보았다. 이번 장에서는 이맥스 안에서 (드디어!) 프로그램을 작성하고, 수정하는 기본적인 방법을 알아 보면서, 그 뒤에 숨겨진 이맥스의 내부 구조를 이해해보자.</p><h2 id="텍스트-입력하기">텍스트 입력하기</h2><p>우리가 같이 작성해볼 프로그램은 시저 암호화(caeser cipher) 알고리즘으로 암호화할 텍스트를 받아 암호화한 코드(cipher)를 출력한다. 이번 장에서는 컴파일형 언어인 C언어로 프로그램을 작성해보자. 먼저 <code>C-x C-f</code>를 입력하여 &quot;enc.c&quot; 파일을 생성하자.</p><p>아래의 코드를 처음부터 직접 입력해 보자! (처음 이맥스를 사용하는 분이면 꼭 해보기를 권한다.)</p><div class="highlight"><pre><span class="cp">#include &lt;stdio.h&gt;</span>
+<span class="cp">#include &lt;string.h&gt;</span>
+<span class="cp">#include &lt;err.h&gt;</span>
+
+<span class="cp">#define PRIME (17)</span>
+<span class="cp">#define SHIFT (11)</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * @plain: input text</span>
+<span class="cm"> * @shift: an integer</span>
+<span class="cm"> * @prime: a prime number</span>
+<span class="cm"> */</span>
+<span class="kt">char</span><span class="o">*</span> <span class="nf">ceaser</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">plain</span><span class="p">,</span> <span class="kt">int</span> <span class="n">shift</span><span class="p">,</span> <span class="kt">int</span> <span class="n">prime</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">const</span> <span class="kt">int</span> <span class="n">len</span> <span class="o">=</span> <span class="n">strlen</span><span class="p">(</span><span class="n">plain</span><span class="p">);</span>
+  <span class="kt">char</span> <span class="o">*</span><span class="n">cipher</span> <span class="o">=</span> <span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="p">)</span><span class="n">malloc</span><span class="p">(</span><span class="n">len</span><span class="p">);</span>
+
+  <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">len</span> <span class="p">;</span> <span class="n">i</span> <span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+    <span class="o">*</span><span class="p">(</span><span class="n">cipher</span> <span class="o">+</span> <span class="n">i</span><span class="p">)</span> <span class="o">=</span> <span class="p">(</span><span class="o">*</span><span class="p">(</span><span class="n">plain</span> <span class="o">+</span> <span class="n">i</span><span class="p">)</span> <span class="o">-</span> <span class="sc">&#39;a&#39;</span> <span class="o">+</span> <span class="n">shift</span><span class="p">)</span> <span class="o">%</span> <span class="n">prime</span> <span class="o">+</span> <span class="sc">&#39;a&#39;</span><span class="p">;</span>
+  <span class="p">}</span>
+  <span class="o">*</span><span class="p">(</span><span class="n">cipher</span> <span class="o">+</span> <span class="n">len</span><span class="p">)</span> <span class="o">=</span> <span class="sc">&#39;\0&#39;</span><span class="p">;</span>
+
+  <span class="k">return</span> <span class="n">cipher</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">argv</span><span class="p">[])</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">argc</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">err</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s">&quot;usage: %s [text]</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
+  <span class="p">}</span>
+
+  <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">encrypted</span> <span class="o">=</span> <span class="n">ceaser</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">SHIFT</span><span class="p">,</span> <span class="n">PRIME</span><span class="p">);</span>
+  <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">decrypted</span> <span class="o">=</span> <span class="n">ceaser</span><span class="p">(</span><span class="n">encrypted</span><span class="p">,</span> <span class="o">-</span><span class="n">SHIFT</span><span class="p">,</span> <span class="n">PRIME</span><span class="p">);</span>
+
+  <span class="n">printf</span><span class="p">(</span><span class="s">&quot;&#39;%s&#39; =enc-&gt;&gt; &#39;%s&#39; =dec-&gt;&gt; &#39;%s&#39;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span>
+     <span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">encrypted</span><span class="p">,</span> <span class="n">decrypted</span><span class="p">);</span>
+
+  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+<p>입력해보았다면 에디터에 비교해서 어떤 점이 불편하고, 어떤 기능들을 더 필요한가? 특히 다른 에디터에서 익숙한 기능이 있다면, 하나 하나 꼭 기록해 놓기 바란다. 앞으로 이맥스를 배워가는 과정에서, 어떻게 원하는 기능을 찾고, 찾을 수 없다면 어떻게 스스로 구현하는지 배워보도록 할 것이다.</p><h2 id="자동-완성-dabbrev-completion">자동 완성 (dabbrev-completion)</h2><p>프로그래밍을 하면서 입력하면서 가장 먼저 절실하게? 필요한 기능은 역시 자동 완성이다. 이맥스에서 동적 자동완성 (dabbrev-completion)의 기능이 있는데, <code>M-/: dabbrev-expand</code>의 키입력을 통해서 호출 할 수 있다.</p><p>동적 자동완성은 앞문자들이 일치하는 단어들 중 가장 최근에 나타난 (앞선) 단어를 찾아 완성해 준다.</p><div class="figure"><img src="/img/emacs-abbrev.png" alt="그림-1. 자동 완성" /><p class="caption">그림-1. 자동 완성</p></div><div class="highlight"><pre><span class="cp">#include &lt;stdio.h&gt;</span>
+<span class="cp">#include &lt;string.h&gt;</span>
+<span class="cp">#inc[]</span>
+</pre></div>
+<p>자 위의 커서에서 <code>M-/</code>로 자동 완성 시켜보기 바란다.</p><h2 id="헤더-파일-열기-find-file-at-point">헤더 파일 열기 (find-file-at-point)</h2><p>&quot;stdio.h&quot; 와 &quot;string.h&quot;의 헤더 파일은 알겠는데, &quot;err.h&quot;는 무슨 헤더 파일일까?</p><div class="highlight"><pre><span class="cp">#include &lt;stdio.h&gt;</span>
+<span class="cp">#include &lt;string.h&gt;</span>
+<span class="cp">#include &lt;[]err.h&gt;</span>
+</pre></div>
+<p>커서를 헤더 파일이름에 놓고, <code>M-x find-file-at-point</code>를 실행해 보자. 시스템에 &quot;err.h&quot; 파일의 위치를 찾아 주는가?</p><h2 id="간단한-텍스트-수정">간단한 텍스트 수정</h2><p>자주 쓰이는 텍스트 수정하는 방법들을 알아 본다.</p><div class="highlight"><pre><span class="cp">#define rpIME (17)</span>
+<span class="cp">#define SHIFT (11)</span>
+</pre></div>
+<ul><li><code>M-u: upper word</code>: 단어를 대문자로 변경</li><li><code>M-l: lower word</code>: 단어를 소문자로 변경</li><li><code>M-c: capitalize word</code>: 단어의 첫 글자를 대문자로, 나머지는 소문자로</li><li><code>C-t: transpose char</code>: 앞/뒤 글자를 뒤바꿈</li><li><code>M-t: transpose word</code>: 앞/뒤 문자를 뒤바꿈</li><li><code>C-M-t: transpose sexp</code>: 앞/뒤 표현식을 뒤바꿈</li></ul><p>자 잘못쓰여진 &quot;rpIME&quot;을 &quot;PRIME&quot;으로 변경하려면 아래와 같이 4번의 입력으로 할 수 있다.</p><ul><li><code>C-f</code>: 커서를 &quot;r&quot;에서 &quot;p&quot;로 옮기고</li><li><code>C-t</code>: &quot;rp&quot; -&gt; &quot;pr&quot;</li><li><code>M-b</code>: 커서를 문자 앞으로 옮기고</li><li><code>M-u</code>: 대문자로 단어를 변경</li></ul><p>사실, 두 글자 지우고 <code>C-d</code> 다시 &quot;PR&quot;을 입력하는 것 또한 4번의 입력으로 가능하다. 두 글자 지우는 것을 현재 커서에서 &quot;p&quot;까지 지우는 것으로 생각할 수 있다면, <code>M-z: zap</code>을 입력하고 &quot;p&quot;를 입력하면 현재 커서에서 &quot;p&quot;까지 지우고, 다시 &quot;PR&quot;을 입력할 수도 있다.</p><h2 id="주석-쓰기">주석 쓰기</h2><p>많은 언어를 접하다 보면 가장 헛갈리는 것 중에 하나가 주석 키워드 이다. 이맥스는 모든 언어들의 주석이 <code>M-;: comment-dwim</code> 한 키에 바인딩 되어 있다. 즉, 언어의 특징적인 주 모드들이 언어에 해당하는 주석 키워드를 이용해 주석을 생성해 준다. 또한 문맥에 따라 다른 주석을 생성하는데 아래와 같은 실험을 해보자.</p><div class="highlight"><pre><span class="p">[]</span>
+<span class="cp">#define []PRIME (17)</span>
+<span class="cp">#define SHIFT (11)</span>
+</pre></div>
+<p>두 곳의 커서 위치에서 <code>M-;</code>를 입력하면 아래와 같이 하나는 현재 줄 전체에, 다른 하나는 오른쪽 공간에 주석을 생성하는 것을 볼 수 있다.</p><div class="highlight"><pre><span class="cm">/* [] */</span>
+<span class="cp">#define PRIME (17)              </span><span class="cm">/* [] */</span><span class="cp"></span>
+<span class="cp">#define SHIFT (11)</span>
+</pre></div>
+<p>오? 그러면 주석을 지우고 싶으면?<a href="chap5.html"> 5장</a>에서 배운 범용 인자 <code>C-u</code>를 이용해서 주석을 제거해 보자. 위의 커서 위치에서 <code>C-u M-;</code>를 입력해서 각각의 주석을 제거하자.</p><p>또한 범위가 선택되었다면 <code>M-;</code>는 선택된 범위를 주석 처리 하거나, 만약에 이미 주석이 처리가 되었다면 주석을 제거할 수도 있다. 범위는 <code>C-space: set-mark-command</code> 를 이용해서 할 수 있고, 위의 두 define문을 선택하고 <code>C-;</code>를 호출해 보자.</p><div class="highlight"><pre><span class="cm">/* #define PRIME (17) */</span>
+<span class="cm">/* #define SHIFT (11) */</span>
+</pre></div>
+<h2 id="주석-문서-달기">주석 문서 달기</h2><p>일반적으로 C언어에서 함수/변수에 대한 문서는 &quot;/**&quot;로 시작하는 주석이 쓰인다.</p><div class="highlight"><pre><span class="cm">/**</span>
+<span class="cm"> * @plain: input text</span>
+<span class="cm"> * @shift: an integer</span>
+<span class="cm"> * @prime: a prime number</span>
+<span class="cm"> */</span>
+<span class="kt">char</span><span class="o">*</span> <span class="nf">ceaser</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">plain</span><span class="p">,</span> <span class="kt">int</span> <span class="n">shift</span><span class="p">,</span> <span class="kt">int</span> <span class="n">prime</span><span class="p">)</span> <span class="p">{</span>
+</pre></div>
+<p>위의 문서에서 보듯 주석의 첫줄의 '<em>'와 두번째 줄의 '</em>'이 잘 정돈되어 있음을 볼 수 있다. 일일이 프로그래머가 입력해 줘야 할까? 이맥스가 주석을 이해하기 때문에 주석에서의 새로운 라인은 자동으로 에디터가 정돈해 줄 수 있지 않을까? <code>M-j: indent-new-comment-line</code>를 입력해 보자.</p><div class="highlight"><pre><span class="o">/**</span><span class="p">[]</span>
+</pre></div>
+<p>다음과 같이 커서가 변했는가?</p><div class="highlight"><pre><span class="o">/**</span>
+ <span class="o">*</span> <span class="p">[]</span>
+</pre></div>
+<h2 id="스타일">스타일</h2><p>많은 프로그래머들은 자기만의 코드 스타일을 가지고 있다. 필자는 모든 소스코드에 4개의 스페이스를 들여쓰기 단위로 쓴다. 하지만 기본 <code>c-mode</code>에서는 2개의 스페이스를 들여쓰기 단위로 사용한다.</p><div class="highlight"><pre><span class="kt">char</span><span class="o">*</span> <span class="nf">ceaser</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">plain</span><span class="p">,</span> <span class="kt">int</span> <span class="n">shift</span><span class="p">,</span> <span class="kt">int</span> <span class="n">prime</span><span class="p">)</span> <span class="p">{[]</span>
+</pre></div>
+<p><code>C-j: newline-and-indent</code>을 함수의 선언문에서 입력해 볼까?</p><div class="highlight"><pre><span class="kt">char</span><span class="o">*</span> <span class="nf">ceaser</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">plain</span><span class="p">,</span> <span class="kt">int</span> <span class="n">shift</span><span class="p">,</span> <span class="kt">int</span> <span class="n">prime</span><span class="p">)</span> <span class="p">{</span>
+  <span class="p">[]</span>
+</pre></div>
+<p>이맥스는 현재 소스 코드를 언어의 문법(Syntactic)에 따라 구조적(AST)으로 이해하고 있다. 그러면 자동 들여쓰기를 지원하는 에디터의 관점에서 소스코드를 살펴보자.</p><div class="highlight"><pre><span class="p">[</span><span class="n">topmost</span><span class="o">-</span><span class="n">intro</span><span class="o">=</span><span class="mi">0</span><span class="p">]</span>
+<span class="kt">char</span><span class="o">*</span> <span class="n">ceaser</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">plain</span><span class="p">,</span> <span class="kt">int</span> <span class="n">shift</span><span class="p">,</span> <span class="kt">int</span> <span class="n">prime</span><span class="p">)</span> <span class="p">{</span>
+  <span class="p">[</span><span class="n">defun</span><span class="o">-</span><span class="n">block</span><span class="o">-</span><span class="n">intro</span><span class="o">=+</span><span class="p">]</span>
+  <span class="k">const</span> <span class="kt">int</span> <span class="n">len</span> <span class="o">=</span> <span class="n">strlen</span><span class="p">(</span><span class="n">plain</span><span class="p">);</span>
+  <span class="p">[</span><span class="n">statement</span><span class="o">=</span><span class="mi">0</span><span class="p">]</span>
+  <span class="kt">char</span> <span class="o">*</span><span class="n">cipher</span> <span class="o">=</span> <span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="p">)</span><span class="n">malloc</span><span class="p">(</span><span class="n">len</span><span class="p">);</span>
+
+  <span class="p">[</span><span class="n">statement</span><span class="o">=</span><span class="mi">0</span><span class="p">]</span>
+  <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">len</span> <span class="p">;</span> <span class="n">i</span> <span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+    <span class="p">[</span><span class="n">statement</span><span class="o">-</span><span class="n">block</span><span class="o">-</span><span class="n">intro</span><span class="o">=+</span><span class="p">]</span>
+    <span class="o">*</span><span class="p">(</span><span class="n">cipher</span> <span class="o">+</span> <span class="n">i</span><span class="p">)</span> <span class="o">=</span> <span class="p">(</span><span class="o">*</span><span class="p">(</span><span class="n">plain</span> <span class="o">+</span> <span class="n">i</span><span class="p">)</span> <span class="o">-</span> <span class="sc">&#39;a&#39;</span> <span class="o">+</span> <span class="n">shift</span><span class="p">)</span> <span class="o">%</span> <span class="n">prime</span> <span class="o">+</span> <span class="sc">&#39;a&#39;</span><span class="p">;</span>
+  <span class="p">[</span><span class="n">block</span><span class="o">-</span><span class="n">close</span><span class="o">=</span><span class="mi">0</span><span class="p">]</span>
+  <span class="p">}</span>
+
+  <span class="p">[</span><span class="n">statement</span><span class="o">=</span><span class="mi">0</span><span class="p">]</span>
+  <span class="o">*</span><span class="p">(</span><span class="n">cipher</span> <span class="o">+</span> <span class="n">len</span><span class="p">)</span> <span class="o">=</span> <span class="sc">&#39;\0&#39;</span><span class="p">;</span>
+  <span class="p">[</span><span class="n">statement</span><span class="o">=</span><span class="mi">0</span><span class="p">]</span>
+  <span class="k">return</span> <span class="n">cipher</span><span class="p">;</span>
+<span class="p">[</span><span class="n">defun</span><span class="o">-</span><span class="n">close</span><span class="o">=</span><span class="mi">0</span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+<p>&quot;[]&quot; 괄호는 이맥스가 현재 (바로 밑의) 줄을 어떻게 구조적으로 이해하고 있는지 나타낸다. 그러면 +는 무엇을 의미 할까? 현재 줄의 들여쓰기에 한 단위를 더하여 다음 줄의 들여쓰기를 결정한다. 또한 0의 값은 현재 줄의 들여쓰기를 유지하고 다음줄의 들여쓰기를 한다.</p><p>자 그러면 <code>C-h v</code>을 통해 <code>c-offsets-alist: 스타일 옵션들</code>을 살펴 보자.</p><div class ="highlight"><pre>c-offsets-alist is a variable defined in `cc-vars.el'.
+Its value is nil
+
+  Automatically becomes buffer-local when set in any fashion.
+
+Documentation:
+Association list of syntactic element symbols and indentation offsets.
+As described below, each cons cell in this list has the form:
+
+    (SYNTACTIC-SYMBOL . OFFSET)
+...
+
+OFFSET can specify an offset in several different ways:
+
+  If OFFSET is nil then it's ignored.
+  If OFFSET is an integer ...
+  If OFFSET is one of the symbols `+', `-', `++', `--', ...
+  If OFFSET is a symbol ...
+  If OFFSET is a vector ...
+  If OFFSET is a function ...
+  If OFFSET is a list ...
+
+Here is the current list of valid syntactic element symbols:
+
+ string                 -- Inside multi-line string.
+ c                      -- Inside a multi-line C style block comment.
+ defun-open             -- Brace that opens a function definition.
+ defun-close            -- Brace that closes a function definition.
+ defun-block-intro      -- The first line in a top-level defun.
+ ...</pre></div><p>너무 많은 (자세한) 정보에 항상 거부감이 들지만, 큰 그림으로 접근하면 매우 간단하다. &quot;alist&quot;인 <code>c-offsets-alist</code>는 이맥스가 파싱한 각각의 <code>SYNTACTIC-SYMBOL</code>을 얼만큼 들여쓸지 <code>OFFSET</code>을 통해 정의한다. <code>OFFSET</code>은 Lisp의 기본 타입들인 정수, 심볼, 리스트, 함수 등을 이용하여 정의할 수 있으며, 매우 직관적으로 정수면 정수 스페이스 만큼, 함수이면 함수를 호출한 후 리턴되는 값 만큼 들여쓰기를 할 것이다. 그런데 현재 줄은 어떻게 해석된 것일까?</p><div class="highlight"><pre><span class="kt">char</span><span class="o">*</span> <span class="nf">ceaser</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">plain</span><span class="p">,</span> <span class="kt">int</span> <span class="n">shift</span><span class="p">,</span> <span class="kt">int</span> <span class="n">prime</span><span class="p">)</span> <span class="p">{</span>
+  <span class="p">[]</span><span class="k">const</span> <span class="kt">int</span> <span class="n">len</span> <span class="o">=</span> <span class="n">strlen</span><span class="p">(</span><span class="n">plain</span><span class="p">);</span>
+</pre></div>
+<p>위의 커서에서 <code>C-c C-o: c-set-offset</code>을 입력해 볼까? 현재 줄은 <code>defun-block-intro</code>으로 해석되어 있음을 알 수있다. 그러면 4를 입력해 볼까? 그리고 <code>C-j: newline-and-indent</code>를 입력해 보자. 4칸이 들여 써졌는가?</p><h2 id="스타일-변경하기">스타일 변경하기</h2><p>이맥스의 C언어의 기본 스타일은 GNU에서 정한 코딩 스타일을 따른다. 만약 K&amp;R (The C Programming Language의 저자들)이나 Linux 커널의 스타일을 지키고 싶으면 어떻게 할까? 이맥스에서는 아래와 같이 잘 알려진 스타일을 정의하고 있다.</p><div class="highlight"><pre><span class="p">(</span><span class="nf">defvar</span> <span class="nv">c-style-alist</span>
+<span class="o">&#39;</span><span class="p">((</span><span class="s">&quot;k&amp;r&quot;</span>
+     <span class="p">(</span><span class="nf">c-basic-offset</span> <span class="o">.</span> <span class="mi">5</span><span class="p">)</span>
+     <span class="p">(</span><span class="nf">c-comment-only-line-offset</span> <span class="o">.</span> <span class="mi">0</span><span class="p">)</span>
+     <span class="p">(</span><span class="nf">c-offsets-alist</span> <span class="o">.</span> <span class="p">((</span><span class="nf">statement-block-intro</span> <span class="o">.</span> <span class="nv">+</span><span class="p">)</span>
+             <span class="p">(</span><span class="nf">knr-argdecl-intro</span> <span class="o">.</span> <span class="mi">0</span><span class="p">)</span>
+             <span class="p">(</span><span class="nf">substatement-open</span> <span class="o">.</span> <span class="mi">0</span><span class="p">)</span>
+             <span class="p">(</span><span class="nf">substatement-label</span> <span class="o">.</span> <span class="mi">0</span><span class="p">)</span>
+             <span class="p">(</span><span class="nf">label</span> <span class="o">.</span> <span class="mi">0</span><span class="p">)</span>
+             <span class="p">(</span><span class="nf">statement-cont</span> <span class="o">.</span> <span class="nv">+</span><span class="p">))))</span>
+  <span class="p">(</span><span class="s">&quot;linux&quot;</span>
+     <span class="p">(</span><span class="nf">c-basic-offset</span>  <span class="o">.</span> <span class="mi">8</span><span class="p">)</span>
+     <span class="p">(</span><span class="nf">c-comment-only-line-offset</span> <span class="o">.</span> <span class="mi">0</span><span class="p">)</span>
+     <span class="p">(</span><span class="nf">c-hanging-braces-alist</span> <span class="o">.</span> <span class="p">((</span><span class="nf">brace-list-open</span><span class="p">)</span>
+                <span class="p">(</span><span class="nf">brace-entry-open</span><span class="p">)</span>
+                <span class="p">(</span><span class="nf">substatement-open</span> <span class="nv">after</span><span class="p">)</span>
+                <span class="p">(</span><span class="nf">block-close</span> <span class="o">.</span> <span class="nv">c-snug-do-while</span><span class="p">)</span>
+                <span class="p">(</span><span class="nf">arglist-cont-nonempty</span><span class="p">)))</span>
+     <span class="p">(</span><span class="nf">c-cleanup-list</span> <span class="o">.</span> <span class="p">(</span><span class="nf">brace-else-brace</span><span class="p">))</span>
+     <span class="p">(</span><span class="nf">c-offsets-alist</span> <span class="o">.</span> <span class="p">((</span><span class="nf">statement-block-intro</span> <span class="o">.</span> <span class="nv">+</span><span class="p">)</span>
+             <span class="p">(</span><span class="nf">knr-argdecl-intro</span>     <span class="o">.</span> <span class="mi">0</span><span class="p">)</span>
+             <span class="p">(</span><span class="nf">substatement-open</span>     <span class="o">.</span> <span class="mi">0</span><span class="p">)</span>
+             <span class="p">(</span><span class="nf">substatement-label</span>    <span class="o">.</span> <span class="mi">0</span><span class="p">)</span>
+             <span class="p">(</span><span class="nf">label</span>                 <span class="o">.</span> <span class="mi">0</span><span class="p">)</span>
+             <span class="p">(</span><span class="nf">statement-cont</span>        <span class="o">.</span> <span class="nv">+</span><span class="p">))))</span>
+<span class="o">...</span><span class="p">)</span>
+</pre></div>
+<p><code>C-c .:c-set-style</code>을 통해 원하는 스타일을 정의해 보자. 그러면 리눅스 소스코드를 열면 &quot;linux&quot; 모드로 나머지 소스코드들은 &quot;gnu&quot;모드로? 수정하고 싶은 파일에 따라 원하는 스타일을 선택할 수는 없을까? 또 자기만의 스타일을 정의할 수는 없을까? 더 나아가서, 작성된 C프로그램은 어떻게 컴파일 하며, 어떻게 디버깅하는 것일까? 다음 장에서 나머지 C프로그램을 같이 살펴 보면서 궁금증을 하나씩 해결해 볼 것이다.</p>
+
+
+      <div id="disqus_thread"></div>
+      <script type="text/javascript">
+        var disqus_shortname = 'emacsbook';
+
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+          var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+          dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+          (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+      </script>
+      <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+      <a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+      
+    </article>
+  </div>
+ 
+  <footer>
+    <a rel="license" href="http://creativecommons.org/licenses/by-nc/3.0/">
+      <img alt="CC" style="border-width:0" src="http://i.creativecommons.org/l/by-nc/3.0/88x31.png" />
+    </a>
+  </footer>
+</div>
+
+
+  <!-- JavaScript at the bottom for fast page loading -->
+
+  <!-- Grab Google CDN's jQuery, with a protocol relative URL; fall back to local if offline -->
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+  <script>window.jQuery || document.write('<script src="js/libs/jquery-1.6.2.min.js"><\/script>')</script>
+
+
+  <!-- scripts concatenated and minified via ant build script-->
+  <script defer src="js/plugins.js"></script>
+  <script defer src="js/script.js"></script>
+  <!-- end scripts-->
+
+  <script>
+    window._gaq = [['_setAccount','UA-9161381-1'],['_trackPageview'],['_trackPageLoadTime']];
+    Modernizr.load({
+      load: ('https:' == location.protocol ? '//ssl' : '//www') + '.google-analytics.com/ga.js'
+    });
+  </script>
+
+
+  <!-- Prompt IE 6 users to install Chrome Frame. Remove this if you want to support IE 6.
+       chromium.org/developers/how-tos/chrome-frame-getting-started -->
+  <!--[if lt IE 7 ]>
+    <script src="//ajax.googleapis.com/ajax/libs/chrome-frame/1.0.3/CFInstall.min.js"></script>
+    <script>window.attachEvent('onload',function(){CFInstall.check({mode:'overlay'})})</script>
+  <![endif]-->
+  
+</body>
+</html>

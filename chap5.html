@@ -1,0 +1,164 @@
+<!doctype html>
+<!-- paulirish.com/2008/conditional-stylesheets-vs-css-hacks-answer-neither/ -->
+<!--[if lt IE 7]> <html class="no-js ie6 oldie" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="no-js ie7 oldie" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="no-js ie8 oldie" lang="en"> <![endif]-->
+<!-- Consider adding an manifest.appcache: h5bp.com/d/Offline -->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+
+  <!-- Use the .htaccess and remove these lines to avoid edge case issues.
+       More info: h5bp.com/b/378 -->
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+  <title>Emacsbook</title>
+  <meta name="description" content="Emacsbook">
+  <meta name="author" content="Taesoo Kim">
+
+  <!-- Mobile viewport optimized: j.mp/bplateviewport -->
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+
+  <!-- Place favicon.ico and apple-touch-icon.png in the root directory: mathiasbynens.be/notes/touch-icons -->
+
+  <!-- CSS: implied media=all -->
+  <!-- CSS concatenated and minified via ant build script-->
+  <link rel="stylesheet" href="css/style.css">
+  <!-- end CSS-->
+
+  <!-- More ideas for your <head> here: h5bp.com/d/head-Tips -->
+
+  <!-- All JavaScript at the bottom, except for Modernizr / Respond.
+       Modernizr enables HTML5 elements & feature detects; Respond is a polyfill for min/max-width CSS3 Media Queries
+       For optimal performance, use a custom Modernizr build: www.modernizr.com/download/ -->
+  <script src="js/libs/modernizr-2.0.6.min.js"></script>
+</head>
+
+<body>
+  <a href="http://github.com/tsgates">
+  <img alt="Fork me on GitHub" src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" 
+       style="position: absolute; top: 0; right: 0; border: 0;">
+  </a>
+
+
+<link rel="stylesheet" href="css/chap.css" type="text/css" media="screen, projection" />
+<link rel="stylesheet" href="css/code.css" type="text/css" media="screen, projection" />
+
+<div id="container">
+  <header>
+  </header>
+
+  <nav id="main_nav">
+    <ul>
+      <li><a href="/index.html">Home</a></li>
+      <li><a href="http://blog.taesoo.org/">Blog</a></li>
+      <li><a href="http://pdos.csail.mit.edu/~taesoo/">About</a></li>
+      <li><a href="/rss.xml">RSS</a></li>
+    </ul>
+  </nav>
+  
+  <div id="main" role="main">
+    <article class="post">
+      <header>
+        <h3><span class="hint">Chap #5</span>December 26, 2011</h3>
+        <h1> 키맵(Keymap)과 커서이동</h1>
+      </header>
+      
+      <p>이번 장에서는 이맥스에서 사용자의 키입력을 어떻게 처리하는지, 또 어떠한 Lisp의 데이터구조로 이를 표현하는지 이해해보고, 더불어 이맥스의 가장 기본적인 편집기능 인 커서이동에 관한 함수들을 하나하나 살펴보도록 한다.</p><h2 id="키맵-keymap">키맵 (Keymap)</h2><p>사용자가 키를 입력하면 이맥스는 키입력에 바인드된 함수를 찾아 호출한다. 키입력과 바인드된 해당 함수의 정보를 담고있는 변수를 이맥스에서 맵(map)이라고 부른다. 맵은 아래와 같이 키와 값을 짝으로 갖는 Associate List(Alist)의 구조로 표현된다. Alist는 리스트의 특별한 형태로, 키와 해당 값이 리스트의 하나의 원소로 저장된다.</p><div class="highlight"><pre><span class="c1">;; global-map</span>
+<span class="p">(</span><span class="nb">list</span> <span class="p">(</span><span class="s">&quot;C-a&quot;</span> <span class="o">.</span> <span class="ss">&#39;move-beginning-of-line</span><span class="p">)</span>
+      <span class="p">(</span><span class="s">&quot;C-e&quot;</span> <span class="o">.</span> <span class="ss">&#39;move-end-of-line</span><span class="p">)</span>
+      <span class="o">...</span><span class="p">)</span>
+</pre></div>
+<p>즉 맵의 한원소는 &quot;C-a&quot;와 같은 입력키, <code>move-beginning-of-line</code>와 같은 해당 함수의 심볼로 이루어진다. 이맥스는 여러 개의 맵을 가지고 있고, 이들을 체인으로 엮어 관리한다. 사용자가 키를 입력하면 위의 맵부터 아래로, 순차적으로 해당 함수를 찾게 되며 가장 먼저 찾은 키의 해당 함수를 호출한다. 체인으로 엮인 구조를 살펴보면 아래와 같다.</p><div class ="highlight"><pre>         +---------- 사용자의 키 입력
+         |
++--------v--------+
+| local-map?      | (("C-a" . `soo-magic-beg-of-line) ...)
++--------|--------+
++--------v--------+
+| minor-mode-map* | (("C-." . `flyspell-auto-correct-word) ...)
++--------|--------+
++--------v--------+
+| major-mode-map+ | (("M-e" . `c-end-of-statement) ...)
++--------|--------+
++--------v--------+
+| global-map      | (("C-a" . `move-beginning-of-line) ...)
++-----------------+</pre></div><p>위쪽 부터 3개의 맵들, <code>local-map</code>, <code>minor-mode-map</code>, <code>major-mode-map</code>은 현재 버퍼 안에서의 키입력에 영향을 미치는 맵이고, <code>global-map</code>은 전역적인 이맥스의 키입력에 영향을 미치는 맵이다.</p><p>이맥스에서 우리의 키입력이 현재 버퍼에서 어떤 맵에 의해서 어떠한 함수로 해석되는지 알아 볼 수 있는데, <code>C-h b:바인딩 도움말</code> (<strong>h</strong>elp <strong>b</strong>inding)을 입력해보자. 입력한 키에 대해서 위에서부터 차례로 해당하는 함수를 찾게되며 그 중 우리가 특별하게 관심있는 <code>global-map</code>을 찾아 보면, 아래와 같은 화면을 볼 수 있다.</p><div class="figure"><img src="/img/emacs-help-binding.png" alt="그림-1. global map" /><p class="caption">그림-1. <code>global map</code></p></div><p><code>C-h k</code>의 입력된 키에 대한 함수를 찾는 것과는 달리, 지금 알아본 <code>C-h b</code>는 사용자가 현재 버퍼에 대하여 입력할 수 있는 모든 키 입력과 해당하는 함수를 한눈에 볼 수 있다. 즉 사용자가 현재 수정하고 있는 버퍼에 어떠한 특별한 기능들이 제공되고 있으며, 어떠한 함수들이 바인딩 되어 있는지 하나하나 살펴볼 수 있다.</p><h2 id="모드-mode">모드 (Mode)</h2><p>일반적으로 우리가 특정 파일을 이맥스에서 열었을 때 이맥스는 열린 파일에 대한 버퍼를 생성하고, &quot;버퍼&quot;라는 이름에서 알 수 있듯이 사용자는 파일을 직접 수정하는 것 대신 버퍼를 수정하게 된다. 이때 현재 작업하는 버퍼(파일)에 대하여 특별히 유용한 함수들과 키맵(map)의 그룹을 불러 들이게 된다. 예를 들면 C언어로 짜여진 파일을 열었을 경우, C언어에 특화된 함수와 변수(코드 하이라이팅, 주석 처리 등)를 불러들이고, 이러한 함수와 변수를 하나로 모아서 모드(mode)라고 부른다. 즉 C언어로 짜여진 파일을 열면 (&quot;.c&quot;나 &quot;.h&quot;의 확장자를 갖는 파일을 열면), 현재 버퍼의 <code>major-mode</code>가 <code>c-mode</code>가 된다. 버퍼를 기능별로 분류하다 보니, 자연스럽게 하나의 버퍼당 하나의 <code>major-mode</code>를 갖게 되며, 현재 버퍼의 모드는 <code>major-mode</code>의 변수에 기록이 된다. <code>C-h v: 변수 도움말</code>을 통해 현재 버퍼의 주(major) 모드가 무엇인지 확인해 보도록 하자.</p><p>버퍼에 하나씩 할당되는 기본적인 주 모드 이외에, 유틸리티적 특성을 갖는 함수와 변수의 집합을 하나로 묶어 <code>minor-mode</code>라고 부른다. 예를 들면 스펠링 체크를 위한 <code>flyspell-mode</code>와 편리한 네비게이션을 위한 <code>ido-mode</code> 등이 있다. 이와 같은 <code>minor-mode</code>는 하나의 버퍼에 여러 개의 모드를 적용할 수 있고, <code>major-mode</code>와 유사하게 <code>minor-mode-list</code>의 변수에 기록된다.</p><div class="figure"><img src="/img/emacs-modes.png" alt="그림-2. Major/Minor Modes" /><p class="caption">그림-2. Major/Minor Modes</p></div><p>위의 화면에서는 아래 상태바에서 볼 수 있듯이 &quot;stdio.h&quot;파일을 열었고, 이에 해당하는 <code>major-mode</code>로 <code>c-mode</code>를 사용하고, 부가적인 <code>minor-mode</code>로 <code>flyspell-mode</code>를 사용하고 있다.</p><p>정리하면, 하나의 모드(mode)는 유사한 기능을 위한 함수/변수들과, 사용자가 어떠한 키입력으로 호출하는지에 관한 맵(map)으로 이루어져 있다. 하나의 버퍼는 주된 기능을 나타내는 <code>major-mode</code> 하나와 사용자에 필요에 따라 여러 개의 <code>minor-mode</code>를 불러 들일 수 있고, 사용자가 키를 입력하면 <code>minor-mode</code>들과 <code>major-mode</code>의 맵을 순차적으로 검색하고 해당 함수를 찾아 호출한다.</p><p><code>major-mode</code>와 <code>minor-mode</code>는 일반적으로 다른 프로그래머가 일반적인 목적으로 작성한 것으로, 사용자가 버퍼에 해당하는 키입력을 변경하고자 할 때에는, <code>local-map</code>을 변경하여 사용자의 기호에 따라 키바인딩(키와 해당 함수)을 변경하게 된다. 즉, 중복적으로 정의된 키바인딩은 맵을 찾는 순서에 따라, <code>local-map</code>에 정의된 키가 가장 우선순위를 갖게 되고, <code>minor-mode</code>와 <code>major-mode</code>가 차례로 검색된다.</p><h2 id="커서이동-moving">커서이동 (Moving)</h2><p>이맥스의 기본적인 에디팅 기능들(커서이동, 수정, 검색 ..)은 모든 버퍼에 일관적으로 요구되는 기능이기 때문에 <code>global-map</code>에 정의되어 사용된다. <code>C-h t:튜토리얼</code>에서 살펴본 대부분의 에디팅 기능들 역시 <code>global-map</code>에 정의되어 있으며, 대부분의 경우 특정 모드에 상관 없이 대부분 적용되는 기능들로 이맥스의 일관적인 철학(관행)을 엿볼 수 있기도 하다. 이번 절에서 간단한 커서 이동법을 살펴보도록 하자.</p><p>첫번째, 가장 작은 단위의 커서 이동은 <strong>글자(char)</strong> 단위의 이동이며, 한글자 앞(<strong>f</strong>orward)으로, 뒤(<strong>b</strong>ackword)로 커서를 이동시키는 <code>forward-char</code>와 <code>backward-char</code> 함수들로 <code>C-</code>에 바인딩 되어 있다.</p><div class ="highlight"><pre>C-f: forward-char
+C-b: backward-char</pre></div><p>두번째, <strong>단어(word)</strong> 단위의 커서 이동은 <code>forward-word</code>와 <code>backward-word</code>의 함수로 <code>M-</code>에 바인딩 되어 있다.</p><div class ="highlight"><pre>M-f: forward-word
+M-b: backword-word</pre></div><p>세번째, <strong>표현식(s-exp: symbolic expression)</strong> 단위의 커서 이동은 첫번째 두번째 커서이동과 유사하게 <code>forward-sexp</code>, <code>backward-sexp</code>의 함수들로 <code>C-M-</code>에 바인딩 되어 있다.</p><div class ="highlight"><pre>C-M-f: forward-sexp
+C-M-b: bacword-sexp</pre></div><p>네번째, <strong>문단(paragraph)</strong> 단위의 커서 이동은 <code>forward-paragraph</code>과 <code>backward-paragraph</code>으로 <code>M-</code> 키와 <code>}</code> (C언어에서 함수의 끝을 나타내는 닫힌 괄호로), <code>{</code> (C언어에서 함수의 시작을 나타내는 열린 괄호)로 바인딩 되어 있다.</p><div class ="highlight"><pre>M-}: forward-paragraph
+M-{: backward-paragraph</pre></div><p>현재 위치에서 앞(<strong>f</strong>orward), 뒤(<strong>b</strong>ackward)로 움직이는 단위는 <code>C-</code> (글자) &lt; <code>M-</code> (단어) &lt; <code>C-M-</code> (sexp)의 단위로 각각 <code>f</code>(앞), <code>b</code>(뒤)의 키로 바인딩 되어 있고 특별히 문단단위의 이동은 <code>M-}</code>와 <code>M-{</code>에 바인딩 되어 있다. s-exp (sexp)의 단위는 다소 생소한 개념인데, Lisp에서 &quot;표현식을 이루는 하나의 단위&quot;라고 생각할 수 있다. 예를 들면 아래와 같다.</p><div class="highlight"><pre><span class="p">(</span><span class="k">setq</span> <span class="nv">tetris-next-shape</span> <span class="p">(</span><span class="nb">random</span> <span class="mi">7</span><span class="p">))</span>
+<span class="c1">;     o                  : current cursor</span>
+<span class="c1">;     &gt;o                 : C-f</span>
+<span class="c1">;     -----&gt;o            : M-f</span>
+<span class="c1">;     ----------------&gt;o : C-M-f</span>
+</pre></div>
+<p>현재 커서의 위치 &quot;t&quot;에서 &quot;tetris&quot;는 하나의 단어(word) 단위고, &quot;tetris-next-shape&quot;은 sexp의 단위이다. 왜냐하면 현재 위치에서 하나의 표현식을 이루는 최소단위는 &quot;tetris-next-shape&quot;이기 때문이다. (&quot;-&quot;도 함수와 변수의 이름에 허용되는 글자이다.)</p><p>이번에는 앞에서 알아본 단위들 보다 조금 큰 범위를 갖는 줄(line), 문장(sentence), 함수(defun), 버퍼(buffer) 단위의 시작(<strong>a</strong>head)과 끝(<strong>e</strong>nd)으로 이동하는 방법들을 알아본다.</p><p>첫번째, <strong>줄(line)</strong>단위의 커서 이동은 <code>beginning-of-line</code>과 <code>end-of-line</code> 함수들로 <code>C-</code>에 바인딩 되어 있다. 이미 <code>C-b</code>는 <strong>b</strong>ackward에 바인딩 되어 있으므로, beginning = <strong>a</strong>head로 (또는 첫 알파벳, a) 기억하면 쉽게 기억할 수 있겠다.</p><div class ="highlight"><pre>C-a: beginning-of-line (ahead of line)
+C-e: end-of-line</pre></div><p>두번째, <strong>문장(sentence)</strong>단위의 커서 이동은 <code>backward-sentence</code>와 <code>forward-sentence</code>의 함수들로 <code>M-</code>로 바인딩되어 있다.</p><div class ="highlight"><pre>M-a: backward-sentence (ahead of sentence)
+M-e: forward-sentence</pre></div><p>세번째, <strong>함수(defun)</strong>단위의 커서 이동은, Lisp에서 정의하는 함수 범위의 처음과 끝으로 이동하는 <code>beginning-of-defun</code>과 <code>end-of-defun</code>함수들로 <code>C-M-</code>에 바인딩 되어 있다.</p><div class ="highlight"><pre>C-M-a: beginning-of-defun (ahead of defun)
+C-M-e: end-of-defun</pre></div><p>네번째, <strong>버퍼(buffer)</strong>단위의 커서 이동은 <code>&lt;</code>(좌로 끝까지 이동하라는 화살표)와 <code>&gt;</code>(우로 끝까지 이동하라는 화살표)의 키로 <code>M-</code>에 바인딩 되어, 버퍼의 시작과 끝으로 커서를 이동시킨다.</p><div class ="highlight"><pre>M-<: beginning-of-buffer
+M->: end-of-buffer</pre></div><p>현재위치에서 처음(<strong>a</strong>head)과 끝(<strong>e</strong>nd)으로 움직이며 <code>C-</code> (줄) &lt; <code>M-</code> (문장) &lt; <code>C-M-</code> (함수)의 단위가, 각각 &quot;a&quot;(처음)과 &quot;e&quot;(끝)에 바인딩 되어 있고, 특별히 버퍼의 시작과 끝은 <code>M-&lt;</code>와 <code>M-&gt;</code>로 바인딩 되어 있다. 참고로 <code>C-M-a/e</code>의 함수(defun) 단위의 움직임은 언어마다 다른 함수 정의와 범위를 가지고 있으므로, 해당 언어의 모드에서 특화된 함수, 예를 들면 C언어의 <code>c-beginning-of-defun</code>과 같은 함수로 바인딩 시켜 이맥스의 &quot;관행&quot;을 지켜 사용자가 자연스럽게 사용할 수 있도록 도와준다.</p><p>다음으로 알아볼 단위는 다음/이전 줄(line), 화면(page)으로 이동하는 함수들이다.</p><p>첫번째, 다음(<strong>n</strong>ext)/이전(<strong>p</strong>revious) <strong>줄(line)</strong>로 이동하는 함수는 <code>next-line</code>과 <code>previous-line</code>으로 <code>C-</code>에 바인딩 되어 있다.</p><div class ="highlight"><pre>C-n: next-line
+C-p: previous-line</pre></div><p>두번째, 다음(down)/이전(up)의 <strong>화면(page)</strong>으로 이동하는 함수는 <code>scroll-up</code>과 <code>scroll-down</code>으로 각각 <code>C-</code>와 <code>M-</code>의 대칭의 키에 <code>v</code>(아래방향의 화살표) 키로 바인딩 되어 있다.</p><div class ="highlight"><pre>C-v: scroll-up
+M-v: scroll-down</pre></div><p>이번 절에서 특정 단위들의 앞/뒤, 시작/끝, 다음/이전으로 이동하는 법들을 알아 보았는데, 이 중 가장 처음 알아본 함수, <code>forward-char</code> 정의를 한번 찾아 볼까?</p><div class ="highlight"><pre>C-f runs the command forward-char, which is an interactive built-in function in
+`C source code'.
+
+It is bound to C-f, <right>.
+
+(forward-char &optional N)
+
+Move point right N characters (left if N is negative).</pre></div><p>한 글자 앞으로 이동하는 함수 <code>forward-char</code>는 <code>C-f</code>와 <code>&lt;right&gt;</code>(오른쪽 화살표)로 바인딩 되어 있다. 눈에 띄는 점은 함수가 <code>N</code>의 인자를 선택적(&amp;optional)으로 받는데, 위의 설명에 따르면 <code>N</code>글자만큼 앞으로 이동하며 음수를 받으면 뒤로 이동한다고 한다.</p><p>맵(map)의 구조를 살펴보면, 이맥스는 주어진 키에 대한 함수를 호출한다. 그러면 어떻게 <code>forward-char</code> 함수를 인자를 가지고 호출할 수 있을까?</p><h2 id="범용-인자-universal-argument">범용 인자 (Universal Argument)</h2><p>우리가 알아본 커서를 이동시키는 함수들은 하나의 인자를 선택적으로 받는데, 일반적으로 함수에 해당하는 이동단위를 &quot;몇번&quot; 반복하라는 의미를 갖는다. 예를 들면 앞서 알아본 <code>forward-char</code> 함수는 &quot;몇 글자&quot; 앞으로 가라 <code>next-line</code>은 &quot;몇 줄&quot; 앞으로 가라라는 인자를 선택적으로 받는다.</p><p><code>C-f</code>에 바인딩된 <code>forward-char</code>의 함수에 5(다섯 글자 앞으로 가라)를 인자로 주기 위해서는, <code>C-u 5</code> 이후 <code>C-f</code>를 입력하면된다. <code>C-u</code>를 범용 인자(<strong>u</strong>niversal argument)라고 부른다. 예를 들면 10줄 아래로 이동하기 위해서는 <code>C-u 10</code> 이후 <code>C-n</code>를 입력하면된다.</p><p>특별히 <code>C-u</code>이후 아무 숫자도 입력하지 않으면 가장 일반적인 숫자라고 여겨지는 정수 4를 앞으로 호출될 함수의 인자로 넘긴다. <code>C-u</code>를 두번 입력하면 (4에 다시 4를 곱한) 16을 앞으로 호출될 함수의 인자로 넘기게 된다.</p><p>모든 알파벳에 바인딩된 함수 <code>self-insert-command</code>를 기억하는가? 이 함수 역시 범용 인자를 추가적으로 받는데, <code>C-u</code> 이후 <code>a</code>를 입력하면 알파벳 &quot;a&quot;가 4개 입력되며, <code>C-u 80</code>이후 <code>#</code>를 입력하면 &quot;#&quot;가 80개 입력된다. 이를 통해 단순히 반복되는 입력작업을 피할 수 있다.</p><h2 id="정리">정리</h2><p>이번장에서는 어떻게 이맥스에서 키입력을 관리하는지, 또한 전역 키맵(global keymap)에 정의된 커서 이동하는 법들을 알아 보았다.</p><p>글자, 단어, 표현식, 문단의 앞/뒤로 이동하는 함수들:</p><ul><li><code>C-f/b</code>: forward/backward-char</li><li><code>M-f/b</code>: forward/backword-word</li><li><code>C-M-f/b</code>: forward/backword-sexp</li><li><code>M-}/{</code>: forward/backword-paragraph</li></ul><p>줄, 문장, 함수, 버퍼의 시작/끝으로 이동하는 함수들:</p><ul><li><code>C-a/e</code>: beginning/end-of-line</li><li><code>M-a/e</code>: backward/forward-sentence</li><li><code>C-M-a/e</code>: beginning/end-of-defun</li><li><code>M-&lt;/&gt;</code>: beginning/end-of-buffer</li></ul><p>다음/이전 줄, 화면으로 이동하는 함수들:</p><ul><li><code>C-n/p</code>: next/previous-line</li><li><code>C/M-v</code>: scroll-up/down</li></ul><p>이들 함수는 범용인자를 받으며, <code>C-u N</code>로 N번 반복 할 수 있다.</p><p>참고로 위의 관련된 함수와 키는 필자가 임의적으로 기억하기 쉽도록 나눈것으로 이맥스의 개발의도와는 다를 수 있다. 다음 장에서는 이맥스의 시작 과정과 함께 편집, 검색, 윈도우 등의 기능을 알아보도록 할 것이다.</p>
+
+
+      <div id="disqus_thread"></div>
+      <script type="text/javascript">
+        var disqus_shortname = 'emacsbook';
+
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+          var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+          dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+          (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+      </script>
+      <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+      <a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+      
+    </article>
+  </div>
+ 
+  <footer>
+    <a rel="license" href="http://creativecommons.org/licenses/by-nc/3.0/">
+      <img alt="CC" style="border-width:0" src="http://i.creativecommons.org/l/by-nc/3.0/88x31.png" />
+    </a>
+  </footer>
+</div>
+
+
+  <!-- JavaScript at the bottom for fast page loading -->
+
+  <!-- Grab Google CDN's jQuery, with a protocol relative URL; fall back to local if offline -->
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+  <script>window.jQuery || document.write('<script src="js/libs/jquery-1.6.2.min.js"><\/script>')</script>
+
+
+  <!-- scripts concatenated and minified via ant build script-->
+  <script defer src="js/plugins.js"></script>
+  <script defer src="js/script.js"></script>
+  <!-- end scripts-->
+
+  <script>
+    window._gaq = [['_setAccount','UA-9161381-1'],['_trackPageview'],['_trackPageLoadTime']];
+    Modernizr.load({
+      load: ('https:' == location.protocol ? '//ssl' : '//www') + '.google-analytics.com/ga.js'
+    });
+  </script>
+
+
+  <!-- Prompt IE 6 users to install Chrome Frame. Remove this if you want to support IE 6.
+       chromium.org/developers/how-tos/chrome-frame-getting-started -->
+  <!--[if lt IE 7 ]>
+    <script src="//ajax.googleapis.com/ajax/libs/chrome-frame/1.0.3/CFInstall.min.js"></script>
+    <script>window.attachEvent('onload',function(){CFInstall.check({mode:'overlay'})})</script>
+  <![endif]-->
+  
+</body>
+</html>

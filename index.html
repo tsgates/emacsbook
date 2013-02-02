@@ -1,0 +1,228 @@
+<!doctype html>
+<!-- paulirish.com/2008/conditional-stylesheets-vs-css-hacks-answer-neither/ -->
+<!--[if lt IE 7]> <html class="no-js ie6 oldie" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="no-js ie7 oldie" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="no-js ie8 oldie" lang="en"> <![endif]-->
+<!-- Consider adding an manifest.appcache: h5bp.com/d/Offline -->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+
+  <!-- Use the .htaccess and remove these lines to avoid edge case issues.
+       More info: h5bp.com/b/378 -->
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+  <title>Emacsbook</title>
+  <meta name="description" content="Emacsbook">
+  <meta name="author" content="Taesoo Kim">
+
+  <!-- Mobile viewport optimized: j.mp/bplateviewport -->
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+
+  <!-- Place favicon.ico and apple-touch-icon.png in the root directory: mathiasbynens.be/notes/touch-icons -->
+
+  <!-- CSS: implied media=all -->
+  <!-- CSS concatenated and minified via ant build script-->
+  <link rel="stylesheet" href="css/style.css">
+  <!-- end CSS-->
+
+  <!-- More ideas for your <head> here: h5bp.com/d/head-Tips -->
+
+  <!-- All JavaScript at the bottom, except for Modernizr / Respond.
+       Modernizr enables HTML5 elements & feature detects; Respond is a polyfill for min/max-width CSS3 Media Queries
+       For optimal performance, use a custom Modernizr build: www.modernizr.com/download/ -->
+  <script src="js/libs/modernizr-2.0.6.min.js"></script>
+</head>
+
+<body>
+  <a href="http://github.com/tsgates">
+  <img alt="Fork me on GitHub" src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" 
+       style="position: absolute; top: 0; right: 0; border: 0;">
+  </a>
+
+
+<link rel="stylesheet" href="css/chap.css" type="text/css" media="screen, projection" />
+
+<div id="container">
+  <header>
+  </header>
+
+  <nav id="main_nav">
+    <ul>
+      <li><a href="/index.html">Home</a></li>
+      <li><a href="http://blog.taesoo.org/">Blog</a></li>
+      <li><a href="http://pdos.csail.mit.edu/~taesoo/">About</a></li>
+      <li><a href="/rss.xml">RSS</a></li>
+    </ul>
+  </nav>
+
+  <div id="main" role="main">
+    <div id="posts">
+      <ul>
+<li>
+  <article class="post">
+    <header>
+      <h3>
+        <span class="hint">Chap #1</span>
+        November 22, 2011
+      </h3>
+      <h1>
+        <a href="chap1.html"> 이맥스 설치 및 실행</a>
+      </h1>
+     </header>
+     <p> 시작하기에 앞서 이맥스를 설치하고, 작업환경을 갖춘다. 또한 설치된 이맥스의 디렉토리 구조를 개관적으로 살펴보고, 앞으로 사용할 용어를 정의한다.</p>
+  </article>
+</li>
+<li>
+  <article class="post">
+    <header>
+      <h3>
+        <span class="hint">Chap #2</span>
+        November 22, 2011
+      </h3>
+      <h1>
+        <a href="chap2.html"> 도움말 시스템</a>
+      </h1>
+     </header>
+     <p> 이맥스가 제공하는 도움말 기능들을 차근차근 알아보고, 도움말 시스템을 활용하여 궁금증에 대한 답을 어떻게 찾을 수 있는지 알아본다.</p>
+  </article>
+</li>
+<li>
+  <article class="post">
+    <header>
+      <h3>
+        <span class="hint">Chap #3</span>
+        December 03, 2011
+      </h3>
+      <h1>
+        <a href="chap3.html"> Lisp 이해하기1</a>
+      </h1>
+     </header>
+     <p> 이맥스를 확장하고 이해하기 위한 Lisp의 문법(Form), 이를 계산(Evaluate)하는 과정, 기본적인 데이터구조, 리스트(List)에 대해 알아본다.</p>
+  </article>
+</li>
+<li>
+  <article class="post">
+    <header>
+      <h3>
+        <span class="hint">Chap #4</span>
+        December 03, 2011
+      </h3>
+      <h1>
+        <a href="chap4.html"> Lisp 이해하기2</a>
+      </h1>
+     </header>
+     <p> Lisp의 특수 형태/연산자들인 조건문, 변수 선언, 함수 선언의 개념을  이맥스의 테트리스 게임의 소스 코드를 통하여 이해해본다.</p>
+  </article>
+</li>
+<li>
+  <article class="post">
+    <header>
+      <h3>
+        <span class="hint">Chap #5</span>
+        December 26, 2011
+      </h3>
+      <h1>
+        <a href="chap5.html"> 키맵(Keymap)과 커서이동</a>
+      </h1>
+     </header>
+     <p> 이맥스에서 어떻게 키입력을 처리하며 어떠한 Lisp의 구조를 사용하는지 이해하고, 전역적으로 사용되는 키입력과 함수 중 특별히 커서의 이동과 관련된 함수들을 살펴본다.</p>
+  </article>
+</li>
+<li>
+  <article class="post">
+    <header>
+      <h3>
+        <span class="hint">Chap #6</span>
+        January 30, 2012
+      </h3>
+      <h1>
+        <a href="chap6.html"> 모드(Mode)와 동적 바인딩(Dynamic Binding)</a>
+      </h1>
+     </header>
+     <p> Lisp의 동적 바인딩(Dynamic Binding)이 어떻게 이맥스를 구현하는데  활용되었는지, 이맥스 안에서 파일을 여는 과정을 통해서 살펴볼 것이다.</p>
+  </article>
+</li>
+<li>
+  <article class="post">
+    <header>
+      <h3>
+        <span class="hint">Chap #7</span>
+        February 02, 2012
+      </h3>
+      <h1>
+        <a href="chap7.html"> 프로그래밍하기: C언어-1</a>
+      </h1>
+     </header>
+     <p> C언어로 프로그래밍을 위해 이맥스가 어떠한 편리한 기능들을 제공하는지 살펴본다. 더 나아가 이맥스가 어떻게 내부적으로 C언어를 이해하고 들여쓰기를 제공하는지 이해해보도록 하자.</p>
+  </article>
+</li>
+<li>
+  <article class="post">
+    <header>
+      <h3>
+        <span class="hint">Chap #8</span>
+        May 17, 2012
+      </h3>
+      <h1>
+        <a href="chap8.html"> 프로그래밍하기: C언어-2</a>
+      </h1>
+     </header>
+     <p> 이맥스가 프로세스를 어떻게 관리하고, 상호작용하는지, 또 이를 활용한 기능들이 어떻게 사용되는지 C언어로 프로그래밍하면서 하나하나  알아본다.</p>
+  </article>
+</li>
+<li>
+  <article class="post">
+    <header>
+      <h3>
+        <span class="hint">Chap #9</span>
+        January 02, 2013
+      </h3>
+      <h1>
+        <a href="chap9.html"> 프로그래밍하기: Python</a>
+      </h1>
+     </header>
+     <p> 이멕스에서 Python을 이용한 개발 방법을 살펴본다. 더불어 이번장을 통하여 이멕스의 주모드가 어떻게 결정되는지  살펴보고, 일반적인 REPL 환경을 살펴볼 볼 것이다.</p>
+  </article>
+</li>
+</ul>
+    </div>
+  </div>
+  
+  <footer>
+    <a rel="license" href="http://creativecommons.org/licenses/by-nc/3.0/">
+      <img alt="CC" style="border-width:0" src="http://i.creativecommons.org/l/by-nc/3.0/88x31.png" />
+    </a>
+  </footer>
+</div>
+
+
+  <!-- JavaScript at the bottom for fast page loading -->
+
+  <!-- Grab Google CDN's jQuery, with a protocol relative URL; fall back to local if offline -->
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+  <script>window.jQuery || document.write('<script src="js/libs/jquery-1.6.2.min.js"><\/script>')</script>
+
+
+  <!-- scripts concatenated and minified via ant build script-->
+  <script defer src="js/plugins.js"></script>
+  <script defer src="js/script.js"></script>
+  <!-- end scripts-->
+
+  <script>
+    window._gaq = [['_setAccount','UA-9161381-1'],['_trackPageview'],['_trackPageLoadTime']];
+    Modernizr.load({
+      load: ('https:' == location.protocol ? '//ssl' : '//www') + '.google-analytics.com/ga.js'
+    });
+  </script>
+
+
+  <!-- Prompt IE 6 users to install Chrome Frame. Remove this if you want to support IE 6.
+       chromium.org/developers/how-tos/chrome-frame-getting-started -->
+  <!--[if lt IE 7 ]>
+    <script src="//ajax.googleapis.com/ajax/libs/chrome-frame/1.0.3/CFInstall.min.js"></script>
+    <script>window.attachEvent('onload',function(){CFInstall.check({mode:'overlay'})})</script>
+  <![endif]-->
+  
+</body>
+</html>

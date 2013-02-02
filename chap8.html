@@ -1,0 +1,266 @@
+<!doctype html>
+<!-- paulirish.com/2008/conditional-stylesheets-vs-css-hacks-answer-neither/ -->
+<!--[if lt IE 7]> <html class="no-js ie6 oldie" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="no-js ie7 oldie" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="no-js ie8 oldie" lang="en"> <![endif]-->
+<!-- Consider adding an manifest.appcache: h5bp.com/d/Offline -->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+
+  <!-- Use the .htaccess and remove these lines to avoid edge case issues.
+       More info: h5bp.com/b/378 -->
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+  <title>Emacsbook</title>
+  <meta name="description" content="Emacsbook">
+  <meta name="author" content="Taesoo Kim">
+
+  <!-- Mobile viewport optimized: j.mp/bplateviewport -->
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+
+  <!-- Place favicon.ico and apple-touch-icon.png in the root directory: mathiasbynens.be/notes/touch-icons -->
+
+  <!-- CSS: implied media=all -->
+  <!-- CSS concatenated and minified via ant build script-->
+  <link rel="stylesheet" href="css/style.css">
+  <!-- end CSS-->
+
+  <!-- More ideas for your <head> here: h5bp.com/d/head-Tips -->
+
+  <!-- All JavaScript at the bottom, except for Modernizr / Respond.
+       Modernizr enables HTML5 elements & feature detects; Respond is a polyfill for min/max-width CSS3 Media Queries
+       For optimal performance, use a custom Modernizr build: www.modernizr.com/download/ -->
+  <script src="js/libs/modernizr-2.0.6.min.js"></script>
+</head>
+
+<body>
+  <a href="http://github.com/tsgates">
+  <img alt="Fork me on GitHub" src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" 
+       style="position: absolute; top: 0; right: 0; border: 0;">
+  </a>
+
+
+<link rel="stylesheet" href="css/chap.css" type="text/css" media="screen, projection" />
+<link rel="stylesheet" href="css/code.css" type="text/css" media="screen, projection" />
+
+<div id="container">
+  <header>
+  </header>
+
+  <nav id="main_nav">
+    <ul>
+      <li><a href="/index.html">Home</a></li>
+      <li><a href="http://blog.taesoo.org/">Blog</a></li>
+      <li><a href="http://pdos.csail.mit.edu/~taesoo/">About</a></li>
+      <li><a href="/rss.xml">RSS</a></li>
+    </ul>
+  </nav>
+  
+  <div id="main" role="main">
+    <article class="post">
+      <header>
+        <h3><span class="hint">Chap #8</span>May 17, 2012</h3>
+        <h1> 프로그래밍하기: C언어-2</h1>
+      </header>
+      
+      <p>고전 &quot;The Art of Unix Programming&quot;에서 이맥스와 Vi의 소위 &quot;Holy War&quot;에 대한 이야기를 소개하고 있다. Eric S. Raymond에 따르면, 이맥스의 가장 큰 장점 중 첫째가 우리가<a href="chap3.html"> 3장</a>,<a href="chap4.html"> 4장</a>에서 알아본 확장성 있는 내장언어인, Lisp에 관한 이야기 였다. 두번째 장점은 이맥스가 프로그래머들이 즐겨 사용하는 다양한 외부 프로그램과 손쉽게 통합되어 이맥스를 떠나지 않고 활용할 수 있다는 점이었다. 이번 장에서는 이맥스가 가지고 있는 확장성, 외부 프로그램과의 커뮤니케이션에 집중하여<a href="chap7.html"> 7장</a>에서 부터 만들고 있는 시져 암호화 프로그램을 마무리 지어 보자.</p><h2 id="man-vs-woman">Man vs Woman</h2><p>지적 호기심을 해결하고 싶은 마음, 궁금증을 해결하고 싶은 마음은 프로그래머로 갖추어야할 기본적인 아니 필수적인 자세이다. 언어의 특성, 큰 그림, 기반한 아키텍쳐와 환경을 이해했다면 그 언어에 정통할 수 있는 가장 중요한 '리소스'는 쉽게 이미 준비되고 테스트된 모듈, 클래스, 함수를 재활용하는 것이다. 이러한 이유에서 이맥스를 배우기에 가장 쉬운 방법이<a href="chap1.html"> 1장</a>,<a href="chap2.html"> 2장</a>을 통해 설명한 도움말에 쉽게 접근하는 것이다.</p><p>C프로그래밍을 하다 모르는 함수가 나오면, 모호하게 사용되고 있는 상수들이 나오면 어떻게 하고 있는가? 리눅스/유닉스 사용자라면 잘 알려진, 아니 너무 자세하고 불?친절한, <code>man</code> (manual) 명령을 통해 문서를 찾아 읽어 볼 것이다. 일반적으로 <code>man</code> 페이지를 튜토리얼 처럼 생각하고 읽으면, 더없이 불필요하고 딱딱한 문서이다. 그런데 레퍼런스로 생각하고 읽으면 더없이 잘 정돈되어 있고, 간략하게 느껴지는 도움말이기도하다.</p><p>POSIX 표준이 아니라, <code>err()</code> 어떠한 함수인지 모르는 독자들이 있을 것이다.</p><div class="highlight"><pre><span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">argv</span><span class="p">[])</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">argc</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">)</span> <span class="p">{</span>
+    <span class="p">[]</span><span class="n">err</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s">&quot;usage: %s [text]</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
+  <span class="p">}</span>
+  <span class="p">...</span>
+</pre></div>
+<p>자 그럼 <code>err()</code>에 커서를 놓고 <code>M-x man</code>을 입력해보자. 다른 창에 해당하는 도움말이 나타났는가? 그러면 해당 버퍼 '*Man err*'로 이동해서 <code>TAB</code>을 입력해 볼까? 오랜 리눅스 사용자였다면 기본 <code>man</code> 페이지에 있는 다른 링크들(SEE ALSO 섹션)을 보고 관련된 명령을, <code>man</code>을 종료한 후 다시 입력하는 습관을 가지고 있을 것이다. 신기하게도 <code>man</code>에서는 그러한 기능이 없다. 이맥스는 Lisp으로 짜여진 더욱 편하고, 아름다운? <code>woman</code>이 있다. 관심있는 독자는 실행해 보고, 문서가 눈에 더 잘들어오도록 설정해 보기바란다.</p><p>자 그럼! 사용자가 이맥스의 <code>man</code> 리습함수를 호출하면, 이맥스에서는 어떠한 일이 일어나고 있는 것일까?</p><h2 id="자식-프로세스-만들기">자식 프로세스 만들기</h2><p><code>man</code>의 함수정의를 찾아가 볼까?</p><div class="highlight"><pre><span class="p">(</span><span class="nf">defun</span> <span class="nv">man</span> <span class="p">(</span><span class="nf">man-args</span><span class="p">)</span>
+  <span class="s">&quot;Get a Un*x manual page and put it in a buffer. ....&quot;</span>
+
+  <span class="p">(</span><span class="nf">interactive</span>
+   <span class="p">(</span><span class="nb">list </span><span class="p">(</span><span class="k">let* </span><span class="p">((</span><span class="nf">default-entry</span> <span class="p">(</span><span class="nf">Man-default-man-entry</span><span class="p">))</span>
+        <span class="c1">;; case-insensitive completition</span>
+        <span class="p">(</span><span class="nf">completion-ignore-case</span> <span class="nv">t</span><span class="p">)</span>
+        <span class="p">(</span><span class="nf">input</span> <span class="p">(</span><span class="nf">completing-read</span>
+            <span class="p">(</span><span class="nf">format</span> <span class="s">&quot;Manual entry%s&quot;</span>
+                <span class="p">(</span><span class="k">if </span><span class="p">(</span><span class="nf">string=</span> <span class="nv">default-entry</span> <span class="s">&quot;&quot;</span><span class="p">)</span>
+                    <span class="s">&quot;: &quot;</span>
+                  <span class="p">(</span><span class="nf">format</span> <span class="s">&quot; (default %s): &quot;</span> <span class="nv">default-entry</span><span class="p">)))</span>
+                        <span class="ss">&#39;Man-completion-table</span>
+            <span class="nv">nil</span> <span class="nv">nil</span> <span class="nv">nil</span> <span class="ss">&#39;Man-topic-history</span> <span class="nv">default-entry</span><span class="p">)))</span>
+       <span class="p">(</span><span class="k">if </span><span class="p">(</span><span class="nf">string=</span> <span class="nv">input</span> <span class="s">&quot;&quot;</span><span class="p">)</span>
+           <span class="p">(</span><span class="nf">error</span> <span class="s">&quot;No man args given&quot;</span><span class="p">)</span>
+         <span class="nv">input</span><span class="p">))))</span>
+
+  <span class="c1">;; translate the &quot;subject(section)&quot; syntax</span>
+  <span class="p">(</span><span class="nf">setq</span> <span class="nv">man-args</span> <span class="p">(</span><span class="nf">Man-translate-references</span> <span class="nv">man-args</span><span class="p">))</span>
+
+  <span class="p">(</span><span class="nf">Man-getpage-in-background</span> <span class="nv">man-args</span><span class="p">))</span>
+</pre></div>
+<p>당황해 하지 말고, 다시 위로 돌아가서 함수의 정의를 차근차근 읽어보자. 모두 우리가 이미 살펴본 문법, 함수들을 사용하고있다. 위의 함수가 아래와 같이 눈에 들어와야 할것이다.</p><div class="highlight"><pre><span class="p">(</span><span class="nf">defun</span> <span class="nv">man</span> <span class="p">(</span><span class="nf">man-args</span><span class="p">)</span>
+  <span class="s">&quot;설명이군&quot;</span>
+
+  <span class="c1">;; 인자를 받네, 자동완성/히스토리도 지원하는군.</span>
+  <span class="p">(</span><span class="nf">interactive</span>
+   <span class="p">(</span><span class="nb">list </span><span class="p">(</span><span class="k">let* </span><span class="p">((</span><span class="nf">default-entry</span> <span class="p">(</span><span class="nf">Man-default-man-entry</span><span class="p">))</span>
+        <span class="c1">;; 무시!</span>
+        <span class="p">(</span><span class="nf">completion-ignore-case</span> <span class="nv">t</span><span class="p">)</span>
+        <span class="p">(</span><span class="nf">input</span> <span class="p">(</span><span class="nf">completing-read</span>
+            <span class="p">(</span><span class="nf">format</span> <span class="s">&quot;Manual entry%s&quot;</span>
+                <span class="p">(</span><span class="k">if </span><span class="p">(</span><span class="nf">string=</span> <span class="nv">default-entry</span> <span class="s">&quot;&quot;</span><span class="p">)</span>
+                    <span class="s">&quot;: &quot;</span>
+                  <span class="p">(</span><span class="nf">format</span> <span class="s">&quot; (default %s): &quot;</span> <span class="nv">default-entry</span><span class="p">)))</span>
+                        <span class="ss">&#39;Man-completion-table</span>
+            <span class="nv">nil</span> <span class="nv">nil</span> <span class="nv">nil</span> <span class="ss">&#39;Man-topic-history</span> <span class="nv">default-entry</span><span class="p">)))</span>
+       <span class="c1">;; 인자가 없으면 안되겠지?</span>
+       <span class="p">(</span><span class="k">if </span><span class="p">(</span><span class="nf">string=</span> <span class="nv">input</span> <span class="s">&quot;&quot;</span><span class="p">)</span>
+           <span class="p">(</span><span class="nf">error</span> <span class="s">&quot;No man args given&quot;</span><span class="p">)</span>
+         <span class="nv">input</span><span class="p">))))</span>
+
+  <span class="c1">;; 내가 입력한 인자를 왜 덮어쓰지? 설명이 잔뜩있네.</span>
+  <span class="c1">;; 아하 &quot;3 err&quot;말고도 &quot;err(3)&quot; 이렇게 입력해도 된다네!</span>
+  <span class="p">(</span><span class="nf">setq</span> <span class="nv">man-args</span> <span class="p">(</span><span class="nf">Man-translate-references</span> <span class="nv">man-args</span><span class="p">))</span>
+
+  <span class="c1">;; 드디어 &#39;man&#39;을 호출하고 버퍼로 가져오는구나.</span>
+  <span class="p">(</span><span class="nf">Man-getpage-in-background</span> <span class="nv">man-args</span><span class="p">))</span>
+</pre></div>
+<p><code>man</code>의 기능은 해당하는 문서파일을 찾아 압축을 풀고, 렌더링을 해서 화면에 출력하는 것이다. &quot;SEE ALSO&quot; 섹션의 관련 명령들은 '링크'라기보다 꾸며진 '글자'라고 보는 것이 맞을 것이다. 이맥스의 <code>man</code>에서 하는 일은 SEE ALSO 섹션에 나열되어있는 글자들도 <code>man</code>이 이해하는 인자로 변경하고, <code>man</code>을 호출하여 문서를 버퍼로 가져온 다음 버퍼의 필요한 곳곳에 링크를 만들었다.</p><p>그러면 <code>man</code> 함수의 핵심(gist!)인 <code>Man-getpage-in-background</code>를 살펴볼까?</p><div class="highlight"><pre><span class="c1">;; 자 함수를 읽기 전에, 함수가 무슨 일을 할까? 잠시 생각해보자. 아마도 버퍼를</span>
+<span class="c1">;; 새로 만들고, man 프로세스를 호출하고 .. 아! background로 프로세스를 실행하면 </span>
+<span class="c1">;; 함수는 바로 리턴이 될테고, 누군가 프로세스를 감시하고 있어야 될텐데?</span>
+<span class="c1">;;</span>
+<span class="p">(</span><span class="nf">defun</span> <span class="nv">Man-getpage-in-background</span> <span class="p">(</span><span class="nf">topic</span><span class="p">)</span>
+
+  <span class="p">(</span><span class="k">let* </span><span class="p">((</span><span class="nf">man-args</span> <span class="nv">topic</span><span class="p">)</span>
+         <span class="p">(</span><span class="nf">bufname</span> <span class="p">(</span><span class="nf">concat</span> <span class="s">&quot;*Man &quot;</span> <span class="nv">man-args</span> <span class="s">&quot;*&quot;</span><span class="p">))</span>
+         <span class="p">(</span><span class="nf">buffer</span>  <span class="p">(</span><span class="nf">get-buffer</span> <span class="nv">bufname</span><span class="p">)))</span>
+         
+      <span class="c1">;; 역시 버퍼를 만드는군</span>
+      <span class="o">...</span>
+      <span class="p">(</span><span class="nf">message</span> <span class="s">&quot;Invoking %s %s in the background&quot;</span> <span class="nv">manual-program</span> <span class="nv">man-args</span><span class="p">)</span>
+      <span class="p">(</span><span class="nf">setq</span> <span class="nv">buffer</span> <span class="p">(</span><span class="nf">generate-new-buffer</span> <span class="nv">bufname</span><span class="p">))</span>
+      <span class="p">(</span><span class="nf">with-current-buffer</span> <span class="nv">buffer</span>
+        <span class="p">(</span><span class="nf">setq</span> <span class="nv">buffer-undo-list</span> <span class="nv">t</span><span class="p">)</span>
+        <span class="p">(</span><span class="nf">setq</span> <span class="nv">Man-original-frame</span> <span class="p">(</span><span class="nf">selected-frame</span><span class="p">))</span>
+        <span class="p">(</span><span class="nf">setq</span> <span class="nv">Man-arguments</span> <span class="nv">man-args</span><span class="p">))</span>
+        
+      <span class="c1">;; 아 맞아. man이 내 터미널의 환경을 알아야 꾸며 주지! 맞아 맞아 터미널을</span>
+      <span class="c1">;; 줄여도 자기가 막 알아서 조절했었지 ...</span>
+      <span class="p">(</span><span class="k">let </span><span class="p">((</span><span class="nf">process-environment</span> <span class="p">(</span><span class="nf">copy-sequence</span> <span class="nv">process-environment</span><span class="p">)))</span>
+       <span class="o">....</span>
+        <span class="c1">;; 머 이것저것 많이 하네 .. 터미널 타입, 스크린크기 머 그쯤 아닌가 ..</span>
+        <span class="p">(</span><span class="nf">setenv</span> <span class="s">&quot;TERM&quot;</span> <span class="s">&quot;dumb&quot;</span><span class="p">)</span>
+        <span class="p">(</span><span class="nf">unless</span> <span class="p">(</span><span class="k">or </span><span class="p">(</span><span class="nf">getenv</span> <span class="s">&quot;MANWIDTH&quot;</span><span class="p">)</span> <span class="p">(</span><span class="nf">getenv</span> <span class="s">&quot;COLUMNS&quot;</span><span class="p">))</span>
+          <span class="p">(</span><span class="nf">setenv</span> <span class="s">&quot;COLUMNS&quot;</span> <span class="p">(</span><span class="nf">number-to-string</span>
+          <span class="o">...</span>
+        <span class="p">(</span><span class="nf">setenv</span> <span class="s">&quot;MAN_KEEP_FORMATTING&quot;</span> <span class="s">&quot;1&quot;</span><span class="p">)</span>
+        
+        <span class="c1">;; 아하! 여기다</span>
+        <span class="p">(</span><span class="k">if </span><span class="p">(</span><span class="nf">fboundp</span> <span class="ss">&#39;start-process</span><span class="p">)</span>
+            <span class="c1">;; 친절하기도 하시지 cygwin, windows 환경도 고려하네 하하</span>
+            <span class="c1">;; 딱보니 &#39;sh -c man err&#39; 정도를 호출하는구만 ...</span>
+            <span class="p">(</span><span class="nf">set-process-sentinel</span>
+             <span class="p">(</span><span class="nf">start-process</span> <span class="nv">manual-program</span> <span class="nv">buffer</span>
+                            <span class="p">(</span><span class="k">if </span><span class="p">(</span><span class="nb">memq </span><span class="nv">system-type</span> <span class="o">&#39;</span><span class="p">(</span><span class="nv">cygwin</span> <span class="nv">windows-nt</span><span class="p">))</span>
+                                <span class="nv">shell-file-name</span>
+                              <span class="s">&quot;sh&quot;</span><span class="p">)</span>
+                            <span class="nv">shell-command-switch</span>
+                            <span class="p">(</span><span class="nf">format</span> <span class="p">(</span><span class="nf">Man-build-man-command</span><span class="p">)</span> <span class="nv">man-args</span><span class="p">))</span>
+             <span class="c1">;; 아 .. 이게 함수 심볼인가? 이걸 asynchronous하게 호출 하나?</span>
+             <span class="ss">&#39;Man-bgproc-sentinel</span><span class="p">)</span>
+             <span class="o">...</span>
+</pre></div>
+<p>코드를 훑어 보았는가? 우리를 흥분되게 만드는 두개의 함수 <code>set-process-sentinel</code>과 <code>start-process</code>를 살펴보자.</p><div class="highlight"><pre><span class="c1">;; 이름(닉네임), 버퍼(프로그램의 stdin/out), 프로그램, 인자들 ...</span>
+<span class="p">(</span><span class="nf">start-process</span> <span class="s">&quot;gedit&quot;</span> <span class="nv">nil</span> <span class="s">&quot;gedit&quot;</span> <span class="s">&quot;/etc/passwd&quot;</span><span class="p">)</span>
+</pre></div>
+<p>이렇게 간단하게 프로그램을 호출할 수 있다. 첫 인자 '이름'은 이맥스 내부의 PID라고 생각할 수 있다. 프로세스 고유의 이름으로, 우리가 앞으로 &quot;gedit&quot;라고 호명하면 이맥스는 지금 실행될 프로세스를 지칭하는지 이해할 수 있다.</p><p>그럼 어떤 프로세스들을 이맥스가 관리하고 있는 것일까? <code>M-x list-processes</code>를 실행 해보자.</p><div class ="highlight"><pre>Proc  Status   Buffer Tty         Command
+----  ------   ------ ---         -------
+gedit run      (none) /dev/pts/5  gedit /etc/passwd</pre></div><p>이맥스가 <code>gedit</code> 에디터를 실행과 종료의 프로세스 상태, 입/출력을 관리하고 있음을 알 수 있다. 그러면 어떻게 프로세스를 종료할까? <code>kill-process: 프로세스 종료하기</code>와 우리가 생성할때 명명한 닉네임 &quot;gedit&quot;을 이용하면 실행한 프로세스를 종료할 수 있다. 아래를 실행시켜 보자.</p><div class="highlight"><pre><span class="p">(</span><span class="nf">kill-process</span> <span class="s">&quot;gedit&quot;</span><span class="p">)</span>
+</pre></div>
+<p>프로세스는 생각보다? 쉽게 생성할 수 있었다. 그러면 어떻게 자식 프로세스가 종료되는지 알 수 있을까?</p><h2 id="프로세스-이벤트">프로세스 이벤트</h2><p>먼저 프로세스가 종료하면 (이벤트가 발생하면), 특정 함수를 호출하게 해보자.</p><div class="highlight"><pre><span class="c1">;; DATE라는 이름의 버퍼를 생성</span>
+<span class="p">(</span><span class="k">let </span><span class="p">((</span><span class="nf">buf</span> <span class="p">(</span><span class="nf">generate-new-buffer</span> <span class="s">&quot;DATE&quot;</span><span class="p">)))</span>
+  <span class="c1">;; 프로세스를 감시할 함수를 지정</span>
+  <span class="p">(</span><span class="nf">set-process-sentinel</span>
+    <span class="c1">;; 생성할 프로세스</span>
+    <span class="p">(</span><span class="nf">start-process</span> <span class="s">&quot;date&quot;</span> <span class="nv">buf</span> <span class="s">&quot;date&quot;</span><span class="p">)</span>
+    <span class="c1">;; 프로세스의 상태가 바뀔때 마다,</span>
+    <span class="c1">;; 프로세스 오브젝트(proc)와 상태 문자열(out)을 인자로 호출</span>
+    <span class="p">(</span><span class="k">lambda </span><span class="p">(</span><span class="nf">proc</span> <span class="nv">out</span><span class="p">)</span> <span class="p">(</span><span class="nf">message</span> <span class="s">&quot;Done!&quot;</span><span class="p">))))</span>
+</pre></div>
+<p>위의 코드를 실행하면 &quot;Done&quot;의 메시지가 출력된다. 우리가 명명한 &quot;DATE&quot;의 버퍼를 살펴볼까? 현재 시간이 기록되어 있는가? 이맥스는 버퍼를 입/출력 단위로 사용한다. 왜 버퍼를 사용할까? 이미 이맥스는 버퍼를 수정하고, 꾸미고, 관리하는 수많은 기능들을 가지고 있는데, 버퍼를 통한 입출력은 특별히 이러한 기능들을 쉽게 재사용할 수 있도록 도와준다.</p><p>&quot;man&quot; 함수에서 볼 수 있듯이, 출력을 버퍼로 받아와서 꾸미고, 링크를 만들고, 바인딩을 변경하는 일들이 쉬워진다. 이제 외부 프로세스를 제어할 수 있으니, 할 수 있는 일들이 무궁무진해졌다.</p><h2 id="cpp-호출하기-프리프로세싱">CPP 호출하기 (프리프로세싱)</h2><p>C프로그래밍을 하다보면 소위 &quot;macro&quot;라고 불리우는 &quot;#define&quot;문이 절실히 필요할 때가 많다. 하지만 남용되어져 프로그래밍 컨택스트를 잃어버리기 마련이다. 컴파일러는 소스를 컴파일 하기 전에 소스를 <code>cpp</code> 프로그램을 통해 프리프로세싱하여 &quot;#include&quot;와 &quot;#define&quot; 등을 문자열로 변경한다. 이맥스에서 특정 줄의 표현식의 프리프로세싱된 결과를 볼 수 있는 기능이 있다.</p><p>아래의 두 줄을 선택하고 <code>C-space: 선택 시작</code> 이후 커서를 움직여 원하는 영역을 선택하고, <code>M-x c-macro-expand</code>를 실행하자.</p><div class="highlight"><pre>  <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">encrypted</span> <span class="o">=</span> <span class="n">ceaser</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">SHIFT</span><span class="p">,</span> <span class="n">PRIME</span><span class="p">);</span>
+  <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">decrypted</span> <span class="o">=</span> <span class="n">ceaser</span><span class="p">(</span><span class="n">encrypted</span><span class="p">,</span> <span class="o">-</span><span class="n">SHIFT</span><span class="p">,</span> <span class="n">PRIME</span><span class="p">);</span>
+</pre></div>
+<p>아래와 같이 SHIFT와 PRIME이 우리가 정한 값으로 변경되었다.</p><div class="highlight"><pre>  <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">encrypted</span> <span class="o">=</span> <span class="n">ceaser</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="p">(</span><span class="mi">11</span><span class="p">),</span> <span class="p">(</span><span class="mi">17</span><span class="p">));</span>
+  <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">decrypted</span> <span class="o">=</span> <span class="n">ceaser</span><span class="p">(</span><span class="n">encrypted</span><span class="p">,</span> <span class="o">-</span><span class="p">(</span><span class="mi">11</span><span class="p">),</span> <span class="p">(</span><span class="mi">17</span><span class="p">));</span>
+</pre></div>
+<p>이 과정이 얼마나 단순한지 상상할 수 있겠는가? 해당 파일을 <code>cpp</code>로 호출한 후, 선택된 줄을 찾아 버퍼에 출력한다. 소스코드의 하이라이팅을 위해 버퍼의 주 모드를 <code>c-mode</code>로 설정하면 된다.</p><h2 id="컴파일-하기">컴파일 하기</h2><p>나머지 시져 암호화 프로그램을 완성한 후, 컴파일하기 위해 <code>M-x compile</code>을 실행하자.</p><div class="highlight"><pre>make -k <span class="o">[]</span>
+</pre></div>
+<p>(<code>make</code>의 &quot;-k&quot; 옵션은 <code>make</code>의 컴파일 과정에서 오류가 발생해도 끝까지 외존성 그래프를 따라 빌드를 시도하라는 의미이다.)</p><p><code>make</code>의 기본 규칙을 활용해서, 실행파일의 이름 &quot;enc&quot;을 입력하고 현재 소스코드를 컴파일 해본다.</p><div class="highlight"><pre>make -k enc
+cc     enc.c   -o enc
+enc.c: In <span class="k">function</span> ‘ceaser’:
+enc.c:15:26: warning: incompatible implicit declaration of built-in <span class="k">function</span> ‘malloc’
+enc.c:17:3: error: ‘for’ loop initial declarations are only allowed in C99 mode
+enc.c:17:3: note: use option -std<span class="o">=</span>c99 or -std<span class="o">=</span>gnu99 to compile your code
+make: *** <span class="o">[</span>enc<span class="o">]</span> Error 1
+
+Compilation exited abnormally with code 2 at Tue Feb 21 02:55:55
+</pre></div>
+<p>더 컴파일 과정을 진행하기 전에, 우리가 어떤일을 하고 있는지 알아보자. &quot;make&quot; 프로세스를 호출했고, 해당하는 결과를 버퍼로 받아 왔다. 컴파일 결과가 담긴 버퍼에서 오류가 난 줄들을 하이라이팅했고(face), 링크를 만들었다. <code>man</code>에서와 마찬가지로 정규 표현식(<code>regexp</code>)을 활용해서 특정 패턴을 찾고, 해당하는 face를 만들어 하이라이팅한 것이다. 별로 특별한 것이 하나도 없다.</p><p>그러면 오류가 난 곳으로 이동하기 위해서는 아래와 같은 명령을 활용한다.</p><ul><li><code>M-g n: go next error</code>: 오류가 난 다음 줄로 이동</li><li><code>M-g p: go previous error</code>: 오류가 난 이전 줄로 이동</li></ul><p>오류는 우리가 다소 최신(?) 표준인 <code>for</code>문 안에 변수를 선언했기 때문인데, 다음과 같은 명령으로 컴파일 할 수 있다. <code>M-x compile</code> 이후 &quot;CFLAGS=-std=c99 make -k enc&quot;를 입력해서 프로그램을 컴파일 해 본다.</p><h2 id="프로그램-실행하기">프로그램 실행하기</h2><p>모두 같은 맥락으로, 컴파일된 프로그램을 실행할 수도 있다. <code>C-!</code> 또는 <code>M-x shell-commnad</code>를 실행해본다. 그리고 프롬프트가 나오면 아래와 같이 입력한다.</p><div class="highlight"><pre><span class="p">.</span><span class="o">/</span><span class="n">enc</span> <span class="n">good</span>
+</pre></div>
+<p>출력 창에 아래와 같은 이쁜? 이모티콘을 볼 수 있을 것이다.</p><div class ="highlight"><pre>'good' =enc->> 'aiio' =dec->> 'V^^d'</pre></div><h2 id="프로세스와-상호작용하기">프로세스와 상호작용하기</h2><p>자 그러면 한발 더 나아가서, 어떻게 프로세스와 상호작용할까?</p><div class="highlight"><pre><span class="p">(</span><span class="k">let </span><span class="p">((</span><span class="nf">buf</span> <span class="p">(</span><span class="nf">generate-new-buffer</span> <span class="s">&quot;PYTHON&quot;</span><span class="p">)))</span>
+  <span class="p">(</span><span class="nf">start-process</span> <span class="s">&quot;python&quot;</span> <span class="nv">buf</span> <span class="s">&quot;python&quot;</span> <span class="s">&quot;-i&quot;</span><span class="p">))</span>
+</pre></div>
+<p>파이선 프로세스를 생성시키고, &quot;PYTHON&quot; 버퍼로 이동해 볼까? 우리가 파이선의 초기화 메시지들이 출력되었는가? (참고로 &quot;-i&quot; 옵션은 &quot;interactive&quot; 모드로 출력을 버퍼링 하지 않는다.)</p><p>그리고 <code>list-processes</code>를 실행해 보면, 파이선 프로세스가 실행되고 있음을 알 수 있다. 자 파이선을 제어하기 위해서는 <code>process-send-string: 프로세스에 문자열 보내기</code>와 <code>process-send-eof: 프로세스의 종료문자 보내기</code>을 활용하면 된다. 아래의 예를 보자.</p><div class="highlight"><pre><span class="p">(</span><span class="nf">process-send-string</span> <span class="s">&quot;python&quot;</span> <span class="s">&quot;print &#39;hello world from emacs!&#39;\n&quot;</span><span class="p">)</span>
+</pre></div>
+<p>위의 예제를 실행하고 &quot;PYTHON&quot; 버퍼로 이동하면 &quot;hello world from emacs!&quot;가 출력되었음을 알 수 있다. 아하! 파이선과 같은 인터프리터형 프로그램을 위와 같이 제어하면, 내가 프로그래밍하면서 현재 버퍼의 함수/클래스를 보내 파이선 인터프리터에 보내 실행해 볼 수 있지 않을까? 이와 관련된 궁금증이 바로 우리가 다음 장에서 같이 해결해 볼 내용이다.</p>
+
+
+      <div id="disqus_thread"></div>
+      <script type="text/javascript">
+        var disqus_shortname = 'emacsbook';
+
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+          var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+          dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+          (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+      </script>
+      <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+      <a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+      
+    </article>
+  </div>
+ 
+  <footer>
+    <a rel="license" href="http://creativecommons.org/licenses/by-nc/3.0/">
+      <img alt="CC" style="border-width:0" src="http://i.creativecommons.org/l/by-nc/3.0/88x31.png" />
+    </a>
+  </footer>
+</div>
+
+
+  <!-- JavaScript at the bottom for fast page loading -->
+
+  <!-- Grab Google CDN's jQuery, with a protocol relative URL; fall back to local if offline -->
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+  <script>window.jQuery || document.write('<script src="js/libs/jquery-1.6.2.min.js"><\/script>')</script>
+
+
+  <!-- scripts concatenated and minified via ant build script-->
+  <script defer src="js/plugins.js"></script>
+  <script defer src="js/script.js"></script>
+  <!-- end scripts-->
+
+  <script>
+    window._gaq = [['_setAccount','UA-9161381-1'],['_trackPageview'],['_trackPageLoadTime']];
+    Modernizr.load({
+      load: ('https:' == location.protocol ? '//ssl' : '//www') + '.google-analytics.com/ga.js'
+    });
+  </script>
+
+
+  <!-- Prompt IE 6 users to install Chrome Frame. Remove this if you want to support IE 6.
+       chromium.org/developers/how-tos/chrome-frame-getting-started -->
+  <!--[if lt IE 7 ]>
+    <script src="//ajax.googleapis.com/ajax/libs/chrome-frame/1.0.3/CFInstall.min.js"></script>
+    <script>window.attachEvent('onload',function(){CFInstall.check({mode:'overlay'})})</script>
+  <![endif]-->
+  
+</body>
+</html>
