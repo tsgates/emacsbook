@@ -79,7 +79,7 @@
 <span class="kt">char</span><span class="o">*</span> <span class="nf">ceaser</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">plain</span><span class="p">,</span> <span class="kt">int</span> <span class="n">shift</span><span class="p">,</span> <span class="kt">int</span> <span class="n">prime</span><span class="p">)</span> <span class="p">{</span>
   <span class="k">const</span> <span class="kt">int</span> <span class="n">len</span> <span class="o">=</span> <span class="n">strlen</span><span class="p">(</span><span class="n">plain</span><span class="p">);</span>
   <span class="kt">char</span> <span class="o">*</span><span class="n">cipher</span> <span class="o">=</span> <span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="p">)</span><span class="n">malloc</span><span class="p">(</span><span class="n">len</span><span class="p">);</span>
-
+  
   <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">len</span> <span class="p">;</span> <span class="n">i</span> <span class="o">++</span><span class="p">)</span> <span class="p">{</span>
     <span class="o">*</span><span class="p">(</span><span class="n">cipher</span> <span class="o">+</span> <span class="n">i</span><span class="p">)</span> <span class="o">=</span> <span class="p">(</span><span class="o">*</span><span class="p">(</span><span class="n">plain</span> <span class="o">+</span> <span class="n">i</span><span class="p">)</span> <span class="o">-</span> <span class="sc">&#39;a&#39;</span> <span class="o">+</span> <span class="n">shift</span><span class="p">)</span> <span class="o">%</span> <span class="n">prime</span> <span class="o">+</span> <span class="sc">&#39;a&#39;</span><span class="p">;</span>
   <span class="p">}</span>
@@ -98,11 +98,11 @@
 
   <span class="n">printf</span><span class="p">(</span><span class="s">&quot;&#39;%s&#39; =enc-&gt;&gt; &#39;%s&#39; =dec-&gt;&gt; &#39;%s&#39;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span>
      <span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">encrypted</span><span class="p">,</span> <span class="n">decrypted</span><span class="p">);</span>
-
+  
   <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
 <span class="p">}</span>
 </pre></div>
-<p>입력해보았다면 에디터에 비교해서 어떤 점이 불편하고, 어떤 기능들을 더 필요한가? 특히 다른 에디터에서 익숙한 기능이 있다면, 하나 하나 꼭 기록해 놓기 바란다. 앞으로 이맥스를 배워가는 과정에서, 어떻게 원하는 기능을 찾고, 찾을 수 없다면 어떻게 스스로 구현하는지 배워보도록 할 것이다.</p><h2 id="자동-완성-dabbrev-completion">자동 완성 (dabbrev-completion)</h2><p>프로그래밍을 하면서 입력하면서 가장 먼저 절실하게? 필요한 기능은 역시 자동 완성이다. 이맥스에서 동적 자동완성 (dabbrev-completion)의 기능이 있는데, <code>M-/: dabbrev-expand</code>의 키입력을 통해서 호출 할 수 있다.</p><p>동적 자동완성은 앞문자들이 일치하는 단어들 중 가장 최근에 나타난 (앞선) 단어를 찾아 완성해 준다.</p><div class="figure"><img src="/img/emacs-abbrev.png" alt="그림-1. 자동 완성" /><p class="caption">그림-1. 자동 완성</p></div><div class="highlight"><pre><span class="cp">#include &lt;stdio.h&gt;</span>
+<p>입력해보았다면 에디터에 비교해서 어떤 점이 불편하고, 어떤 기능들을 더 필요한가? 특히 다른 에디터에서 익숙한 기능이 있다면, 하나 하나 꼭 기록해 놓기 바란다. 앞으로 이맥스를 배워가는 과정에서, 어떻게 원하는 기능을 찾고, 찾을 수 없다면 어떻게 스스로 구현하는지 배워보도록 할 것이다.</p><h2 id="자동-완성-dabbrev-completion">자동 완성 (dabbrev-completion)</h2><p>프로그래밍을 하면서 입력하면서 가장 먼저 절실하게? 필요한 기능은 역시 자동 완성이다. 이맥스에서 동적 자동완성 (dabbrev-completion)의 기능이 있는데, <code>M-/: dabbrev-expand</code>의 키입력을 통해서 호출 할 수 있다.</p><p>동적 자동완성은 앞문자들이 일치하는 단어들 중 가장 최근에 나타난 (앞선) 단어를 찾아 완성해 준다.</p><div class="figure"><img src="img/emacs-abbrev.png" alt="그림-1. 자동 완성" /><p class="caption">그림-1. 자동 완성</p></div><div class="highlight"><pre><span class="cp">#include &lt;stdio.h&gt;</span>
 <span class="cp">#include &lt;string.h&gt;</span>
 <span class="cp">#inc[]</span>
 </pre></div>
@@ -147,14 +147,14 @@
   <span class="k">const</span> <span class="kt">int</span> <span class="n">len</span> <span class="o">=</span> <span class="n">strlen</span><span class="p">(</span><span class="n">plain</span><span class="p">);</span>
   <span class="p">[</span><span class="n">statement</span><span class="o">=</span><span class="mi">0</span><span class="p">]</span>
   <span class="kt">char</span> <span class="o">*</span><span class="n">cipher</span> <span class="o">=</span> <span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="p">)</span><span class="n">malloc</span><span class="p">(</span><span class="n">len</span><span class="p">);</span>
-
+  
   <span class="p">[</span><span class="n">statement</span><span class="o">=</span><span class="mi">0</span><span class="p">]</span>
   <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">len</span> <span class="p">;</span> <span class="n">i</span> <span class="o">++</span><span class="p">)</span> <span class="p">{</span>
     <span class="p">[</span><span class="n">statement</span><span class="o">-</span><span class="n">block</span><span class="o">-</span><span class="n">intro</span><span class="o">=+</span><span class="p">]</span>
     <span class="o">*</span><span class="p">(</span><span class="n">cipher</span> <span class="o">+</span> <span class="n">i</span><span class="p">)</span> <span class="o">=</span> <span class="p">(</span><span class="o">*</span><span class="p">(</span><span class="n">plain</span> <span class="o">+</span> <span class="n">i</span><span class="p">)</span> <span class="o">-</span> <span class="sc">&#39;a&#39;</span> <span class="o">+</span> <span class="n">shift</span><span class="p">)</span> <span class="o">%</span> <span class="n">prime</span> <span class="o">+</span> <span class="sc">&#39;a&#39;</span><span class="p">;</span>
   <span class="p">[</span><span class="n">block</span><span class="o">-</span><span class="n">close</span><span class="o">=</span><span class="mi">0</span><span class="p">]</span>
   <span class="p">}</span>
-
+  
   <span class="p">[</span><span class="n">statement</span><span class="o">=</span><span class="mi">0</span><span class="p">]</span>
   <span class="o">*</span><span class="p">(</span><span class="n">cipher</span> <span class="o">+</span> <span class="n">len</span><span class="p">)</span> <span class="o">=</span> <span class="sc">&#39;\0&#39;</span><span class="p">;</span>
   <span class="p">[</span><span class="n">statement</span><span class="o">=</span><span class="mi">0</span><span class="p">]</span>
