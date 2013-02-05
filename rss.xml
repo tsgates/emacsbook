@@ -12,64 +12,71 @@
       <title>Chap #9.  프로그래밍하기: Python</title>
       <link>chap9.html</link>
       <description> 이멕스에서 Python을 이용한 개발 방법을 살펴본다. 더불어 이번장을 통하여 이멕스의 주모드가 어떻게 결정되는지  살펴보고, 일반적인 REPL 환경을 살펴볼 볼 것이다.</description>
-      <pubDate>Wed, 02 Jan 2013 00:00:00 +0900</pubDate>
-      <dc:date>2013-01-02T00:00:00+09:00</dc:date>
-    </item>
-    <item>
-      <title>Chap #8.  프로그래밍하기: C언어-2</title>
-      <link>chap8.html</link>
-      <description> 이맥스가 프로세스를 어떻게 관리하고, 상호작용하는지, 또 이를 활용한 기능들이 어떻게 사용되는지 C언어로 프로그래밍하면서 하나하나  알아본다.</description>
-      <pubDate>Thu, 17 May 2012 00:00:00 +0900</pubDate>
-      <dc:date>2012-05-17T00:00:00+09:00</dc:date>
-    </item>
-    <item>
-      <title>Chap #7.  프로그래밍하기: C언어-1</title>
-      <link>chap7.html</link>
-      <description> C언어로 프로그래밍을 위해 이맥스가 어떠한 편리한 기능들을 제공하는지 살펴본다. 더 나아가 이맥스가 어떻게 내부적으로 C언어를 이해하고 들여쓰기를 제공하는지 이해해보도록 하자.</description>
-      <pubDate>Thu, 02 Feb 2012 00:00:00 +0900</pubDate>
-      <dc:date>2012-02-02T00:00:00+09:00</dc:date>
-    </item>
-    <item>
-      <title>Chap #6.  모드(Mode)와 동적 바인딩(Dynamic Binding)</title>
-      <link>chap6.html</link>
-      <description> Lisp의 동적 바인딩(Dynamic Binding)이 어떻게 이맥스를 구현하는데  활용되었는지, 이맥스 안에서 파일을 여는 과정을 통해서 살펴볼 것이다.</description>
-      <pubDate>Mon, 30 Jan 2012 00:00:00 +0900</pubDate>
-      <dc:date>2012-01-30T00:00:00+09:00</dc:date>
-    </item>
-    <item>
-      <title>Chap #5.  키맵(Keymap)과 커서이동</title>
-      <link>chap5.html</link>
-      <description> 이맥스에서 어떻게 키입력을 처리하며 어떠한 Lisp의 구조를 사용하는지 이해하고, 전역적으로 사용되는 키입력과 함수 중 특별히 커서의 이동과 관련된 함수들을 살펴본다.</description>
-      <pubDate>Mon, 26 Dec 2011 00:00:00 +0900</pubDate>
-      <dc:date>2011-12-26T00:00:00+09:00</dc:date>
+      <pubDate>Wed, 02 Jan 2013 00:00:00 -0500</pubDate>
+      <dc:date>2013-01-02T00:00:00-05:00</dc:date>
     </item>
     <item>
       <title>Chap #4.  Lisp 이해하기2</title>
       <link>chap4.html</link>
       <description> Lisp의 특수 형태/연산자들인 조건문, 변수 선언, 함수 선언의 개념을  이맥스의 테트리스 게임의 소스 코드를 통하여 이해해본다.</description>
-      <pubDate>Sat, 03 Dec 2011 00:00:00 +0900</pubDate>
-      <dc:date>2011-12-03T00:00:00+09:00</dc:date>
+      <pubDate>Wed, 02 Jan 2013 00:00:00 -0500</pubDate>
+      <dc:date>2013-01-02T00:00:00-05:00</dc:date>
+    </item>
+    <item>
+      <title>Chap #10. </title>
+      <link>chap10.html</link>
+      <description></description>
+      <pubDate>Thu, 17 May 2012 00:00:00 -0400</pubDate>
+      <dc:date>2012-05-17T00:00:00-04:00</dc:date>
+    </item>
+    <item>
+      <title>Chap #8.  프로그래밍하기: C언어-2</title>
+      <link>chap8.html</link>
+      <description> 이맥스가 프로세스를 어떻게 관리하고, 상호작용하는지, 또 이를 활용한 기능들이 어떻게 사용되는지 C언어로 프로그래밍하면서 하나하나  알아본다.</description>
+      <pubDate>Thu, 17 May 2012 00:00:00 -0400</pubDate>
+      <dc:date>2012-05-17T00:00:00-04:00</dc:date>
+    </item>
+    <item>
+      <title>Chap #7.  프로그래밍하기: C언어-1</title>
+      <link>chap7.html</link>
+      <description> C언어로 프로그래밍을 위해 이맥스가 어떠한 편리한 기능들을 제공하는지 살펴본다. 더 나아가 이맥스가 어떻게 내부적으로 C언어를 이해하고 들여쓰기를 제공하는지 이해해보도록 하자.</description>
+      <pubDate>Thu, 02 Feb 2012 00:00:00 -0500</pubDate>
+      <dc:date>2012-02-02T00:00:00-05:00</dc:date>
+    </item>
+    <item>
+      <title>Chap #6.  모드(Mode)와 동적 바인딩(Dynamic Binding)</title>
+      <link>chap6.html</link>
+      <description> Lisp의 동적 바인딩(Dynamic Binding)이 어떻게 이맥스를 구현하는데  활용되었는지, 이맥스 안에서 파일을 여는 과정을 통해서 살펴볼 것이다.</description>
+      <pubDate>Mon, 30 Jan 2012 00:00:00 -0500</pubDate>
+      <dc:date>2012-01-30T00:00:00-05:00</dc:date>
+    </item>
+    <item>
+      <title>Chap #5.  키맵(Keymap)과 커서이동</title>
+      <link>chap5.html</link>
+      <description> 이맥스에서 어떻게 키입력을 처리하며 어떠한 Lisp의 구조를 사용하는지 이해하고, 전역적으로 사용되는 키입력과 함수 중 특별히 커서의 이동과 관련된 함수들을 살펴본다.</description>
+      <pubDate>Mon, 26 Dec 2011 00:00:00 -0500</pubDate>
+      <dc:date>2011-12-26T00:00:00-05:00</dc:date>
     </item>
     <item>
       <title>Chap #3.  Lisp 이해하기1</title>
       <link>chap3.html</link>
       <description> 이맥스를 확장하고 이해하기 위한 Lisp의 문법(Form), 이를 계산(Evaluate)하는 과정, 기본적인 데이터구조, 리스트(List)에 대해 알아본다.</description>
-      <pubDate>Sat, 03 Dec 2011 00:00:00 +0900</pubDate>
-      <dc:date>2011-12-03T00:00:00+09:00</dc:date>
+      <pubDate>Sat, 03 Dec 2011 00:00:00 -0500</pubDate>
+      <dc:date>2011-12-03T00:00:00-05:00</dc:date>
     </item>
     <item>
       <title>Chap #2.  도움말 시스템</title>
       <link>chap2.html</link>
       <description> 이맥스가 제공하는 도움말 기능들을 차근차근 알아보고, 도움말 시스템을 활용하여 궁금증에 대한 답을 어떻게 찾을 수 있는지 알아본다.</description>
-      <pubDate>Tue, 22 Nov 2011 00:00:00 +0900</pubDate>
-      <dc:date>2011-11-22T00:00:00+09:00</dc:date>
+      <pubDate>Tue, 22 Nov 2011 00:00:00 -0500</pubDate>
+      <dc:date>2011-11-22T00:00:00-05:00</dc:date>
     </item>
     <item>
       <title>Chap #1.  이맥스 설치 및 실행</title>
       <link>chap1.html</link>
       <description> 시작하기에 앞서 이맥스를 설치하고, 작업환경을 갖춘다. 또한 설치된 이맥스의 디렉토리 구조를 개관적으로 살펴보고, 앞으로 사용할 용어를 정의한다.</description>
-      <pubDate>Tue, 22 Nov 2011 00:00:00 +0900</pubDate>
-      <dc:date>2011-11-22T00:00:00+09:00</dc:date>
+      <pubDate>Tue, 22 Nov 2011 00:00:00 -0500</pubDate>
+      <dc:date>2011-11-22T00:00:00-05:00</dc:date>
     </item>
   </channel>
 </rss>
