@@ -23,13 +23,6 @@
       <dc:date>2013-01-02T00:00:00-05:00</dc:date>
     </item>
     <item>
-      <title>Chap #10. </title>
-      <link>chap10.html</link>
-      <description></description>
-      <pubDate>Thu, 17 May 2012 00:00:00 -0400</pubDate>
-      <dc:date>2012-05-17T00:00:00-04:00</dc:date>
-    </item>
-    <item>
       <title>Chap #8.  프로그래밍하기: C언어-2</title>
       <link>chap8.html</link>
       <description> 이맥스가 프로세스를 어떻게 관리하고, 상호작용하는지, 또 이를 활용한 기능들이 어떻게 사용되는지 C언어로 프로그래밍하면서 하나하나  알아본다.</description>
